@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CourseCard from '../../components/CourseCard.astro';
+import { withBase } from '../../lib/site';
+const all = await getCollection('offerings');
+const current = all.filter((o) => o.data.current);
+const archived = all.filter((o) => !o.data.current);
+---
+
+<BaseLayout
+  title="Ensino"
+  description="Disciplinas atuais e arquivo de ofertas anteriores."
+  ><header class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Ensino</span><h1>Disciplinas e calendários</h1><p
+        class="hero-lead"
+      >
+        Encontre rapidamente aulas, avaliações, materiais e a logística de cada
+        turma.
+      </p>
+    </div>
+  </header><section class="container">
+    <div class="section-head">
+      <h2>Ofertas atuais</h2><a href={withBase('feed/calendario.ics')}
+        >Baixar calendário completo</a
+      >
+    </div><div class="grid">
+      {current.map((o) => <CourseCard offering={o} />)}
+    </div>
+  </section><section class="container">
+    <h2>Ofertas anteriores</h2><div class="grid">
+      {
+        archived.map((o) => (
+          <article class="card">
+            <>
+              <span class="eyebrow">{o.data.term}</span>
+              <h3>{o.data.title}</h3>
+              <p>{o.data.code}</p>
+              <a
+                href={withBase(
+                  `ensino/${o.data.slug}/${o.data.term.replace('.', '-')}/`
+                )}
+              >
+                Consultar oferta arquivada
+              </a>
+            </>
+          </article>
+        ))
+      }
+    </div>
+  </section></BaseLayout
+>

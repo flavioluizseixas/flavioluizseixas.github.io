@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/site';
+---
+
+<BaseLayout
+  title="Página não encontrada"
+  description="A página solicitada não foi encontrada."
+  ><div class="container narrow">
+    <span class="eyebrow">Erro 404</span><h1>
+      Esta página não está por aqui.
+    </h1><p class="hero-lead">
+      O endereço pode ter mudado durante a migração do site antigo.
+    </p><div class="hero-actions">
+      <a class="button" href={withBase('ensino/')}>Ver disciplinas</a><a
+        class="button secondary"
+        href={withBase('busca/')}>Buscar no site</a
+      >
+    </div>
+  </div></BaseLayout
+>

@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+export async function getStaticPaths() {
+  const entries = await getCollection('offerings');
+  return entries
+    .filter((e) => e.data.current)
+    .map((offering) => ({
+      params: { slug: offering.data.slug },
+      props: { offering }
+    }));
+}
+const { offering } = Astro.props;
+return Astro.redirect(
+  `${import.meta.env.BASE_URL}ensino/${offering.data.slug}/${offering.data.term.replace('.', '-')}/`
+);
+---

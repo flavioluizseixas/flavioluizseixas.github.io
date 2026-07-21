@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Agenda from './Agenda.astro';
+import { withBase } from '../lib/site';
+const { offering, Content } = Astro.props;
+const d = offering.data;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Course',
+  name: d.title,
+  courseCode: d.code,
+  description: d.summary,
+  provider: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Universidade Federal Fluminense'
+  }
+};
+---
+
+<BaseLayout title={`${d.title} · ${d.term}`} description={d.summary}>
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(jsonLd)}
+  />
+  <header class="page-hero">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href={withBase('ensino/')}>Ensino</a> / {d.title}
+      </div><span class="eyebrow"
+        >{d.code} · {
+          d.level === 'graduacao' ? 'Graduação' : 'Pós-graduação'
+        }</span
+      ><h1>{d.title}</h1><p class="hero-lead">{d.summary}</p>{
+        !d.current && (
+          <div class="archive-banner">
+            <>
+              <strong>Oferta encerrada — semestre {d.term}</strong>
+              <br />
+            </>
+            Este calendário é mantido para consulta histórica.
+          </div>
+        )
+      }{
+        d.notice && (
+          <div class="notice">
+            <br />
+            {d.notice}
+          </div>
+        )
+      }<div class="course-summary">
+        <dl class="facts">
+          <div><dt>Período</dt><dd>{d.term}</dd></div><div>
+            <dt>Turma</dt><dd>{d.class_group}</dd>
+          </div><div><dt>Horário</dt><dd>{d.schedule}</dd></div><div>
+            <dt>Sala</dt><dd>{d.room || 'A confirmar'}</dd>
+          </div>
+        </dl><div>
+          <span class="label">Última atualização</span><p>{d.updated}</p><a
+            href={withBase(`feed/${d.slug}-${d.term.replace('.', '-')}.ics`)}
+            >Adicionar ao calendário</a
+          >
+        </div>
+      </div>
+    </div>
+  </header>
+  <nav class="in-page-nav" aria-label="Nesta disciplina">
+    <div>
+      <a href="#visao-geral">Visão geral</a><a href="#calendario">Calendário</a
+      ><a href="#avaliacao">Avaliação</a><a href="#materiais">Materiais</a><a
+        href="#referencias">Referências</a
+      >
+    </div>
+  </nav>
+  <div class="container">
+    <Agenda events={d.calendar} /><article
+      class="prose narrow"
+      id="visao-geral"
+    >
+      <Content />
+    </article>{
+      d.materials.length > 0 && (
+        <section id="materiais">
+          <>
+            <h2>Materiais e ferramentas</h2>
+            <div class="resources">
+              {d.materials.map((m: any) => (
+                <a
+                  class="resource"
+                  href={m.url}
+                  target={m.external ? '_blank' : undefined}
+                  rel={m.external ? 'noopener noreferrer' : undefined}
+                >
+                  <strong>{m.title}</strong>
+                  <span>
+                    {m.type}
+                    {m.external ? ' · link externo' : ''}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </>
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>

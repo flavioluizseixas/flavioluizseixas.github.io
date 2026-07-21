@@ -1,0 +1,18 @@
+---
+import { getCollection, render } from 'astro:content';
+import OfferingPage from '../../../components/OfferingPage.astro';
+export async function getStaticPaths() {
+  const entries = await getCollection('offerings');
+  return entries.map((offering) => ({
+    params: {
+      slug: offering.data.slug,
+      term: offering.data.term.replace('.', '-')
+    },
+    props: { offering }
+  }));
+}
+const { offering } = Astro.props;
+const { Content } = await render(offering);
+---
+
+<OfferingPage offering={offering} Content={Content} />

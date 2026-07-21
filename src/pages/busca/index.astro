@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Busca"
+  description="Busque disciplinas, materiais, pesquisa e páginas do site."
+  ><header class="page-hero">
+    <div class="container narrow">
+      <span class="eyebrow">Busca</span><h1>O que você procura?</h1><p
+        class="hero-lead"
+      >
+        Pesquise por disciplina, código, semestre, tópico ou material.
+      </p>
+    </div>
+  </header><div class="container narrow">
+    <div id="search"><p>Carregando busca…</p></div><noscript
+      ><p class="empty">
+        A busca requer JavaScript. Use a navegação principal para explorar o
+        site.
+      </p></noscript
+    >
+  </div><link
+    href={import.meta.env.BASE_URL + 'pagefind/pagefind-ui.css'}
+    rel="stylesheet"
+  /><script is:inline define:vars={{ base: import.meta.env.BASE_URL }}>
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await import(base + 'pagefind/pagefind-ui.js');
+        new window.PagefindUI({
+          element: '#search',
+          showSubResults: true,
+          translations: {
+            placeholder: 'Nome, código, tópico…',
+            clear_search: 'Limpar',
+            load_more: 'Ver mais',
+            search_label: 'Buscar neste site',
+            filters_label: 'Filtros',
+            zero_results: 'Nenhum resultado para [SEARCH_TERM]'
+          }
+        });
+      } catch {
+        document.querySelector('#search').innerHTML =
+          '<p class="empty">A busca estará disponível após o build de produção.</p>';
+      }
+    });
+  </script></BaseLayout
+>

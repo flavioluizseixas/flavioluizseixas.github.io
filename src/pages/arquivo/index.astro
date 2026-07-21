@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { withBase } from '../../lib/site';
+const entries = (await getCollection('offerings'))
+  .filter((e) => !e.data.current)
+  .sort((a, b) => b.data.term.localeCompare(a.data.term));
+const groups = Object.groupBy(entries, (e) => e.data.term);
+---
+
+<BaseLayout
+  title="Arquivo"
+  description="Ofertas anteriores de disciplinas, organizadas por semestre."
+  ><header class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Memória acadêmica</span><h1>
+        Arquivo de disciplinas
+      </h1><p class="hero-lead">
+        Calendários antigos permanecem em URLs próprias e são identificados como
+        ofertas encerradas.
+      </p>
+    </div>
+  </header><div class="container narrow">
+    {
+      Object.entries(groups).map(([term, items]) => (
+        <section>
+          <h2>{term}</h2>
+          {items?.map((item) => (
+            <article class="card">
+              <span class="eyebrow">{item.data.code}</span>
+              <h3>{item.data.title}</h3>
+              <p>{item.data.summary}</p>
+              <a
+                href={withBase(
+                  `ensino/${item.data.slug}/${item.data.term.replace('.', '-')}/`
+                )}
+              >
+                Abrir oferta {term}
+              </a>
+            </article>
+          ))}
+        </section>
+      ))
+    }
+  </div></BaseLayout
+>

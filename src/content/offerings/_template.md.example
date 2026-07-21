@@ -1,0 +1,34 @@
+---
+title: Nome da disciplina
+code: TCC00000
+slug: nome-da-disciplina
+term: '2026.2'
+current: false
+status: draft
+level: graduacao
+class_group: A1
+schedule: Segundas, 18h–20h
+room: null
+timezone: America/Sao_Paulo
+summary: Resumo curto da oferta.
+language: pt-BR
+updated: 21/07/2026
+materials: []
+calendar:
+  - date: '2026-08-10'
+    title: Apresentação do curso
+    type: aula
+    status: planned
+---
+
+## Visão geral
+
+Objetivo e ementa da oferta.
+
+## Avaliação
+
+Critérios, pesos e regras.
+
+## Referências
+
+- Referência básica.

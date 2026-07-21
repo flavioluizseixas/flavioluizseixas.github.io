@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { profileLinks, withBase } from '../../lib/site';
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Flávio Luiz Seixas',
+  jobTitle: 'Professor de Ciência da Computação',
+  affiliation: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Universidade Federal Fluminense'
+  },
+  sameAs: profileLinks.map((l) => l.href)
+};
+---
+
+<BaseLayout
+  title="Sobre"
+  description="Biografia, atuação acadêmica e interesses de Flávio Luiz Seixas."
+  ><script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(person)}
+  /><header class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Sobre</span><h1>Flávio Luiz Seixas</h1><p
+        class="hero-lead"
+      >
+        Professor, pesquisador e coordenador de projetos na interseção entre
+        computação, saúde e processos.
+      </p>
+    </div>
+  </header><article class="container narrow prose">
+    <h2>Biografia</h2><p>
+      Professor de Ciência da Computação do Instituto de Computação da
+      Universidade Federal Fluminense (UFF), em Niterói, desde 2017. É doutor em
+      Computação (2012) e mestre em Engenharia de Telecomunicações (2007) pela
+      UFF, MBA em Administração de Empresas e Negócios pela FGV (2002) e
+      engenheiro industrial eletricista, com ênfase em Eletrônica e
+      Telecomunicações, pela UTFPR (1998).
+    </p><p>
+      Atua no Programa de Pós-Graduação em Computação, nas linhas de
+      Inteligência Artificial e Sistemas de Computação, no Mestrado Profissional
+      em Enfermagem Assistencial e colabora com o programa de Ciências
+      Cardiovasculares da UFF. Coordena a Fábrica de Software e Tecnologia para
+      a Saúde.
+    </p><p>
+      Antes da UFF, atuou na Embratel-Claro nas áreas de qualidade, processos e
+      indicadores, e lecionou Engenharia de Telecomunicações na Universidade
+      Estácio de Sá.
+    </p><h2>Interesses</h2><ul>
+      <li>Inteligência artificial aplicada à saúde</li><li>
+        Sistemas de suporte à decisão
+      </li><li>Processamento de sinais e imagens médicas</li><li>
+        Modelagem de processos de negócio
+      </li><li>Desenvolvimento organizacional e empreendedorismo inovador</li>
+    </ul><p>
+      <a class="button" href={withBase('contato/')}>Entrar em contato</a>
+    </p>
+  </article></BaseLayout
+>

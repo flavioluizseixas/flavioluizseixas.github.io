@@ -1,0 +1,131 @@
+---
+import '../styles/global.css';
+import { withBase } from '../lib/site';
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+const { title, description, image = 'images/social-card.svg' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const fullTitle =
+  title === 'Início'
+    ? 'Flávio Luiz Seixas — Professor e pesquisador'
+    : `${title} — Flávio Luiz Seixas`;
+const nav = [
+  ['Início', ''],
+  ['Ensino', 'ensino/'],
+  ['Pesquisa', 'pesquisa/'],
+  ['Extensão', 'extensao/'],
+  ['Publicações', 'publicacoes/'],
+  ['Sobre', 'sobre/']
+];
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#092d46" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+    <meta property="og:type" content="website" /><meta
+      property="og:title"
+      content={fullTitle}
+    />
+    <meta property="og:description" content={description} /><meta
+      property="og:image"
+      content={new URL(withBase(image), Astro.site)}
+    />
+    <title>{fullTitle}</title>
+    <script is:inline>
+      document.documentElement.dataset.theme =
+        localStorage.getItem('theme') || 'auto';
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a
+          class="brand"
+          href={withBase('')}
+          aria-label="Página inicial de Flávio Luiz Seixas"
+          ><span class="brand-mark">FS</span><span
+            ><strong>Flávio Luiz Seixas</strong><small
+              >Instituto de Computação · UFF</small
+            ></span
+          ></a
+        >
+        <button
+          class="menu-button"
+          aria-expanded="false"
+          aria-controls="global-nav">Menu</button
+        >
+        <nav id="global-nav" aria-label="Navegação principal">
+          {
+            nav.map(([label, path]) => (
+              <a
+                href={withBase(path)}
+                aria-current={
+                  Astro.url.pathname === withBase(path) ? 'page' : undefined
+                }
+              >
+                {label}
+              </a>
+            ))
+          }
+          <a class="search-link" href={withBase('busca/')}
+            >Buscar <span aria-hidden="true">⌕</span></a
+          >
+        </nav>
+        <button
+          class="theme-button"
+          aria-label="Alternar tema"
+          title="Alternar tema">◐</button
+        >
+      </div>
+    </header>
+    <main id="conteudo"><slot /></main>
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <strong>Flávio Luiz Seixas</strong><p>
+            Professor de Ciência da Computação<br />Universidade Federal
+            Fluminense
+          </p>
+        </div><div>
+          <strong>Atalhos</strong><a href={withBase('ensino/')}>Disciplinas</a
+          ><a href={withBase('contato/')}>Contato</a><a
+            href={withBase('arquivo/')}>Arquivo</a
+          >
+        </div><div>
+          <strong>Este site</strong><p>
+            Conteúdo acadêmico aberto, rápido e acessível.
+          </p><a href={withBase('feed/calendario.ics')}>Assinar calendário</a>
+        </div>
+      </div><p class="footer-note">
+        Atualizado a partir de conteúdo versionado. Horários em Brasília.
+      </p>
+    </footer>
+    <a class="mobile-courses" href={withBase('ensino/')}>Disciplinas</a>
+    <script>
+      const menu = document.querySelector('.menu-button');
+      const nav = document.querySelector('#global-nav');
+      menu?.addEventListener('click', () => {
+        const open = menu.getAttribute('aria-expanded') === 'true';
+        menu.setAttribute('aria-expanded', String(!open));
+        nav?.classList.toggle('open', !open);
+      });
+      document.querySelector('.theme-button')?.addEventListener('click', () => {
+        const next =
+          document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem('theme', next);
+      });
+    </script>
+  </body>
+</html>

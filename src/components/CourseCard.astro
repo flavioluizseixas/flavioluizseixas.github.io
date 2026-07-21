@@ -1,0 +1,44 @@
+---
+import { formatDate, withBase, todayInSaoPaulo } from '../lib/site';
+const { offering } = Astro.props;
+const today = todayInSaoPaulo();
+const next = offering.data.calendar
+  .filter(
+    (e: any) =>
+      e.date >= today && !['cancelled', 'completed'].includes(e.status)
+  )
+  .sort((a: any, b: any) => a.date.localeCompare(b.date))[0];
+---
+
+<article class="card course-card" data-pagefind-filter="type:Disciplina">
+  <span class="eyebrow">{offering.data.code} · {offering.data.term}</span>
+  <h3>{offering.data.title}</h3><p class="course-meta">
+    Turma {offering.data.class_group}<br />{offering.data.schedule}<br />{
+      offering.data.room ? `Sala ${offering.data.room}` : 'Sala a confirmar'
+    }
+  </p>
+  <div class="next">
+    <small>Próxima atividade</small>{
+      next ? (
+        <>
+          <>
+            <strong>{next.title}</strong>
+            <time datetime={next.date}>
+              {formatDate(next.date, { weekday: 'short' })}
+            </time>
+          </>
+        </>
+      ) : (
+        <strong>Sem novas atividades previstas</strong>
+      )
+    }
+  </div>
+  <div class="card-actions">
+    <a
+      class="button"
+      href={withBase(
+        `ensino/${offering.data.slug}/${offering.data.term.replace('.', '-')}/#calendario`
+      )}>Ver calendário</a
+    >
+  </div>
+</article>

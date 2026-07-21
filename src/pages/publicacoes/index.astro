@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { profileLinks } from '../../lib/site';
+---
+
+<BaseLayout
+  title="Publicações"
+  description="Produção acadêmica e perfis científicos de Flávio Luiz Seixas."
+  ><header class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Produção acadêmica</span><h1>Publicações</h1><p
+        class="hero-lead"
+      >
+        A curadoria local está em preparação. Consulte os perfis científicos
+        para a lista completa e mais recente.
+      </p>
+    </div>
+  </header><div class="container">
+    <div class="grid">
+      {
+        profileLinks
+          .filter((l) =>
+            ['Currículo Lattes', 'ORCID', 'Google Scholar'].includes(l.label)
+          )
+          .map((link) => (
+            <a
+              class="card"
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <>
+                <span class="eyebrow">Perfil externo</span>
+                <h2>{link.label}</h2>
+                <p>Abrir produção acadêmica ↗</p>
+              </>
+            </a>
+          ))
+      }
+    </div>
+  </div></BaseLayout
+>

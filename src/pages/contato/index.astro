@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Contato"
+  description="Contato institucional e endereço profissional de Flávio Luiz Seixas."
+  ><header class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Contato</span><h1>Vamos conversar</h1><p
+        class="hero-lead"
+      >
+        Para assuntos acadêmicos, orientação e colaboração, prefira o e-mail
+        institucional.
+      </p>
+    </div>
+  </header><div class="container split">
+    <article>
+      <h2>E-mail</h2><p>
+        <a id="email" href="#">fseixas [arroba] ic.uff.br</a>
+      </p><p class="course-meta">
+        O endereço é montado no navegador para reduzir coleta automatizada
+        simples.
+      </p>
+    </article><article>
+      <h2>Endereço profissional</h2><address>
+        Instituto de Computação — sala 431<br />Campus UFF da Praia Vermelha<br
+        />Av. Gal. Milton Tavares de Souza, s/nº<br />Boa Viagem, Niterói — RJ<br
+        />CEP 24210-346
+      </address>
+    </article>
+  </div><script>
+    const e = document.querySelector('#email');
+    if (e) {
+      const a = ['fseixas', 'ic.uff.br'].join('@');
+      e.setAttribute('href', `mailto:${a}`);
+      e.textContent = a;
+    }
+  </script></BaseLayout
+>

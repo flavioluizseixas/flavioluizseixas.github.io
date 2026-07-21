@@ -1,0 +1,137 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CourseCard from '../components/CourseCard.astro';
+import {
+  formatDate,
+  profileLinks,
+  todayInSaoPaulo,
+  withBase
+} from '../lib/site';
+const offerings = (await getCollection('offerings'))
+  .filter((o) => o.data.current)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const today = todayInSaoPaulo();
+const upcoming = offerings
+  .flatMap((o) =>
+    o.data.calendar.map((e) => ({
+      ...e,
+      course: o.data.title,
+      slug: o.data.slug,
+      term: o.data.term
+    }))
+  )
+  .filter(
+    (e) => e.date >= today && !['cancelled', 'completed'].includes(e.status)
+  )
+  .sort((a, b) => a.date.localeCompare(b.date))
+  .slice(0, 5);
+---
+
+<BaseLayout
+  title="Início"
+  description="Ensino, pesquisa e extensão de Flávio Luiz Seixas, professor do Instituto de Computação da UFF."
+>
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow">Professor · pesquisador · orientador</span><h1>
+        Computação com propósito, <em>da sala de aula à saúde.</em>
+      </h1><p class="hero-lead">
+        Sou Flávio Luiz Seixas, professor do Instituto de Computação da UFF.
+        Trabalho com inteligência artificial aplicada à saúde, sistemas de apoio
+        à decisão e processos de negócio.
+      </p><div class="hero-actions">
+        <a class="button" href={withBase('ensino/')}>Ver disciplinas</a><a
+          class="button secondary"
+          href={withBase('sobre/')}>Conheça meu trabalho</a
+        >
+      </div>
+    </div>
+  </section>
+  <section class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Semestre 2026.1</span><h2>
+          Ensino neste semestre
+        </h2>
+      </div><a href={withBase('arquivo/')}>Ver ofertas anteriores</a>
+    </div><div class="grid">
+      {offerings.map((o) => <CourseCard offering={o} />)}
+    </div>
+  </section>
+  <section class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Agenda integrada</span><h2>
+          Próximas atividades
+        </h2>
+      </div><a href={withBase('feed/calendario.ics')}>Assinar calendário</a>
+    </div>{
+      upcoming.length ? (
+        <ol class="activity-list">
+          {upcoming.map((e) => (
+            <li>
+              <time datetime={e.date}>
+                {formatDate(e.date, {
+                  day: '2-digit',
+                  month: 'short',
+                  year: undefined
+                })}
+              </time>
+              <div>
+                <strong>{e.title}</strong>
+                <br />
+                <a
+                  href={withBase(
+                    `ensino/${e.slug}/${e.term.replace('.', '-')}/#calendario`
+                  )}
+                >
+                  {e.course}
+                </a>
+              </div>
+              <span class:list={['tag', e.type]}>{e.type}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="empty">
+          Não há atividades futuras publicadas neste momento. Consulte os
+          calendários completos para o histórico do semestre.
+        </p>
+      )
+    }
+  </section>
+  <section class="profile-strip">
+    <div class="container">
+      <strong>Perfis acadêmicos e profissionais</strong><div
+        class="hero-actions"
+      >
+        {
+          profileLinks.map((link) => (
+            <a href={link.href} target="_blank" rel="noopener noreferrer">
+              {link.label}
+            </a>
+          ))
+        }<a href={withBase('contato/')}>E-mail institucional</a>
+      </div>
+    </div>
+  </section>
+  <section class="container split">
+    <article>
+      <span class="eyebrow">Pesquisa</span><h2>
+        Inteligência artificial a serviço da saúde
+      </h2><p>
+        Pesquisa em aprendizado de máquina, apoio à decisão e processamento de
+        sinais e imagens médicas, conectando rigor computacional a problemas
+        concretos.
+      </p><a href={withBase('pesquisa/')}>Conheça as linhas de pesquisa →</a>
+    </article><article>
+      <span class="eyebrow">Extensão</span><h2>
+        Conhecimento que atravessa os muros
+      </h2><p>
+        A Fábrica de Software e Tecnologia para a Saúde reúne formação,
+        desenvolvimento de soluções e colaboração interdisciplinar.
+      </p><a href={withBase('extensao/')}>Conheça os projetos →</a>
+    </article>
+  </section>
+</BaseLayout>
