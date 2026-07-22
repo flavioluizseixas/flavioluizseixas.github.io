@@ -210,9 +210,17 @@ p {
 .hero h1 {
   max-width: 850px;
 }
-.hero h1 em {
+.home-hero-title > span {
+  display: block;
+}
+.home-hero-title .home-hero-accent {
   color: var(--blue);
+  font-family: 'ABeeZee', ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.73em;
+  font-style: italic;
   font-weight: 400;
+  letter-spacing: -0.018em;
+  white-space: nowrap;
 }
 .hero-lead {
   font-size: 1.18rem;
@@ -811,6 +819,10 @@ footer a {
   }
   .page-hero .container {
     padding-top: 3rem;
+  }
+  .home-hero-title .home-hero-accent {
+    font-size: 0.68em;
+    white-space: normal;
   }
   .about-hero-grid {
     grid-template-columns: 1fr;
