@@ -365,6 +365,28 @@ p {
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   max-width: 900px;
 }
+.about-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+}
+.about-hero-copy {
+  min-width: 0;
+}
+.about-portrait {
+  align-self: end;
+  margin: -2.5rem 0 -3.2rem;
+  aspect-ratio: 4 / 5;
+}
+.about-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  filter: drop-shadow(0 16px 24px rgba(25, 47, 89, 0.16));
+}
 .breadcrumbs {
   font-size: 0.85rem;
   color: var(--muted);
@@ -666,6 +688,13 @@ footer a {
   .course-summary {
     grid-template-columns: 1fr;
   }
+  .about-hero-grid {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 1.5rem;
+  }
+  .about-portrait {
+    margin-top: 0;
+  }
   .site-header nav {
     display: none;
     position: absolute;
@@ -782,6 +811,15 @@ footer a {
   }
   .page-hero .container {
     padding-top: 3rem;
+  }
+  .about-hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-portrait {
+    grid-row: 1;
+    justify-self: end;
+    width: min(68vw, 240px);
+    margin: 0 0 0.5rem;
   }
 }
 @media print {

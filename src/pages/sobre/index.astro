@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
 import { profileLinks, withBase } from '../../lib/site';
+import profilePhoto from '../../assets/flavio-seixas-retrato-transparente.png';
 const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -22,13 +24,24 @@ const person = {
     type="application/ld+json"
     set:html={JSON.stringify(person)}
   /><header class="page-hero">
-    <div class="container">
-      <span class="eyebrow">Sobre</span><h1>Flávio Luiz Seixas</h1><p
-        class="hero-lead"
-      >
-        Professor, pesquisador e coordenador de projetos na interseção entre
-        computação, saúde e processos.
-      </p>
+    <div class="container about-hero-grid">
+      <div class="about-hero-copy">
+        <span class="eyebrow">Sobre</span><h1>Flávio Luiz Seixas</h1><p
+          class="hero-lead"
+        >
+          Professor, pesquisador e coordenador de projetos na interseção entre
+          computação, saúde e processos.
+        </p>
+      </div>
+      <figure class="about-portrait">
+        <Image
+          src={profilePhoto}
+          alt="Retrato de Flávio Luiz Seixas"
+          widths={[280, 360, 480]}
+          sizes="(max-width: 850px) 220px, 320px"
+          loading="eager"
+        />
+      </figure>
     </div>
   </header><article class="container narrow prose">
     <h2>Biografia</h2><p>
