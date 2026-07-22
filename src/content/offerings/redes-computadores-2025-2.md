@@ -10,7 +10,12 @@ class_group: A1
 schedule: Quartas e sextas, 20h–22h
 room: null
 timezone: America/Sao_Paulo
-summary: Oferta histórica de Redes de Computadores, com fundamentos e laboratórios.
+summary: Disciplina histórica de Redes de Computadores, com fundamentos e laboratórios.
+overview: Registro preservado da disciplina de 2025.2.
+evaluation: Consulte o calendário histórico e os registros oficiais do semestre.
+references:
+  - Kurose e Ross
+  - Tanenbaum
 language: pt-BR
 updated: '2025'
 materials: []
@@ -73,7 +78,7 @@ calendar:
 
 ## Visão geral
 
-Registro preservado da oferta de 2025.2.
+Registro preservado da disciplina de 2025.2.
 
 ## Avaliação
 

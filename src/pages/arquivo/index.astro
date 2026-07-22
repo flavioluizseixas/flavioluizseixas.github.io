@@ -10,14 +10,14 @@ const groups = Object.groupBy(entries, (e) => e.data.term);
 
 <BaseLayout
   title="Arquivo"
-  description="Ofertas anteriores de disciplinas, organizadas por semestre."
+  description="Disciplinas anteriores, organizadas por semestre."
   ><header class="page-hero">
     <div class="container">
       <span class="eyebrow">Memória acadêmica</span><h1>
         Arquivo de disciplinas
       </h1><p class="hero-lead">
         Calendários antigos permanecem em URLs próprias e são identificados como
-        ofertas encerradas.
+        disciplinas encerradas.
       </p>
     </div>
   </header><div class="container narrow">
@@ -35,7 +35,7 @@ const groups = Object.groupBy(entries, (e) => e.data.term);
                   `ensino/${item.data.slug}/${item.data.term.replace('.', '-')}/`
                 )}
               >
-                Abrir oferta {term}
+                Abrir disciplina {term}
               </a>
             </article>
           ))}

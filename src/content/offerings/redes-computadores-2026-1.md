@@ -3,14 +3,19 @@ title: Redes de Computadores
 code: TCC00359
 slug: redes-computadores
 term: '2026.1'
-current: true
-status: active
+current: false
+status: archived
 level: graduacao
 class_group: A1
 schedule: Segundas e quartas, 20h–22h
 room: null
 timezone: America/Sao_Paulo
 summary: A Internet e as camadas de aplicação, transporte, rede e enlace, combinando fundamentos e laboratórios.
+overview: 'A disciplina percorre a pilha da Internet: aplicações, transporte, rede e enlace. A teoria é acompanhada por exercícios e laboratórios com ferramentas de análise e simulação.'
+evaluation: O calendário destaca provas, revisão e apresentação do projeto. Pesos e regras devem ser consultados no canal oficial da turma.
+references:
+  - 'Kurose, J. F.; Ross, K. W. Redes de Computadores e a Internet: uma abordagem top-down. Pearson, 6ª ed., 2013.'
+  - 'Tanenbaum, A. S. Redes de computadores. Campus, 5ª ed., 2011.'
 language: pt-BR
 updated: 24/05/2026
 notice: Sala e ambiente virtual ainda precisam de confirmação.

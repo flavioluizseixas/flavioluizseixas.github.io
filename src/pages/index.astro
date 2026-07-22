@@ -11,6 +11,8 @@ import {
 const offerings = (await getCollection('offerings'))
   .filter((o) => o.data.current)
   .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const currentTerms = [...new Set(offerings.map((o) => o.data.term))].sort();
+const currentTerm = currentTerms.join(' e ');
 const today = todayInSaoPaulo();
 const upcoming = offerings
   .flatMap((o) =>
@@ -34,12 +36,12 @@ const upcoming = offerings
 >
   <section class="hero">
     <div class="container">
-      <span class="eyebrow">Professor · pesquisador · orientador</span><h1>
-        Computação com propósito, <em>da sala de aula à saúde.</em>
+      <span class="eyebrow">Professor · pesquisador · engenheiro</span><h1>
+        Ciência da Computação
       </h1><p class="hero-lead">
         Sou Flávio Luiz Seixas, professor do Instituto de Computação da UFF.
-        Trabalho com inteligência artificial aplicada à saúde, sistemas de apoio
-        à decisão e processos de negócio.
+        Minhas áreas de pesquisa são inteligência artificial aplicada à saúde, e
+        sistemas de apoio à decisão.
       </p><div class="hero-actions">
         <a class="button" href={withBase('ensino/')}>Ver disciplinas</a><a
           class="button secondary"
@@ -51,10 +53,10 @@ const upcoming = offerings
   <section class="container">
     <div class="section-head">
       <div>
-        <span class="eyebrow">Semestre 2026.1</span><h2>
+        <span class="eyebrow">Semestre {currentTerm}</span><h2>
           Ensino neste semestre
         </h2>
-      </div><a href={withBase('arquivo/')}>Ver ofertas anteriores</a>
+      </div><a href={withBase('arquivo/')}>Ver disciplinas anteriores</a>
     </div><div class="grid">
       {offerings.map((o) => <CourseCard offering={o} />)}
     </div>

@@ -15,8 +15,8 @@ const currents = new Map<string, number>();
 for (const offer of loadOfferings()) {
   if (offer.current)
     currents.set(offer.slug, (currents.get(offer.slug) || 0) + 1);
-  if (!offer.calendar?.length)
-    errors.push(`${offer.slug} ${offer.term}: calendário vazio`);
+  if (!Array.isArray(offer.calendar))
+    errors.push(`${offer.slug} ${offer.term}: calendário ausente`);
   for (const [i, event] of (offer.calendar || []).entries()) {
     const place = `${offer.slug} ${offer.term}, evento ${i + 1}`;
     if (!event.title?.trim()) errors.push(`${place}: título ausente`);
@@ -34,9 +34,12 @@ for (const offer of loadOfferings()) {
   }
 }
 for (const [slug, count] of currents)
-  if (count > 1) errors.push(`${slug}: ${count} ofertas marcadas como atuais`);
+  if (count > 1)
+    errors.push(`${slug}: ${count} disciplinas marcadas como atuais`);
 if (errors.length) {
   console.error(`Validação falhou:\n- ${errors.join('\n- ')}`);
   process.exit(1);
 }
-console.log(`Conteúdo válido: ${loadOfferings().length} ofertas verificadas.`);
+console.log(
+  `Conteúdo válido: ${loadOfferings().length} disciplinas verificadas.`
+);

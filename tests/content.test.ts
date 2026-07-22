@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { loadOfferings } from '../scripts/content';
 describe('conteúdo acadêmico', () => {
-  it('tem no máximo uma oferta corrente por disciplina', () => {
+  it('tem no máximo um período corrente por disciplina', () => {
     const current = loadOfferings().filter((o) => o.current);
     expect(new Set(current.map((o) => o.slug)).size).toBe(current.length);
   });

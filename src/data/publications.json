@@ -1,0 +1,701 @@
+{
+  "orcid": "0000-0002-7160-0818",
+  "syncedAt": "2026-07-22T00:59:43.400Z",
+  "count": 34,
+  "publications": [
+    {
+      "id": "221065371",
+      "title": "Bringing Plain Language Principles Into Interaction Design Practices: Insights from a Wizard of Oz Approach",
+      "authors": [
+        "Rodrigo dos Santos Oliveira",
+        "Roberta Cláudia de Jesus Bordalo",
+        "Luciana Cardoso de Castro Salgado",
+        "Flavio Seixas",
+        "Claudia Cappelli"
+      ],
+      "year": 2027,
+      "type": "book-chapter",
+      "container": "Lecture Notes in Networks and Systems",
+      "publisher": "Springer Nature Switzerland",
+      "volume": null,
+      "issue": null,
+      "pages": "189-201",
+      "doi": "10.1007/978-3-032-32029-2_16",
+      "url": "https://doi.org/10.1007/978-3-032-32029-2_16"
+    },
+    {
+      "id": "218796319",
+      "title": "Artificial intelligence in the prediction of intraoperative red blood cell transfusion in cardiac surgery: a systematic review and diagnostic test accuracy meta-analysis",
+      "authors": [
+        "Filipe Giordano Valério",
+        "Amanda Carneiro Rodrigues",
+        "Davi Ricardo Soares Gama de Amorim",
+        "Roberta Esterque Cantarino",
+        "Glauco Martins de Araujo",
+        "Jimmy Yusuf",
+        "Lecticia Vianna Leal Soares Bessa",
+        "Millena Mendonça Andrade Paes Leme",
+        "Marcella Freire de Campos Euzebio",
+        "Flávio Luiz Seixas",
+        "Alexandra Rezende Assad",
+        "Luis Antonio dos Santos Diego"
+      ],
+      "year": 2026,
+      "type": "journal-article",
+      "container": "Brazilian Journal of Anesthesiology (English Edition)",
+      "publisher": "Elsevier BV",
+      "volume": "76",
+      "issue": "4",
+      "pages": "844782",
+      "doi": "10.1016/j.bjane.2026.844782",
+      "url": "https://doi.org/10.1016/j.bjane.2026.844782"
+    },
+    {
+      "id": "196345603",
+      "title": "Education and Social Inclusion in the IT Market: Design and Implementation of an Apprenticeship Program",
+      "authors": [
+        "Elaine F. Rangel Seixas",
+        "Mônica da Silva",
+        "Flavio Seixas",
+        "Flavia Bernardini",
+        "José Viterbo"
+      ],
+      "year": 2026,
+      "type": "book-chapter",
+      "container": "Lecture Notes in Networks and Systems",
+      "publisher": "Springer Nature Switzerland",
+      "volume": null,
+      "issue": null,
+      "pages": "129-141",
+      "doi": "10.1007/978-3-032-00701-8_11",
+      "url": "https://doi.org/10.1007/978-3-032-00701-8_11"
+    },
+    {
+      "id": "191692295",
+      "title": "How Is Plain Language Applied in Interactive Systems Design? A Systematic Mapping Study",
+      "authors": [
+        "Rodrigo Oliveira",
+        "Luciana Cardoso De Castro Salgado",
+        "Flávio Seixas",
+        "Claudia Cappelli"
+      ],
+      "year": 2026,
+      "type": "book-chapter",
+      "container": "Lecture Notes in Computer Science",
+      "publisher": "Springer Nature Switzerland",
+      "volume": null,
+      "issue": null,
+      "pages": "260-264",
+      "doi": "10.1007/978-3-032-05008-3_49",
+      "url": "https://doi.org/10.1007/978-3-032-05008-3_49"
+    },
+    {
+      "id": "197031345",
+      "title": "Investigating the Implementation of Data Protection Laws in Brazilian Game Companies: An Initial Study",
+      "authors": [
+        "Mônica da Silva",
+        "Elaine F. Rangel Seixas",
+        "José Viterbo",
+        "Luciana Cardoso de C. Salgado",
+        "Flavio Seixas"
+      ],
+      "year": 2026,
+      "type": "book-chapter",
+      "container": "Lecture Notes in Networks and Systems",
+      "publisher": "Springer Nature Switzerland",
+      "volume": null,
+      "issue": null,
+      "pages": "217-229",
+      "doi": "10.1007/978-3-031-97119-8_16",
+      "url": "https://doi.org/10.1007/978-3-031-97119-8_16"
+    },
+    {
+      "id": "191374944",
+      "title": "Keeping an Eye on Your Foot: Design and Evaluation of a Mobile Health Application “De Olho No Pé” to monitor diabetes complications",
+      "authors": [
+        "Rodrigo dos Santos Oliveira",
+        "Wender Emiliano Soares",
+        "Cintya Guimarães Gomes",
+        "Debora Vieira Soares",
+        "Flavio Luiz Seixas"
+      ],
+      "year": 2026,
+      "type": "book-chapter",
+      "container": "Lecture Notes in Computer Science",
+      "publisher": "Springer Nature Switzerland",
+      "volume": null,
+      "issue": null,
+      "pages": "477-496",
+      "doi": "10.1007/978-3-032-05005-2_24",
+      "url": "https://doi.org/10.1007/978-3-032-05005-2_24"
+    },
+    {
+      "id": "197095684",
+      "title": "Presenting a Dataset for 3D Breast Surface Representation Using Thermography",
+      "authors": [
+        "Flávia C. H. Pastura",
+        "Wanessa I. Oliveira",
+        "Eudóxia L. S. Moura",
+        "Flávio L. Seixas",
+        "Aura Conci"
+      ],
+      "year": 2026,
+      "type": "book-chapter",
+      "container": "Lecture Notes in Computer Science",
+      "publisher": "Springer Nature Switzerland",
+      "volume": null,
+      "issue": null,
+      "pages": "172-189",
+      "doi": "10.1007/978-3-032-10990-3_12",
+      "url": "https://doi.org/10.1007/978-3-032-10990-3_12"
+    },
+    {
+      "id": "209438026",
+      "title": "USO DA INTELIGÊNCIA ARTIFICIAL NA AVALIAÇÃO DE SERVIÇOS EM SAÚDE:",
+      "authors": [
+        "Olívia Maria Villefort França",
+        "Ana Carla Dantas Cavalcanti",
+        "Flávio Luiz Seixas",
+        "Lucas Souza De Oliveira"
+      ],
+      "year": 2026,
+      "type": "journal-article",
+      "container": "Revista Enfermagem Atual In Derme",
+      "publisher": "Revista Enfermagem Atual",
+      "volume": "100",
+      "issue": "1",
+      "pages": "e026036",
+      "doi": "10.31011/reaid-2026-v.100-n.1-art.2619",
+      "url": "https://doi.org/10.31011/reaid-2026-v.100-n.1-art.2619"
+    },
+    {
+      "id": "193581506",
+      "title": "DESENVOLVIMENTO E AVALIAÇÃO DO PALIENF: APLICATIVO PARA REGISTRO DE CUIDADOS PALIATIVOS ONCOPEDIÁTRICOS",
+      "authors": [
+        "Amanda Danielle Resende Silva e Sousa",
+        "Ana Carla Dantas Cavalcanti",
+        "Liliane Faria da Silva",
+        "Flavio Luiz Seixas",
+        "Samantha Kelly Batista Souza",
+        "Fernada Garcia Bezerra Góes"
+      ],
+      "year": 2025,
+      "type": "journal-article",
+      "container": "Texto & Contexto - Enfermagem",
+      "publisher": "FapUNIFESP (SciELO)",
+      "volume": "34",
+      "issue": null,
+      "pages": "e20240263",
+      "doi": "10.1590/1980-265x-tce-2024-0263pt",
+      "url": "https://doi.org/10.1590/1980-265x-tce-2024-0263pt"
+    },
+    {
+      "id": "175873084",
+      "title": "Enhancing dementia prediction models: Leveraging temporal patterns and class-balancing methods",
+      "authors": [
+        "Flavio Luiz Seixas",
+        "Elaine Rangel Seixas",
+        "Alex A. Freitas"
+      ],
+      "year": 2025,
+      "type": "journal-article",
+      "container": "Applied Soft Computing",
+      "publisher": "Elsevier BV",
+      "volume": "171",
+      "issue": null,
+      "pages": "112754",
+      "doi": "10.1016/j.asoc.2025.112754",
+      "url": "https://doi.org/10.1016/j.asoc.2025.112754"
+    },
+    {
+      "id": "198163991",
+      "title": "Integrating Data into Referral Management Systems: A Global Review and Proposal for Enhanced Specialized Care Regulation",
+      "authors": [
+        "Luiz Eduardo De Morais Rodrigues",
+        "Janika Leoste",
+        "Diego Zoracy W Oliveira",
+        "Luiz Felipe Vila Verde Alves",
+        "Ricardo Alexandre Da Silva",
+        "Alexandre Beraldi Santos",
+        "Flavio Luiz Seixas"
+      ],
+      "year": 2025,
+      "type": "conference-paper",
+      "container": "2025 16th IEEE International Conference on Industry Applications (INDUSCON)",
+      "publisher": "IEEE",
+      "volume": null,
+      "issue": null,
+      "pages": "1081-1084",
+      "doi": "10.1109/INDUSCON66435.2025.11241600",
+      "url": "https://doi.org/10.1109/INDUSCON66435.2025.11241600"
+    },
+    {
+      "id": "193581505",
+      "title": "PALIENF DEVELOPMENT AND ASSESSMENT: APPLICATION FOR RECORDING ONCOPEDIATRIC PALLIATIVE CARE",
+      "authors": [
+        "Amanda Danielle Resende Silva e Sousa",
+        "Ana Carla Dantas Cavalcanti",
+        "Liliane Faria da Silva",
+        "Flavio Luiz Seixas",
+        "Samantha Kelly Batista Souza",
+        "Fernada Garcia Bezerra Góes"
+      ],
+      "year": 2025,
+      "type": "journal-article",
+      "container": "Texto & Contexto - Enfermagem",
+      "publisher": "FapUNIFESP (SciELO)",
+      "volume": "34",
+      "issue": null,
+      "pages": "e20240263",
+      "doi": "10.1590/1980-265x-tce-2024-0263en",
+      "url": "https://doi.org/10.1590/1980-265x-tce-2024-0263en"
+    },
+    {
+      "id": "154089101",
+      "title": "An Accessibility Review: Google Classroom",
+      "authors": [
+        "Elaine F. Rangel Seixas",
+        "Bárbara Ramos",
+        "Flavio Seixas",
+        "Mônica da Silva",
+        "Flavia Bernardini",
+        "José Viterbo"
+      ],
+      "year": 2024,
+      "type": "book-chapter",
+      "container": "Lecture Notes in Networks and Systems",
+      "publisher": "Springer Nature Switzerland",
+      "volume": null,
+      "issue": null,
+      "pages": "171-180",
+      "doi": "10.1007/978-3-031-54235-0_16",
+      "url": "https://doi.org/10.1007/978-3-031-54235-0_16"
+    },
+    {
+      "id": "154089102",
+      "title": "An Artificial Intelligence Technologies Approach for Talent Retention",
+      "authors": [
+        "Elaine F. Rangel Seixas",
+        "Flavio Seixas",
+        "José Viterbo",
+        "Flavia Bernardini",
+        "Kathleen Freitas",
+        "Gabriel Fernandes"
+      ],
+      "year": 2024,
+      "type": "book-chapter",
+      "container": "Lecture Notes in Networks and Systems",
+      "publisher": "Springer Nature Switzerland",
+      "volume": null,
+      "issue": null,
+      "pages": "412-421",
+      "doi": "10.1007/978-3-031-54235-0_37",
+      "url": "https://doi.org/10.1007/978-3-031-54235-0_37"
+    },
+    {
+      "id": "164386486",
+      "title": "Ética e Responsabilidade na Era da Inteligência Artificial: Um Survey com Estudantes de Computação",
+      "authors": [
+        "Mônica da Silva",
+        "Elaine F. Rangel Seixas",
+        "Mariza Ferro",
+        "José Viterbo",
+        "Flavio Seixas",
+        "Luciana C. C. Salgado"
+      ],
+      "year": 2024,
+      "type": "conference-paper",
+      "container": "Anais do XXXII Workshop sobre Educação em Computação (WEI 2024)",
+      "publisher": "Sociedade Brasileira de Computação - SBC",
+      "volume": null,
+      "issue": null,
+      "pages": "854-865",
+      "doi": "10.5753/wei.2024.3148",
+      "url": "https://doi.org/10.5753/wei.2024.3148"
+    },
+    {
+      "id": "167656961",
+      "title": "O CAMINHO DO DESENVOLVIMENTO DE UM APLICATIVO MÓVEL PARA ENFERMEIROS INTENSIVISTAS SOBRE DROGAS CARDIOATIVAS",
+      "authors": [
+        "Mayara Davila Borges",
+        "Dayse Mary da Silva Correia",
+        "Ricardo de Monteiro e Tavares",
+        "Aline Silva de Lima",
+        "Débora Barbosa Ferreira",
+        "Karina Pereira de Lemos",
+        "Luanna Barci Dutra da Costa",
+        "Flavio Luiz Seixas"
+      ],
+      "year": 2024,
+      "type": "journal-article",
+      "container": "Enfermagem em Foco",
+      "publisher": "Conselho Federal de Enfermagem - Cofen",
+      "volume": "15",
+      "issue": null,
+      "pages": "e-202431",
+      "doi": "10.21675/2357-707X.2024.v15.e-202431",
+      "url": "https://doi.org/10.21675/2357-707X.2024.v15.e-202431"
+    },
+    {
+      "id": "173534130",
+      "title": "PLANEJAMENTO ESTRATÉGICO NA PÓS-GRADUAÇÃO STRICTO SENSU EM ENFERMAGEM: UM RELATO DE EXPERIÊNCIA",
+      "authors": [
+        "Érica Brandão de Moraes",
+        "Rosimere Ferreira Santana",
+        "Ana Carla Dantas Cavalvanti",
+        "Enéas Rangel Teixeira",
+        "Eduardo Picanço Cruz",
+        "Maithê de Carvalho e Lemos Goulart",
+        "Flávio Luiz Seixas"
+      ],
+      "year": 2024,
+      "type": "journal-article",
+      "container": "Texto & Contexto - Enfermagem",
+      "publisher": "FapUNIFESP (SciELO)",
+      "volume": "33",
+      "issue": null,
+      "pages": "e20240107",
+      "doi": "10.1590/1980-265x-tce-2024-0107pt",
+      "url": "https://doi.org/10.1590/1980-265x-tce-2024-0107pt"
+    },
+    {
+      "id": "173534129",
+      "title": "STRATEGIC PLANNING IN STRICTO SENSU POSTGRADUATE COURSES IN NURSING: AN EXPERIENCE REPORT",
+      "authors": [
+        "Érica Brandão de Moraes",
+        "Rosimere Ferreira Santana",
+        "Ana Carla Dantas Cavalvanti",
+        "Enéas Rangel Teixeira",
+        "Eduardo Picanço Cruz",
+        "Maithê de Carvalho e Lemos Goulart",
+        "Flávio Luiz Seixas"
+      ],
+      "year": 2024,
+      "type": "journal-article",
+      "container": "Texto & Contexto - Enfermagem",
+      "publisher": "FapUNIFESP (SciELO)",
+      "volume": "33",
+      "issue": null,
+      "pages": "e20240107",
+      "doi": "10.1590/1980-265x-tce-2024-0107en",
+      "url": "https://doi.org/10.1590/1980-265x-tce-2024-0107en"
+    },
+    {
+      "id": "128578005",
+      "title": "Risco de uso abusivo de opióides e tecnologias educativas em pacientes com dor crônica: um protocolo de revisão de escopo",
+      "authors": [
+        "Lucielena Maria de Sousa Garcia Soares",
+        "Érica Brandão de Moraes",
+        "Lina Rosa Brum Costa",
+        "Flávio Luiz Seixas",
+        "Jouhanna do Carmo Menegaz",
+        "Ana Karine Ramos Brum"
+      ],
+      "year": 2023,
+      "type": "journal-article",
+      "container": "Research, Society and Development",
+      "publisher": "Research, Society and Development",
+      "volume": "12",
+      "issue": "2",
+      "pages": "e24012239558",
+      "doi": "10.33448/rsd-v12i2.39558",
+      "url": "https://doi.org/10.33448/rsd-v12i2.39558"
+    },
+    {
+      "id": "107631529",
+      "title": "Necessidades de aprendizagem de familiares de crianças e adolescentes em tratamento com quimioterápicos antineoplásicos orais",
+      "authors": [
+        "Gabriele Alvernaz Silva Franco",
+        "Liliane Faria da Silva",
+        "Flavio Luiz Seixas",
+        "Fernanda Garcia Bezerra Góes",
+        "Ana Carolina Alves Vollu",
+        "Eduardo Charpinel Lagoeiro"
+      ],
+      "year": 2022,
+      "type": "journal-article",
+      "container": "Escola Anna Nery",
+      "publisher": "FapUNIFESP (SciELO)",
+      "volume": "26",
+      "issue": null,
+      "pages": "e20210246",
+      "doi": "10.1590/2177-9465-ean-2021-0246",
+      "url": "https://doi.org/10.1590/2177-9465-ean-2021-0246"
+    },
+    {
+      "id": "114423162",
+      "title": "QUIMIO EM CASA: APLICATIVO PARA FAMILIARES DE CRIANÇAS E ADOLESCENTES EM USO DE ANTINEOPLÁSICOS ORAIS",
+      "authors": [
+        "Gabriele Alvernaz Silva Franco",
+        "Liliane Faria da Silva",
+        "Flavio Luiz Seixas",
+        "Fernanda Garcia Bezerra Góes",
+        "Sandra Teixeira de Araújo Pacheco",
+        "Juliana Rezende Montenegro Medeiros de Moraes"
+      ],
+      "year": 2022,
+      "type": "journal-article",
+      "container": "Texto & Contexto - Enfermagem",
+      "publisher": "FapUNIFESP (SciELO)",
+      "volume": "31",
+      "issue": null,
+      "pages": "e20210414",
+      "doi": "10.1590/1980-265x-tce-2021-0414pt",
+      "url": "https://doi.org/10.1590/1980-265x-tce-2021-0414pt"
+    },
+    {
+      "id": "114423161",
+      "title": "QUIMIO EM CASA: APPLICATION FOR FAMILY MEMBERS OF CHILDREN AND ADOLESCENTS USING ORAL ANTINEOPLASTIC AGENTS",
+      "authors": [
+        "Gabriele Alvernaz Silva Franco",
+        "Liliane Faria da Silva",
+        "Flavio Luiz Seixas",
+        "Fernanda Garcia Bezerra Góes",
+        "Sandra Teixeira de Araújo Pacheco",
+        "Juliana Rezende Montenegro Medeiros de Moraes"
+      ],
+      "year": 2022,
+      "type": "journal-article",
+      "container": "Texto & Contexto - Enfermagem",
+      "publisher": "FapUNIFESP (SciELO)",
+      "volume": "31",
+      "issue": null,
+      "pages": "e20210414",
+      "doi": "10.1590/1980-265x-tce-2021-0414en",
+      "url": "https://doi.org/10.1590/1980-265x-tce-2021-0414en"
+    },
+    {
+      "id": "92496816",
+      "title": "Orientações para o cuidado domiciliar de crianças e adolescentes em quimioterapia antineoplásica oral",
+      "authors": [
+        "Gabriele Alvernaz Silva Franco",
+        "Liliane Faria da Silva",
+        "Flavio Luiz Seixas",
+        "Fernanda Garcia Bezerra Góes",
+        "Emília Gallindo Cursino"
+      ],
+      "year": 2021,
+      "type": "journal-article",
+      "container": "Research, Society and Development",
+      "publisher": "Research, Society and Development",
+      "volume": "10",
+      "issue": "4",
+      "pages": "e40310414530",
+      "doi": "10.33448/rsd-v10i4.14530",
+      "url": "https://doi.org/10.33448/rsd-v10i4.14530"
+    },
+    {
+      "id": "80709335",
+      "title": "A dynamic decision model for diagnosis of dementia, Alzheimer's disease and Mild Cognitive Impairment",
+      "authors": [
+        "Carolina M. Carvalho",
+        "Flávio L. Seixas",
+        "Aura Conci",
+        "Débora C. Muchaluat-Saade",
+        "Jerson Laks",
+        "Yolanda Boechat"
+      ],
+      "year": 2020,
+      "type": "journal-article",
+      "container": "Computers in Biology and Medicine",
+      "publisher": "Elsevier BV",
+      "volume": "126",
+      "issue": null,
+      "pages": "104010",
+      "doi": "10.1016/j.compbiomed.2020.104010",
+      "url": "https://doi.org/10.1016/j.compbiomed.2020.104010"
+    },
+    {
+      "id": "73620668",
+      "title": "Infodemia, Fake News and Medicine: Science and The Quest for Truth",
+      "authors": [
+        "Claudio Tinoco Mesquita",
+        "Anderson Oliveira",
+        "Flávio Luiz Seixas",
+        "Aline Paes"
+      ],
+      "year": 2020,
+      "type": "journal-article",
+      "container": "International Journal of Cardiovascular Sciences",
+      "publisher": "Sociedade Brasileira de Cardiologia",
+      "volume": null,
+      "issue": null,
+      "pages": null,
+      "doi": "10.36660/ijcs.20200073",
+      "url": "https://doi.org/10.36660/ijcs.20200073"
+    },
+    {
+      "id": "41806397",
+      "title": "A clinical decision support system for aiding diagnosis of Alzheimer's disease and related disorders in mobile devices",
+      "authors": [
+        "Carolina Medeiros Carvalho",
+        "Debora Christina",
+        "Muchaluat Saade",
+        "Aura Conci",
+        "Flavio Luiz Seixas",
+        "Jerson Laks"
+      ],
+      "year": 2017,
+      "type": "conference-paper",
+      "container": "IEEE International Conference on Communications",
+      "publisher": "IEEE",
+      "volume": null,
+      "issue": null,
+      "pages": "1-6",
+      "doi": "10.1109/ICC.2017.7996968",
+      "url": "https://doi.org/10.1109/ICC.2017.7996968"
+    },
+    {
+      "id": "41806402",
+      "title": "Improving a Bayesian decision model for supporting diagnosis of Alzheimer’s disease and related disorders",
+      "authors": [
+        "Carolina Medeiros Carvalho",
+        "Flávio Luiz Seixas",
+        "Aura Conci",
+        "Débora Christina Muchaluat-Saade",
+        "Jerson Laks"
+      ],
+      "year": 2017,
+      "type": "book",
+      "container": "Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics)",
+      "publisher": "Springer International Publishing",
+      "volume": null,
+      "issue": null,
+      "pages": "176-191",
+      "doi": "10.1007/978-3-319-62416-7_13",
+      "url": "https://doi.org/10.1007/978-3-319-62416-7_13"
+    },
+    {
+      "id": "41806399",
+      "title": "A Bayesian network decision model for supporting the diagnosis of dementia, Alzheimer[U+05F3]s disease and mild cognitive impairment",
+      "authors": [
+        "Flávio Luiz Seixas",
+        "Bianca Zadrozny",
+        "Jerson Laks",
+        "Aura Conci",
+        "Débora Christina Muchaluat Saade"
+      ],
+      "year": 2014,
+      "type": "journal-article",
+      "container": "Computers in Biology and Medicine",
+      "publisher": "Elsevier BV",
+      "volume": "51",
+      "issue": null,
+      "pages": "140-158",
+      "doi": "10.1016/j.compbiomed.2014.04.010",
+      "url": "https://doi.org/10.1016/j.compbiomed.2014.04.010"
+    },
+    {
+      "id": "41806398",
+      "title": "Intelligent automated brain image segmentation",
+      "authors": [
+        "F.L. Seixas",
+        "A. Conci",
+        "D.C. Muchaluat Saade",
+        "A.S. De Souza"
+      ],
+      "year": 2009,
+      "type": "journal-article",
+      "container": "International Journal of Innovative Computing and Applications",
+      "publisher": "Inderscience Publishers",
+      "volume": "2",
+      "issue": "1",
+      "pages": "23",
+      "doi": "10.1504/IJICA.2009.027994",
+      "url": "https://doi.org/10.1504/IJICA.2009.027994"
+    },
+    {
+      "id": "41806396",
+      "title": "Automated segmentation and volumetric analysis of brain components on MR imaging",
+      "authors": [
+        "Marcelo P. Silva",
+        "Jean R. Damasceno",
+        "Flávio L. Seixas",
+        "Andrea Silveira de Souza",
+        "Débora C. Muchaluat Saade"
+      ],
+      "year": 2008,
+      "type": "conference-paper",
+      "container": "Proceedings of the ACM Symposium on Applied Computing",
+      "publisher": "ACM",
+      "volume": null,
+      "issue": null,
+      "pages": "1422-1423",
+      "doi": "10.1145/1363686.1364015",
+      "url": "https://doi.org/10.1145/1363686.1364015"
+    },
+    {
+      "id": "41806401",
+      "title": "Clinical dementia rating score prediction based on MR segmentation",
+      "authors": [
+        "Flavio L. Seixas",
+        "A. S. de Souza",
+        "A. Plastino",
+        "D. C. M. Saade",
+        "A. Conci"
+      ],
+      "year": 2008,
+      "type": "conference-paper",
+      "container": "Proceedings - 2008 IEEE International Conference on Bioinformatics and Biomedicine Workshops, BIBMW",
+      "publisher": "IEEE",
+      "volume": null,
+      "issue": null,
+      "pages": "113-114",
+      "doi": "10.1109/BIBMW.2008.4686219",
+      "url": "https://doi.org/10.1109/BIBMW.2008.4686219"
+    },
+    {
+      "id": "41806395",
+      "title": "Image registration using genetic algorithms",
+      "authors": [],
+      "year": 2008,
+      "type": "conference-paper",
+      "container": "GECCO'08: Proceedings of the 10th Annual Conference on Genetic and Evolutionary Computation 2008",
+      "publisher": null,
+      "volume": null,
+      "issue": null,
+      "pages": null,
+      "doi": null,
+      "url": "http://www.scopus.com/inward/record.url?eid=2-s2.0-57349090159&partnerID=MN8TOARS"
+    },
+    {
+      "id": "41806403",
+      "title": "Automated segmentation of the corpus callosum midsagittal surface area",
+      "authors": [
+        "Flavio Luiz Seixas",
+        "Andrea Silveira de Souza",
+        "Alair Augusto Sarmet M.D. dos Santos",
+        "Debora C. Muchaluat Saade"
+      ],
+      "year": 2007,
+      "type": "conference-paper",
+      "container": "Proceedings of SIBGRAPI 2007 - 20th Brazilian Symposium on Computer Graphics and Image Processing",
+      "publisher": "IEEE",
+      "volume": null,
+      "issue": null,
+      "pages": "287-293",
+      "doi": "10.1109/SIBGRAPI.2007.29",
+      "url": "https://doi.org/10.1109/SIBGRAPI.2007.29"
+    },
+    {
+      "id": "41806400",
+      "title": "Automatic segmentation of brain structures based on anatomic atlas",
+      "authors": [
+        "Flavio Luiz Seixas",
+        "Jean Damasceno",
+        "Marcelo Pereira da Silva",
+        "Andrea Silveira de Souza",
+        "Debora C. Muchaluat Saade"
+      ],
+      "year": 2007,
+      "type": "conference-paper",
+      "container": "Proceedings of The 7th International Conference on Intelligent Systems Design and Applications, ISDA 2007",
+      "publisher": "IEEE",
+      "volume": null,
+      "issue": null,
+      "pages": null,
+      "doi": "10.1109/ISDA.2007.4389629",
+      "url": "https://doi.org/10.1109/ISDA.2007.4389629"
+    }
+  ]
+}

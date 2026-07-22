@@ -7,10 +7,14 @@ current: false
 status: archived
 level: pos-graduacao
 class_group: Única
-schedule: Oferta encerrada
+schedule: Disciplina encerrada
 room: null
 timezone: America/Sao_Paulo
 summary: Métodos, implementação e avaliação de aprendizado de máquina aplicados à saúde.
+overview: A disciplina aborda preparação de dados, aprendizado supervisionado e não supervisionado, avaliação de modelos e aplicações clínicas, com atenção à metodologia científica.
+evaluation: Disciplina encerrada. O detalhamento histórico deve ser validado com a página original antes da publicação definitiva.
+references:
+  - Referências organizadas por tema serão restauradas após auditoria dos links legados.
 language: pt-BR
 updated: '2025'
 materials: []
@@ -31,11 +35,11 @@ calendar:
 
 ## Visão geral
 
-A oferta aborda preparação de dados, aprendizado supervisionado e não supervisionado, avaliação de modelos e aplicações clínicas, com atenção à metodologia científica.
+A disciplina aborda preparação de dados, aprendizado supervisionado e não supervisionado, avaliação de modelos e aplicações clínicas, com atenção à metodologia científica.
 
 ## Avaliação
 
-Oferta encerrada. O detalhamento histórico deve ser validado com a página original antes da publicação definitiva.
+Disciplina encerrada. O detalhamento histórico deve ser validado com a página original antes da publicação definitiva.
 
 ## Referências
 

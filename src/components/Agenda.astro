@@ -96,6 +96,13 @@ const next = events.find(
       ))
     }
   </ol>
+  {
+    events.length === 0 && (
+      <p class="empty">
+        O calendário detalhado desta disciplina será publicado em breve.
+      </p>
+    )
+  }
 </section>
 <script>
   document.querySelectorAll('[data-filter]').forEach((button) =>

@@ -1,6 +1,11 @@
 ---
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
+import '@fontsource/abeezee/400.css';
 import '../styles/global.css';
 import { withBase } from '../lib/site';
+import icLogo from '../../prompts/images/Logo-Instituto-de-Computacao.png';
 interface Props {
   title: string;
   description: string;
@@ -28,7 +33,7 @@ const nav = [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#092d46" />
+    <meta name="theme-color" content="#192f59" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
@@ -54,7 +59,15 @@ const nav = [
           class="brand"
           href={withBase('')}
           aria-label="Página inicial de Flávio Luiz Seixas"
-          ><span class="brand-mark">FS</span><span
+          ><span class="brand-logo-wrap"
+            ><img
+              class="brand-logo"
+              src={icLogo.src}
+              width={icLogo.width}
+              height={icLogo.height}
+              alt="Instituto de Computação da UFF"
+            /></span
+          ><span
             ><strong>Flávio Luiz Seixas</strong><small
               >Instituto de Computação · UFF</small
             ></span
@@ -93,7 +106,19 @@ const nav = [
     <footer>
       <div class="footer-grid">
         <div>
-          <strong>Flávio Luiz Seixas</strong><p>
+          <a
+            class="footer-ic-link"
+            href="https://www.ic.uff.br/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><img
+              class="footer-ic-logo"
+              src={icLogo.src}
+              width={icLogo.width}
+              height={icLogo.height}
+              alt="Instituto de Computação da UFF"
+            /></a
+          ><strong>Flávio Luiz Seixas</strong><p>
             Professor de Ciência da Computação<br />Universidade Federal
             Fluminense
           </p>

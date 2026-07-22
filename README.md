@@ -13,15 +13,27 @@ npm run dev
 
 Comandos principais:
 
-- `npm run validate:content`: valida datas, títulos, tipos e ofertas correntes.
+- `npm run validate:content`: valida datas, títulos, tipos e disciplinas correntes.
 - `npm test`: testa regras editoriais e utilitários.
 - `npm run check`: verifica Astro e TypeScript.
 - `npm run build`: valida, compila, cria a busca Pagefind e gera calendários ICS.
 - `npm run test:e2e`: testa os fluxos principais em desktop e celular.
+- `npm run sync:orcid`: atualiza a cópia local das publicações usando os dados públicos do ORCID e do Crossref.
+
+## Atualizar as publicações
+
+A página de publicações usa uma cópia versionada em `src/data/publications.json`, portanto continua funcionando mesmo se o ORCID estiver temporariamente indisponível. Para sincronizar novos trabalhos:
+
+```bash
+npm run sync:orcid
+npm run build
+```
+
+Revise as referências geradas antes da publicação. Os registros são apresentados em estilo ABNT com os metadados disponíveis; campos ausentes na origem não são inventados.
 
 ## Editar uma disciplina
 
-Cada oferta é um único arquivo em `src/content/offerings/`. Para adicionar uma aula, inclua no `calendar`, mantendo ordem cronológica:
+Cada disciplina por semestre é um único arquivo em `src/content/offerings/`. Para adicionar uma aula, inclua no `calendar`, mantendo ordem cronológica:
 
 ```yaml
 - date: '2026-08-12'
@@ -43,7 +55,7 @@ Para alterar uma data, preserve a anterior:
 
 Para cancelar, use `status: cancelled`; não apague o evento. Tipos aceitos: `aula`, `laboratorio`, `atividade`, `avaliacao`, `entrega`, `apresentacao`, `feriado` e `sem-aula`.
 
-Materiais podem ficar no nível da oferta ou vinculados a um evento:
+Materiais podem ficar no nível da disciplina ou vinculados a um evento:
 
 ```yaml
 materials:
@@ -59,11 +71,11 @@ Arquivos locais ficam em `public/files/`. Não publique links privados, tokens o
 
 1. Copie `src/content/offerings/_template.md.example` para um novo `.md`.
 2. Altere período, turma, logística e calendário.
-3. Marque a oferta anterior como `current: false` e `status: archived`.
-4. Marque apenas a nova oferta como `current: true`.
+3. Marque a disciplina do semestre anterior como `current: false` e `status: archived`.
+4. Marque apenas a disciplina do novo semestre como `current: true`.
 5. Execute `npm run validate:content && npm test && npm run build`.
 
-A URL da oferta é imutável: `/ensino/{slug}/{ano-semestre}/`. A URL permanente `/ensino/{slug}/` aponta para a oferta corrente.
+A URL da disciplina em cada semestre é imutável: `/ensino/{slug}/{ano-semestre}/`. A URL permanente `/ensino/{slug}/` aponta para o semestre corrente.
 
 ## GitHub Pages
 
@@ -74,7 +86,7 @@ Antes do lançamento, ajuste `site`/domínio, `public/robots.txt` e confirme as 
 ## Estrutura
 
 - `src/content/`: fonte editorial em Markdown.
-- `src/components/`: cartões, agenda e página de oferta.
+- `src/components/`: cartões, agenda e página de disciplina.
 - `src/pages/`: rotas estáticas.
 - `scripts/`: validação e geração de ICS.
 - `tests/`: testes unitários e de navegação.
@@ -86,4 +98,4 @@ Antes do lançamento, ajuste `site`/domínio, `public/robots.txt` e confirme as 
 - O horário de referência é sempre `America/Sao_Paulo`.
 - Pagefind é gerado depois do Astro e funciona sem serviço pago.
 - Datas editoriais ficam no conteúdo; a interface apenas as apresenta.
-- Ofertas incompletas não receberam dados inventados e estão documentadas para revisão humana.
+- Disciplinas incompletas não receberam dados inventados e estão documentadas para revisão humana.

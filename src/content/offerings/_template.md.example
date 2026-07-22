@@ -10,7 +10,7 @@ class_group: A1
 schedule: Segundas, 18h–20h
 room: null
 timezone: America/Sao_Paulo
-summary: Resumo curto da oferta.
+summary: Resumo curto da disciplina.
 language: pt-BR
 updated: 21/07/2026
 materials: []
@@ -23,7 +23,7 @@ calendar:
 
 ## Visão geral
 
-Objetivo e ementa da oferta.
+Objetivo e ementa da disciplina.
 
 ## Avaliação
 

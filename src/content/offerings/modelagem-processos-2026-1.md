@@ -3,14 +3,21 @@ title: Modelagem de Processos de Negócios
 code: TCC00330
 slug: modelagem-processos
 term: '2026.1'
-current: true
-status: active
+current: false
+status: archived
 level: graduacao
 class_group: A1
 schedule: Segundas e quartas, 18h–20h
 room: '308'
 timezone: America/Sao_Paulo
 summary: Descoberta, modelagem, análise e redesenho de processos de negócio, da situação atual à visão de futuro.
+overview: O curso apresenta conceitos de processos de negócio e uma metodologia que parte do levantamento e do entendimento da situação atual (AS-IS), passa pela avaliação do processo e chega ao desenho da situação futura (TO-BE).
+evaluation: As datas de P1, P2, VR, VS e apresentações estão destacadas no calendário. Critérios e pesos devem ser confirmados no ambiente oficial da disciplina.
+references:
+  - 'Dumas, M.; La Rosa, M.; Mendling, J.; Reijers, H. Fundamentals of Business Process Management. 2ª ed., Springer, 2018.'
+  - 'Sharp, A.; McDermott, P. Workflow Modeling. Artech House, 2001.'
+  - 'ABPMP Brazil. BPM CBOK, 3ª ed., 2013.'
+  - 'Paim, R. Gestão de processos: pensar, agir e aprender. Bookman, 2009.'
 language: pt-BR
 updated: 24/05/2026
 notice: Calendário migrado da página legada. Confirme eventuais alterações com o professor.

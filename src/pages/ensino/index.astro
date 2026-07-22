@@ -10,7 +10,7 @@ const archived = all.filter((o) => !o.data.current);
 
 <BaseLayout
   title="Ensino"
-  description="Disciplinas atuais e arquivo de ofertas anteriores."
+  description="Disciplinas atuais e arquivo de períodos anteriores."
   ><header class="page-hero">
     <div class="container">
       <span class="eyebrow">Ensino</span><h1>Disciplinas e calendários</h1><p
@@ -22,14 +22,14 @@ const archived = all.filter((o) => !o.data.current);
     </div>
   </header><section class="container">
     <div class="section-head">
-      <h2>Ofertas atuais</h2><a href={withBase('feed/calendario.ics')}
+      <h2>Disciplinas atuais</h2><a href={withBase('feed/calendario.ics')}
         >Baixar calendário completo</a
       >
     </div><div class="grid">
       {current.map((o) => <CourseCard offering={o} />)}
     </div>
   </section><section class="container">
-    <h2>Ofertas anteriores</h2><div class="grid">
+    <h2>Disciplinas anteriores</h2><div class="grid">
       {
         archived.map((o) => (
           <article class="card">
@@ -42,7 +42,7 @@ const archived = all.filter((o) => !o.data.current);
                   `ensino/${o.data.slug}/${o.data.term.replace('.', '-')}/`
                 )}
               >
-                Consultar oferta arquivada
+                Consultar disciplina arquivada
               </a>
             </>
           </article>

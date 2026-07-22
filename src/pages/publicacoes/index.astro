@@ -1,42 +1,155 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { profileLinks } from '../../lib/site';
+import orcidData from '../../data/publications.json';
+import {
+  abntReference,
+  publicationTypeLabels,
+  type Publication
+} from '../../lib/publications';
+
+const publications = orcidData.publications as Publication[];
+const years = [...new Set(publications.map((publication) => publication.year))];
+const types = [...new Set(publications.map((publication) => publication.type))];
+const syncedAt = new Intl.DateTimeFormat('pt-BR', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  timeZone: 'America/Sao_Paulo'
+}).format(new Date(orcidData.syncedAt));
 ---
 
 <BaseLayout
   title="Publicações"
-  description="Produção acadêmica e perfis científicos de Flávio Luiz Seixas."
-  ><header class="page-hero">
+  description="Produção acadêmica de Flávio Luiz Seixas importada do ORCID e apresentada segundo o estilo ABNT."
+>
+  <header class="page-hero publications-hero">
     <div class="container">
       <span class="eyebrow">Produção acadêmica</span><h1>Publicações</h1><p
         class="hero-lead"
       >
-        A curadoria local está em preparação. Consulte os perfis científicos
-        para a lista completa e mais recente.
+        Trabalhos divulgados no ORCID, organizados por ano e apresentados em
+        formato de referência ABNT.
+      </p><div class="hero-actions">
+        <a
+          class="button"
+          href={`https://orcid.org/${orcidData.orcid}`}
+          target="_blank"
+          rel="noopener noreferrer">Consultar perfil no ORCID</a
+        ><span class="publication-count"
+          >{publications.length} publicações · atualização {syncedAt}</span
+        >
+      </div>
+    </div>
+  </header>
+  <div class="container publications-content">
+    <div class="publication-controls" aria-label="Filtros das publicações">
+      <label>
+        Tipo
+        <select id="publication-type">
+          <option value="all">Todos os tipos</option>
+          {
+            types.map((type) => (
+              <option value={type}>
+                {publicationTypeLabels[type] ?? type}
+              </option>
+            ))
+          }
+        </select>
+      </label>
+      <label>
+        Ano
+        <select id="publication-year">
+          <option value="all">Todos os anos</option>
+          {years.map((year) => <option value={year}>{year}</option>)}
+        </select>
+      </label>
+      <p id="publication-result-count" aria-live="polite">
+        {publications.length} resultados
       </p>
     </div>
-  </header><div class="container">
-    <div class="grid">
+    <div class="publication-years">
       {
-        profileLinks
-          .filter((l) =>
-            ['Currículo Lattes', 'ORCID', 'Google Scholar'].includes(l.label)
-          )
-          .map((link) => (
-            <a
-              class="card"
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <>
-                <span class="eyebrow">Perfil externo</span>
-                <h2>{link.label}</h2>
-                <p>Abrir produção acadêmica ↗</p>
-              </>
-            </a>
-          ))
+        years.map((year) => (
+          <section class="publication-year" data-year-group={year}>
+            <h2>{year}</h2>
+            <ol class="publication-list">
+              {publications
+                .filter((publication) => publication.year === year)
+                .map((publication) => (
+                  <li
+                    class="publication-item"
+                    data-year={publication.year}
+                    data-type={publication.type}
+                  >
+                    <span class="tag">
+                      {publicationTypeLabels[publication.type] ??
+                        publication.type}
+                    </span>
+                    <p class="abnt-reference">{abntReference(publication)}</p>
+                    {publication.doi ? (
+                      <a
+                        href={publication.url ?? undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        DOI: {publication.doi}
+                      </a>
+                    ) : (
+                      publication.url && (
+                        <a
+                          href={publication.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Consultar publicação
+                        </a>
+                      )
+                    )}
+                  </li>
+                ))}
+            </ol>
+          </section>
+        ))
       }
     </div>
-  </div></BaseLayout
->
+    <aside class="notice publication-note">
+      <strong>Sobre os dados bibliográficos</strong><br />As referências são
+      geradas com os metadados públicos disponíveis no ORCID e no Crossref. A
+      ausência de volume, número ou páginas no registro de origem é preservada,
+      sem completar informações por inferência.
+    </aside>
+    <script>
+      const typeSelect =
+        document.querySelector<HTMLSelectElement>('#publication-type');
+      const yearSelect =
+        document.querySelector<HTMLSelectElement>('#publication-year');
+      const resultCount = document.querySelector('#publication-result-count');
+      const filterPublications = () => {
+        let visible = 0;
+        document
+          .querySelectorAll<HTMLElement>('.publication-item')
+          .forEach((item) => {
+            const matchesType =
+              typeSelect?.value === 'all' ||
+              item.dataset.type === typeSelect?.value;
+            const matchesYear =
+              yearSelect?.value === 'all' ||
+              item.dataset.year === yearSelect?.value;
+            item.hidden = !(matchesType && matchesYear);
+            if (!item.hidden) visible += 1;
+          });
+        document
+          .querySelectorAll<HTMLElement>('.publication-year')
+          .forEach((group) => {
+            group.hidden = !group.querySelector(
+              '.publication-item:not([hidden])'
+            );
+          });
+        if (resultCount)
+          resultCount.textContent = `${visible} ${visible === 1 ? 'resultado' : 'resultados'}`;
+      };
+      typeSelect?.addEventListener('change', filterPublications);
+      yearSelect?.addEventListener('change', filterPublications);
+    </script>
+  </div>
+</BaseLayout>

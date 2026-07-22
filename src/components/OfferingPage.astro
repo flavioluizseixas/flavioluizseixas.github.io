@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Agenda from './Agenda.astro';
 import { withBase } from '../lib/site';
-const { offering, Content } = Astro.props;
+const { offering } = Astro.props;
 const d = offering.data;
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -35,7 +35,7 @@ const jsonLd = {
         !d.current && (
           <div class="archive-banner">
             <>
-              <strong>Oferta encerrada — semestre {d.term}</strong>
+              <strong>Disciplina encerrada — semestre {d.term}</strong>
               <br />
             </>
             Este calendário é mantido para consulta histórica.
@@ -54,6 +54,22 @@ const jsonLd = {
             <dt>Turma</dt><dd>{d.class_group}</dd>
           </div><div><dt>Horário</dt><dd>{d.schedule}</dd></div><div>
             <dt>Sala</dt><dd>{d.room || 'A confirmar'}</dd>
+          </div><div>
+            <dt>Ambiente virtual</dt><dd>
+              {
+                d.classroom_url ? (
+                  <a
+                    href={d.classroom_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Acessar Classroom
+                  </a>
+                ) : (
+                  'A confirmar'
+                )
+              }
+            </dd>
           </div>
         </dl><div>
           <span class="label">Última atualização</span><p>{d.updated}</p><a
@@ -73,35 +89,63 @@ const jsonLd = {
     </div>
   </nav>
   <div class="container">
-    <Agenda events={d.calendar} /><article
-      class="prose narrow"
-      id="visao-geral"
-    >
-      <Content />
-    </article>{
-      d.materials.length > 0 && (
-        <section id="materiais">
-          <>
-            <h2>Materiais e ferramentas</h2>
-            <div class="resources">
-              {d.materials.map((m: any) => (
-                <a
-                  class="resource"
-                  href={m.url}
-                  target={m.external ? '_blank' : undefined}
-                  rel={m.external ? 'noopener noreferrer' : undefined}
-                >
-                  <strong>{m.title}</strong>
-                  <span>
-                    {m.type}
-                    {m.external ? ' · link externo' : ''}
-                  </span>
-                </a>
-              ))}
-            </div>
-          </>
-        </section>
-      )
-    }
+    <section class="prose narrow course-section" id="visao-geral">
+      <h2>Visão geral</h2>
+      <p>{d.overview || d.summary}</p>
+    </section>
+    <Agenda events={d.calendar} />
+    <section class="prose narrow course-section" id="avaliacao">
+      <h2>Avaliação</h2>
+      <p>
+        {
+          d.evaluation ||
+            'Consulte o calendário e os avisos da disciplina para conhecer as avaliações e os respectivos critérios.'
+        }
+      </p>
+    </section>
+    <section class="course-section" id="materiais">
+      <h2>Materiais</h2>
+      {
+        d.materials.length > 0 ? (
+          <div class="resources">
+            {d.materials.map((m: any) => (
+              <a
+                class="resource"
+                href={m.url}
+                target={m.external ? '_blank' : undefined}
+                rel={m.external ? 'noopener noreferrer' : undefined}
+              >
+                <strong>{m.title}</strong>
+                <span>
+                  {m.type}
+                  {m.external ? ' · link externo' : ''}
+                </span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p class="empty">
+            Os materiais desta disciplina serão publicados em breve.
+          </p>
+        )
+      }
+    </section>
+    <section class="prose narrow course-section" id="referencias">
+      <h2>Referências</h2>
+      {
+        d.references.length > 0 ? (
+          <ul>
+            {d.references.map((reference: string) => (
+              <li>{reference}</li>
+            ))}
+          </ul>
+        ) : (
+          <p class="empty">
+            As referências serão organizadas por tema e publicadas junto ao
+            calendário detalhado da disciplina.
+          </p>
+        )
+      }
+    </section>
   </div>
 </BaseLayout>

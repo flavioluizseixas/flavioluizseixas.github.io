@@ -10,6 +10,7 @@
     "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "sync:orcid": "node --import tsx scripts/sync-orcid.ts",
     "validate:content": "node --import tsx scripts/validate-content.ts",
     "format": "prettier --write 'src/**/*.{astro,ts,md,css}' 'scripts/**/*.ts' 'tests/**/*.ts' '*.{ts,mjs,json,md}' '.github/**/*.yml'",
     "format:check": "prettier --check 'src/**/*.{astro,ts,md,css}' 'scripts/**/*.ts' 'tests/**/*.ts' '*.{ts,mjs,json,md}' '.github/**/*.yml'"
@@ -17,6 +18,8 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
     "@astrojs/sitemap": "^3.4.0",
+    "@fontsource/abeezee": "^5.3.0",
+    "@fontsource/poppins": "^5.3.0",
     "astro": "^5.12.0"
   },
   "devDependencies": {
