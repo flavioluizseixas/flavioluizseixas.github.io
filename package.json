@@ -11,6 +11,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "sync:orcid": "node --import tsx scripts/sync-orcid.ts",
+    "sync:calendar:mpn": "node --import tsx scripts/sync-mpn-calendar.ts",
+    "sync:calendar:ams": "node --import tsx scripts/sync-mpn-calendar.ts --file \"data/AMS Planejamento.xlsx\" --sheet 2026.2 --offering src/content/offerings/aprendizado-maquina-saude-2026-2.md",
     "validate:content": "node --import tsx scripts/validate-content.ts",
     "format": "prettier --write 'src/**/*.{astro,ts,md,css}' 'scripts/**/*.ts' 'tests/**/*.ts' '*.{ts,mjs,json,md}' '.github/**/*.yml'",
     "format:check": "prettier --check 'src/**/*.{astro,ts,md,css}' 'scripts/**/*.ts' 'tests/**/*.ts' '*.{ts,mjs,json,md}' '.github/**/*.yml'"
@@ -32,6 +34,7 @@
     "tsx": "^4.20.0",
     "typescript": "^5.8.0",
     "vitest": "^3.2.0",
+    "xlsx": "^0.18.5",
     "yaml": "^2.8.0"
   }
 }

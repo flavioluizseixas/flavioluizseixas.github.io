@@ -19,6 +19,7 @@ Comandos principais:
 - `npm run build`: valida, compila, cria a busca Pagefind e gera calendários ICS.
 - `npm run test:e2e`: testa os fluxos principais em desktop e celular.
 - `npm run sync:orcid`: atualiza a cópia local das publicações usando os dados públicos do ORCID e do Crossref.
+- `npm run sync:calendar:mpn`: transfere a aba `2026.2` da planilha de planejamento para o calendário de Modelagem de Processos de Negócio.
 
 ## Atualizar as publicações
 
@@ -30,6 +31,37 @@ npm run build
 ```
 
 Revise as referências geradas antes da publicação. Os registros são apresentados em estilo ABNT com os metadados disponíveis; campos ausentes na origem não são inventados.
+
+## Atualizar o calendário de Processos de Negócio
+
+A fonte versionada é `data/MPN Planejamento.xlsx`. Edite a aba do semestre e mantenha as colunas `Data` e `Conteúdo` preenchidas. As demais colunas aceitas são:
+
+- `Referências`: texto bibliográfico exibido no evento.
+- `Tipo`: `aula`, `laboratorio`, `atividade`, `avaliacao`, `entrega`, `apresentacao`, `feriado` ou `sem-aula`. Se ficar vazio, será inferido pelo título.
+- `Status`: `planned`, `changed`, `cancelled` ou `completed`. Se ficar vazio, será usado `planned`.
+- `Observações`: aviso opcional exibido no evento.
+
+Para importar e validar:
+
+```bash
+npm run sync:calendar:mpn
+npm run validate:content
+```
+
+Outro semestre ou arquivo pode ser selecionado sem alterar o script:
+
+```bash
+npm run sync:calendar:mpn -- --sheet 2027.1 --file "data/MPN Planejamento.xlsx" --offering src/content/offerings/modelagem-processos-2027-1.md
+```
+
+Para Aprendizado de Máquina para Saúde, a fonte versionada é `data/AMS Planejamento.xlsx`. Depois de editar a aba `2026.2`, execute:
+
+```bash
+npm run sync:calendar:ams
+npm run validate:content
+```
+
+O arquivo usa as mesmas colunas `Referências`, `Tipo`, `Status` e `Observações`. Referências podem ficar vazias em atividades para as quais não se aplica uma leitura específica.
 
 ## Editar uma disciplina
 
@@ -88,6 +120,7 @@ Antes do lançamento, ajuste `site`/domínio, `public/robots.txt` e confirme as 
 - `src/content/`: fonte editorial em Markdown.
 - `src/components/`: cartões, agenda e página de disciplina.
 - `src/pages/`: rotas estáticas.
+- `data/`: planilhas editoriais versionadas.
 - `scripts/`: validação e geração de ICS.
 - `tests/`: testes unitários e de navegação.
 - `prompts/`: PRD original.
