@@ -67,96 +67,96 @@ calendar:
     references:
       - SHORTLIFFE; CIMINO (2021); RAJKOMAR; DEAN; KOHANE (2019)
   - date: '2026-08-14'
-    title: "Hackathon: definição do problema e prototipação"
+    title: 'Hackathon: definição do problema e prototipação'
     type: atividade
     status: planned
     note: Montagem de equipes, definição do problema, imersão, ideação e prototipação.
   - date: '2026-08-21'
-    title: "Aula 1: Introdução e evolução da IA na medicina"
+    title: 'Aula 1: Introdução e evolução da IA na medicina'
     type: aula
     status: planned
     note: Módulo 1 — Fundamentos e ecossistema de dados.
     references:
       - SHORTLIFFE; CIMINO (2021); RAJKOMAR; DEAN; KOHANE (2019); BEAM; KOHANE (2018)
   - date: '2026-08-28'
-    title: "Aula 2: Tipos de dados clínicos e qualidade"
+    title: 'Aula 2: Tipos de dados clínicos e qualidade'
     type: aula
     status: planned
     note: Módulo 1 — Fundamentos e ecossistema de dados.
     references:
       - SHORTLIFFE; CIMINO (2021)
   - date: '2026-09-04'
-    title: "Aula 3: Interoperabilidade e padrões clínicos"
+    title: 'Aula 3: Interoperabilidade e padrões clínicos'
     type: aula
     status: planned
     note: Módulo 1 — Fundamentos e ecossistema de dados.
     references:
       - BENSON; GRIEVE (2021)
   - date: '2026-09-11'
-    title: "Aula 4: Formulação do problema e ciclo de vida do modelo"
+    title: 'Aula 4: Formulação do problema e ciclo de vida do modelo'
     type: aula
     status: planned
     note: Módulo 2 — Desenho de estudos e aprendizado de máquina clássico.
     references:
       - JAMES et al. (2023); COLLINS et al. (2024)
   - date: '2026-09-18'
-    title: "Aula 5: Avaliação de desempenho e validação"
+    title: 'Aula 5: Avaliação de desempenho e validação'
     type: aula
     status: planned
     note: Módulo 2 — Desenho de estudos e aprendizado de máquina clássico.
     references:
       - JAMES et al. (2023); COLLINS et al. (2024)
   - date: '2026-09-25'
-    title: "Aula 6: Aprendizado supervisionado e não supervisionado clássico"
+    title: 'Aula 6: Aprendizado supervisionado e não supervisionado clássico'
     type: aula
     status: planned
     note: Módulo 2 — Desenho de estudos e aprendizado de máquina clássico.
     references:
       - JAMES et al. (2023)
   - date: '2026-10-02'
-    title: "Aula 7: Deep learning 1 — visão computacional médica"
+    title: 'Aula 7: Deep learning 1 — visão computacional médica'
     type: aula
     status: planned
     note: Módulo 3 — Aprendizado profundo e NLP.
     references:
       - PANESAR (2019); TOPOL (2019)
   - date: '2026-10-09'
-    title: "Aula 8: Deep learning 2 — transformers e sinais biomédicos"
+    title: 'Aula 8: Deep learning 2 — transformers e sinais biomédicos'
     type: aula
     status: planned
     note: Módulo 3 — Aprendizado profundo e NLP.
     references:
       - PANESAR (2019)
   - date: '2026-10-16'
-    title: "Aulas 9 e 10: Processamento de linguagem natural biomédico; modelos de linguagem e multimodalidade"
+    title: 'Aulas 9 e 10: Processamento de linguagem natural biomédico; modelos de linguagem e multimodalidade'
     type: aula
     status: planned
     note: Módulo 3 — Aprendizado profundo e NLP.
     references:
       - WORLD HEALTH ORGANIZATION (2024)
   - date: '2026-10-23'
-    title: "Aulas 11 e 12: Análise de sobrevivência, predição de risco, inferência causal e evidência de mundo real"
+    title: 'Aulas 11 e 12: Análise de sobrevivência, predição de risco, inferência causal e evidência de mundo real'
     type: aula
     status: planned
     note: Módulo 4 — Sobrevivência, inferência causal e decisão.
     references:
       - WANG; LI; REDDY (2019); HERNÁN; ROBINS (2020)
   - date: '2026-10-30'
-    title: "Aula 13: Sistemas de apoio à decisão clínica e implementação"
+    title: 'Aula 13: Sistemas de apoio à decisão clínica e implementação'
     type: aula
     status: planned
     note: Módulo 4 — Sobrevivência, inferência causal e decisão.
     references:
       - BERNER (2007)
   - date: '2026-11-06'
-    title: "Aula 14: Explicabilidade, equidade e privacidade"
+    title: 'Aula 14: Explicabilidade, equidade e privacidade'
     type: aula
     status: planned
     note: Módulo 5 — Ética, regulação e prática profissional.
     references:
       - WORLD HEALTH ORGANIZATION (2021)
   - date: '2026-11-13'
-    title: "Aula 15: Regulação, relato científico e MLOps"
+    title: 'Aula 15: Regulação, relato científico e MLOps'
     type: aula
     status: planned
     note: Módulo 5 — Ética, regulação e prática profissional.
@@ -168,7 +168,7 @@ calendar:
     status: planned
     note: Não haverá aula.
   - date: '2026-11-27'
-    title: "Aula 16: O futuro da medicina baseada em IA"
+    title: 'Aula 16: O futuro da medicina baseada em IA'
     type: aula
     status: planned
     note: Módulo 5 — Ética, regulação e prática profissional.

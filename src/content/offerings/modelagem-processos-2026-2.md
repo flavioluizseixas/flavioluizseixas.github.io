@@ -29,33 +29,33 @@ calendar:
     type: apresentacao
     status: planned
   - date: '2026-08-14'
-    title: "Aula 1: Partes de um negócio"
+    title: 'Aula 1: Partes de um negócio'
     type: aula
     status: planned
   - date: '2026-08-21'
-    title: "Aula 2: Gerenciamento de processos de negócio"
+    title: 'Aula 2: Gerenciamento de processos de negócio'
     type: aula
     status: planned
     references:
       - DUMAS, Cap. 1
   - date: '2026-08-28'
-    title: "Aula 3: Ciclo de gestão de processos de negócio usando BPM"
+    title: 'Aula 3: Ciclo de gestão de processos de negócio usando BPM'
     type: aula
     status: planned
     references:
       - DUMAS, Caps 2 e 3.
   - date: '2026-09-04'
-    title: "Aula 4: Descoberta de processos de negócio"
+    title: 'Aula 4: Descoberta de processos de negócio'
     type: aula
     status: planned
     references:
       - DUMAS, Caps 4 e 5.
   - date: '2026-09-11'
-    title: "Aula 5: Modelagem de processos de negócio com BPMN - parte 1"
+    title: 'Aula 5: Modelagem de processos de negócio com BPMN - parte 1'
     type: aula
     status: planned
   - date: '2026-09-18'
-    title: "Aula 6: Modelagem de processos de negócio com BPMN - parte 2"
+    title: 'Aula 6: Modelagem de processos de negócio com BPMN - parte 2'
     type: aula
     status: planned
   - date: '2026-09-25'
@@ -63,31 +63,31 @@ calendar:
     type: avaliacao
     status: planned
   - date: '2026-10-02'
-    title: "Apresentação 1: tema do estudo de caso"
+    title: 'Apresentação 1: tema do estudo de caso'
     type: apresentacao
     status: planned
   - date: '2026-10-09'
-    title: "Aula 7: Análise de processos de negócio. Análise qualitativa: análise de valor agregado, análise de desperdício, análise de partes interessadas, diagrama de causa-efeito, técnica dos 5 porquês, pareto."
+    title: 'Aula 7: Análise de processos de negócio. Análise qualitativa: análise de valor agregado, análise de desperdício, análise de partes interessadas, diagrama de causa-efeito, técnica dos 5 porquês, pareto.'
     type: aula
     status: planned
     references:
       - DUMAS, Cap. 7
   - date: '2026-10-16'
-    title: "Aula 8: Análise de processos de negócio. Análise quantitativa: análise de fluxo, análise de fila, simulação de processos."
+    title: 'Aula 8: Análise de processos de negócio. Análise quantitativa: análise de fluxo, análise de fila, simulação de processos.'
     type: aula
     status: planned
     references:
       - DUMAS, Cap. 8
   - date: '2026-10-23'
-    title: "Apresentação 2: Modelagem de processos de negócio AS-IS"
+    title: 'Apresentação 2: Modelagem de processos de negócio AS-IS'
     type: apresentacao
     status: planned
   - date: '2026-10-30'
-    title: "Aula 9: Redesenho e melhoria de processos de negócio"
+    title: 'Aula 9: Redesenho e melhoria de processos de negócio'
     type: aula
     status: planned
   - date: '2026-11-06'
-    title: "Aula 10: Monitoramento de processos"
+    title: 'Aula 10: Monitoramento de processos'
     type: aula
     status: planned
   - date: '2026-11-13'
@@ -99,7 +99,7 @@ calendar:
     type: feriado
     status: planned
   - date: '2026-11-27'
-    title: "Apresentação 3: Desenho do processo TO-BE"
+    title: 'Apresentação 3: Desenho do processo TO-BE'
     type: apresentacao
     status: planned
   - date: '2026-12-04'

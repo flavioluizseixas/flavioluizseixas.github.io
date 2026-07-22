@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import * as prettier from 'prettier';
 import XLSX from 'xlsx';
 import YAML from 'yaml';
 
@@ -163,7 +164,13 @@ const newFrontmatter = document
   .toString({ lineWidth: 0 })
   .replace(/^(\s+- date: )(\d{4}-\d{2}-\d{2})$/gm, "$1'$2'")
   .trimEnd();
-fs.writeFileSync(offeringPath, markdown.replace(match[1], newFrontmatter));
+const updatedMarkdown = markdown.replace(match[1], newFrontmatter);
+const prettierConfig = await prettier.resolveConfig(offeringPath);
+const formattedMarkdown = await prettier.format(updatedMarkdown, {
+  ...prettierConfig,
+  filepath: offeringPath
+});
+fs.writeFileSync(offeringPath, formattedMarkdown);
 
 console.log(
   `${events.length} eventos importados de “${sheetName}” para ${path.relative(process.cwd(), offeringPath)}.`
