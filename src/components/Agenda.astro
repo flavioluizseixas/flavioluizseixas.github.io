@@ -20,6 +20,7 @@ const next = events.find(
 );
 const moduleLabel = (note?: string) =>
   note?.match(/^Módulo\s+\d+\s*[—–-]\s*.+$/i)?.[0] ?? null;
+const titleLines = (title: string) => title.split(/;\s+(?=Aula\s+\d+\s*:)/i);
 let previousModule: string | null = null;
 type AgendaItem = {
   event: any;
@@ -98,7 +99,13 @@ const agendaItems: AgendaItem[] = events.map((event: any) => {
               )}
             </div>
             <div>
-              <h3>{event.title}</h3>
+              <h3 aria-label={event.title}>
+                {titleLines(event.title).map((line) => (
+                  <span class="event-title-line" aria-hidden="true">
+                    {line}
+                  </span>
+                ))}
+              </h3>
               {event.note && !module && <p>{event.note}</p>}
               {event.references?.length > 0 && (
                 <p>

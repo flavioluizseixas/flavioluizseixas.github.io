@@ -520,6 +520,12 @@ p {
   color: var(--ink);
   letter-spacing: 0;
 }
+.event-title-line {
+  display: block;
+}
+.event-title-line + .event-title-line {
+  margin-top: 0.35rem;
+}
 .event p {
   color: var(--muted);
   margin: 0.3rem 0;
