@@ -24,7 +24,7 @@ export function loadOfferings(): Offering[] {
     .filter((f) => f.endsWith('.md'))
     .map((file) => {
       const raw = fs.readFileSync(path.join(dir, file), 'utf8');
-      const match = raw.match(/^---\n([\s\S]*?)\n---/);
+      const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
       if (!match) throw new Error(`${file}: frontmatter ausente`);
       try {
         return YAML.parse(match[1]);

@@ -66,6 +66,14 @@ function cellText(sheet: XLSX.WorkSheet, column: number, row: number) {
   ).trim();
 }
 
+export function normalizeTitle(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(/^[;,\s]+|[;,\s]+$/g, ''))
+    .filter(Boolean)
+    .join('; ');
+}
+
 const spreadsheetPath = path.resolve(argument('file', defaults.spreadsheet));
 const sheetName = argument('sheet', defaults.sheet);
 const offeringPath = path.resolve(argument('offering', defaults.offering));
@@ -105,7 +113,7 @@ const allowedStatuses = new Set<CalendarStatus>([
   'completed'
 ]);
 for (let row = 1; row <= range.e.r; row += 1) {
-  const title = cellText(sheet, 2, row).replace(/\s+/g, ' ');
+  const title = normalizeTitle(cellText(sheet, 2, row));
   const dateCell = sheet[XLSX.utils.encode_cell({ c: 1, r: row })]?.v;
   if (!title && (dateCell === undefined || dateCell === '')) continue;
   if (!title || dateCell === undefined || dateCell === '')

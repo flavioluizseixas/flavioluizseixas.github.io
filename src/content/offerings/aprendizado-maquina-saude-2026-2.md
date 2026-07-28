@@ -55,7 +55,7 @@ references:
   - 'PANESAR, Arjun. Machine Learning and AI for Healthcare: Big Data for Improved Health Outcomes. Berkeley: Apress, 2019.'
   - 'BERNER, Eta S. Clinical Decision Support Systems: Theory and Practice. 2. ed. New York: Springer, 2007.'
 language: pt-BR
-updated: 22/07/2026
+updated: 28/07/2026
 notice: Sala e ambiente virtual serão informados em breve.
 materials: []
 calendar:
@@ -100,19 +100,17 @@ calendar:
     references:
       - JAMES et al. (2023); COLLINS et al. (2024)
   - date: '2026-09-18'
-    title: 'Aula 5: Avaliação de desempenho e validação'
+    title: 'Aula 5: Avaliação de desempenho e validação; Aula 6: Aprendizado supervisionado e não supervisionado clássico'
     type: aula
     status: planned
     note: Módulo 2 — Desenho de estudos e aprendizado de máquina clássico.
     references:
       - JAMES et al. (2023); COLLINS et al. (2024)
   - date: '2026-09-25'
-    title: 'Aula 6: Aprendizado supervisionado e não supervisionado clássico'
-    type: aula
+    title: Apresentação de artigo 1
+    type: apresentacao
     status: planned
     note: Módulo 2 — Desenho de estudos e aprendizado de máquina clássico.
-    references:
-      - JAMES et al. (2023)
   - date: '2026-10-02'
     title: 'Aula 7: Deep learning 1 — visão computacional médica'
     type: aula
@@ -128,40 +126,36 @@ calendar:
     references:
       - PANESAR (2019)
   - date: '2026-10-16'
-    title: 'Aulas 9 e 10: Processamento de linguagem natural biomédico; modelos de linguagem e multimodalidade'
+    title: 'Aula 9: Processamento de linguagem natural biomédico; Aula 10: Modelos de linguagem e multimodalidade'
     type: aula
     status: planned
     note: Módulo 3 — Aprendizado profundo e NLP.
     references:
       - WORLD HEALTH ORGANIZATION (2024)
   - date: '2026-10-23'
-    title: 'Aulas 11 e 12: Análise de sobrevivência, predição de risco, inferência causal e evidência de mundo real'
+    title: 'Aula 11: Análise de sobrevivência, predição de risco; Aula 12: Inferência causal e evidência de mundo real'
     type: aula
     status: planned
     note: Módulo 4 — Sobrevivência, inferência causal e decisão.
     references:
       - WANG; LI; REDDY (2019); HERNÁN; ROBINS (2020)
   - date: '2026-10-30'
-    title: 'Aula 13: Sistemas de apoio à decisão clínica e implementação'
-    type: aula
+    title: Semana de extensão (SEMEXT)
+    type: atividade
     status: planned
     note: Módulo 4 — Sobrevivência, inferência causal e decisão.
-    references:
-      - BERNER (2007)
   - date: '2026-11-06'
-    title: 'Aula 14: Explicabilidade, equidade e privacidade'
+    title: 'Aula 13: Sistemas de apoio à decisão clínica e implementação; Aula 14: Explicabilidade, equidade e privacidade; Aula 15: Regulação, relato científico e MLOps'
     type: aula
     status: planned
     note: Módulo 5 — Ética, regulação e prática profissional.
     references:
-      - WORLD HEALTH ORGANIZATION (2021)
+      - BERNER (2007); WORLD HEALTH ORGANIZATION (2021); ANVISA (2022); FDA (2025); COLLINS et al. (2024)
   - date: '2026-11-13'
-    title: 'Aula 15: Regulação, relato científico e MLOps'
-    type: aula
+    title: Apresentação de artigo 2
+    type: apresentacao
     status: planned
     note: Módulo 5 — Ética, regulação e prática profissional.
-    references:
-      - ANVISA (2022); FDA (2025); COLLINS et al. (2024)
   - date: '2026-11-20'
     title: Feriado
     type: feriado

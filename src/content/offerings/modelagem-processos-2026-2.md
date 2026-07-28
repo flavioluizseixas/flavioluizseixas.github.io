@@ -20,7 +20,7 @@ references:
   - 'ABPMP Brazil. BPM CBOK, 3ª ed., 2013.'
   - 'Paim, R. Gestão de processos: pensar, agir e aprender. Bookman, 2009.'
 language: pt-BR
-updated: 22/07/2026
+updated: 28/07/2026
 notice: Sala e ambiente virtual serão informados em breve.
 materials: []
 calendar:
@@ -83,11 +83,11 @@ calendar:
     type: apresentacao
     status: planned
   - date: '2026-10-30'
-    title: 'Aula 9: Redesenho e melhoria de processos de negócio'
-    type: aula
+    title: Semana de extensão (SEMEXT)
+    type: atividade
     status: planned
   - date: '2026-11-06'
-    title: 'Aula 10: Monitoramento de processos'
+    title: 'Aula 9: Redesenho e melhoria de processos de negócio; Aula 10: Monitoramento de processos'
     type: aula
     status: planned
   - date: '2026-11-13'
