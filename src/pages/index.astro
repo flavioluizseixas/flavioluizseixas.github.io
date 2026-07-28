@@ -2,35 +2,85 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CourseCard from '../components/CourseCard.astro';
-import { profileLinks, withBase } from '../lib/site';
+import { profileLinks } from '../lib/site';
+import { route, type Locale } from '../i18n';
+const locale: Locale = Astro.props.locale ?? 'pt';
+const copy = {
+  pt: {
+    title: 'Início',
+    description:
+      'Ensino, pesquisa e extensão de Flávio Luiz Seixas, professor do Instituto de Computação da UFF.',
+    role: 'Professor · pesquisador · cientista da computação · engenheiro',
+    heading: 'Inteligência artificial',
+    accent: 'para transformar a saúde',
+    lead: 'Sou Flávio Luiz Seixas, professor do Instituto de Computação da Universidade Federal Fluminense. Desenvolvo pesquisas e soluções em inteligência artificial aplicada à saúde, sistemas de apoio à decisão e saúde digital.',
+    coursesCta: 'Conheça minhas disciplinas',
+    researchCta: 'Explore minhas pesquisas',
+    semester: 'Semestre',
+    teaching: 'Ensino neste semestre',
+    previous: 'Ver disciplinas anteriores',
+    profiles: 'Perfis acadêmicos e profissionais',
+    email: 'E-mail institucional',
+    research: 'Pesquisa',
+    researchHeading: 'Inteligência artificial a serviço da saúde',
+    researchText:
+      'Pesquisa em aprendizado de máquina, apoio à decisão e processamento de sinais e imagens médicas, conectando rigor computacional a problemas concretos.',
+    researchLink: 'Conheça as linhas de pesquisa →',
+    outreach: 'Extensão',
+    outreachHeading: 'Conhecimento que atravessa os muros',
+    outreachText:
+      'A Fábrica de Software e Tecnologia para a Saúde reúne formação, desenvolvimento de soluções e colaboração interdisciplinar.',
+    outreachLink: 'Conheça os projetos →'
+  },
+  en: {
+    title: 'Home',
+    description:
+      'Teaching, research, and outreach by Flávio Luiz Seixas, professor at the UFF Institute of Computing.',
+    role: 'Professor · researcher · computer scientist · engineer',
+    heading: 'Artificial intelligence',
+    accent: 'to transform healthcare',
+    lead: 'I am Flávio Luiz Seixas, a professor at the Institute of Computing of Fluminense Federal University. I develop research and solutions in artificial intelligence applied to healthcare, decision support systems, and digital health.',
+    coursesCta: 'Explore my courses',
+    researchCta: 'Explore my research',
+    semester: 'Term',
+    teaching: 'Teaching this term',
+    previous: 'View previous courses',
+    profiles: 'Academic and professional profiles',
+    email: 'Institutional email',
+    research: 'Research',
+    researchHeading: 'Artificial intelligence serving healthcare',
+    researchText:
+      'Research in machine learning, decision support, and medical signal and image processing, connecting computational rigor to real-world problems.',
+    researchLink: 'Explore the research areas →',
+    outreach: 'Outreach',
+    outreachHeading: 'Knowledge beyond university walls',
+    outreachText:
+      'The Software and Healthcare Technology Factory brings together education, solution development, and interdisciplinary collaboration.',
+    outreachLink: 'Explore the projects →'
+  }
+}[locale];
 const offerings = (await getCollection('offerings'))
   .filter((o) => o.data.current)
   .sort((a, b) => a.data.title.localeCompare(b.data.title));
 const currentTerms = [...new Set(offerings.map((o) => o.data.term))].sort();
-const currentTerm = currentTerms.join(' e ');
+const currentTerm = currentTerms.join(locale === 'pt' ? ' e ' : ' and ');
 ---
 
 <BaseLayout
-  title="Início"
-  description="Ensino, pesquisa e extensão de Flávio Luiz Seixas, professor do Instituto de Computação da UFF."
+  title={copy.title}
+  description={copy.description}
+  {locale}
+  routeName="home"
 >
   <section class="hero">
     <div class="container">
-      <span class="eyebrow"
-        >Professor · pesquisador · cientista da computação · engenheiro</span
-      ><h1 class="home-hero-title">
-        <span>Inteligência artificial</span>
-        <span class="home-hero-accent">para transformar a saúde</span>
-      </h1><p class="hero-lead">
-        Sou Flávio Luiz Seixas, professor do Instituto de Computação da
-        Universidade Federal Fluminense. Desenvolvo pesquisas e soluções em
-        inteligência artificial aplicada à saúde, sistemas de apoio à decisão e
-        saúde digital.
-      </p><div class="hero-actions">
-        <a class="button" href={withBase('ensino/')}
-          >Conheça minhas disciplinas</a
-        ><a class="button secondary" href={withBase('pesquisa/')}
-          >Explore minhas pesquisas</a
+      <span class="eyebrow">{copy.role}</span><h1 class="home-hero-title">
+        <span>{copy.heading}</span>
+        <span class="home-hero-accent">{copy.accent}</span>
+      </h1><p class="hero-lead">{copy.lead}</p><div class="hero-actions">
+        <a class="button" href={route(locale, 'teaching')}>{copy.coursesCta}</a
+        ><a class="button secondary" href={route(locale, 'research')}
+          >{copy.researchCta}</a
         >
       </div>
     </div>
@@ -38,45 +88,42 @@ const currentTerm = currentTerms.join(' e ');
   <section class="container">
     <div class="section-head">
       <div>
-        <span class="eyebrow">Semestre {currentTerm}</span><h2>
-          Ensino neste semestre
+        <span class="eyebrow">{copy.semester} {currentTerm}</span><h2>
+          {copy.teaching}
         </h2>
-      </div><a href={withBase('arquivo/')}>Ver disciplinas anteriores</a>
+      </div><a href={route(locale, 'archive')}>{copy.previous}</a>
     </div><div class="grid">
-      {offerings.map((o) => <CourseCard offering={o} />)}
+      {offerings.map((o) => <CourseCard offering={o} {locale} />)}
     </div>
   </section>
   <section class="profile-strip">
     <div class="container">
-      <strong>Perfis acadêmicos e profissionais</strong><div
-        class="hero-actions"
-      >
+      <strong>{copy.profiles}</strong><div class="hero-actions">
         {
           profileLinks.map((link) => (
             <a href={link.href} target="_blank" rel="noopener noreferrer">
-              {link.label}
+              {locale === 'en' && link.label === 'Currículo Lattes'
+                ? 'Lattes CV'
+                : link.label}
             </a>
           ))
-        }<a href={withBase('contato/')}>E-mail institucional</a>
+        }<a href={route(locale, 'contact')}>{copy.email}</a>
       </div>
     </div>
   </section>
   <section class="container split">
     <article>
-      <span class="eyebrow">Pesquisa</span><h2>
-        Inteligência artificial a serviço da saúde
-      </h2><p>
-        Pesquisa em aprendizado de máquina, apoio à decisão e processamento de
-        sinais e imagens médicas, conectando rigor computacional a problemas
-        concretos.
-      </p><a href={withBase('pesquisa/')}>Conheça as linhas de pesquisa →</a>
+      <span class="eyebrow">{copy.research}</span><h2>
+        {copy.researchHeading}
+      </h2><p>{copy.researchText}</p><a href={route(locale, 'research')}
+        >{copy.researchLink}</a
+      >
     </article><article>
-      <span class="eyebrow">Extensão</span><h2>
-        Conhecimento que atravessa os muros
-      </h2><p>
-        A Fábrica de Software e Tecnologia para a Saúde reúne formação,
-        desenvolvimento de soluções e colaboração interdisciplinar.
-      </p><a href={withBase('extensao/')}>Conheça os projetos →</a>
+      <span class="eyebrow">{copy.outreach}</span><h2>
+        {copy.outreachHeading}
+      </h2><p>{copy.outreachText}</p><a href={route(locale, 'outreach')}
+        >{copy.outreachLink}</a
+      >
     </article>
   </section>
 </BaseLayout>

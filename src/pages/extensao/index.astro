@@ -1,34 +1,60 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { type Locale } from '../../i18n';
+const locale: Locale = Astro.props.locale ?? 'pt';
+const copy = {
+  pt: {
+    title: 'Extensão',
+    description: 'Projetos de extensão em software e tecnologia para a saúde.',
+    heading: 'Tecnologia construída em colaboração',
+    lead: 'Projetos que aproximam estudantes, universidade, profissionais e necessidades da sociedade.',
+    project: 'Fábrica de Software e Tecnologia para a Saúde',
+    projectText:
+      'Projeto coordenado desde 2017 que articula formação discente e desenvolvimento de soluções computacionais para desafios da saúde.',
+    projectText2:
+      'O trabalho favorece experiências interdisciplinares, aprendizagem baseada em projetos e transferência de conhecimento.',
+    updating: 'Em atualização',
+    results: 'Projetos e resultados',
+    resultsText:
+      'Parceiros, produtos e oportunidades de participação serão publicados após curadoria e autorização.'
+  },
+  en: {
+    title: 'Outreach',
+    description: 'Outreach projects in software and healthcare technology.',
+    heading: 'Technology built through collaboration',
+    lead: 'Projects connecting students, the university, professionals, and societal needs.',
+    project: 'Software and Healthcare Technology Factory',
+    projectText:
+      'A project coordinated since 2017 that combines student education with the development of computational solutions for healthcare challenges.',
+    projectText2:
+      'The work fosters interdisciplinary experiences, project-based learning, and knowledge transfer.',
+    updating: 'Being updated',
+    results: 'Projects and outcomes',
+    resultsText:
+      'Partners, products, and opportunities to participate will be published after curation and authorization.'
+  }
+}[locale];
 ---
 
 <BaseLayout
-  title="Extensão"
-  description="Projetos de extensão em software e tecnologia para a saúde."
+  title={copy.title}
+  description={copy.description}
+  {locale}
+  routeName="outreach"
   ><header class="page-hero">
     <div class="container">
-      <span class="eyebrow">Extensão</span><h1>
-        Tecnologia construída em colaboração
-      </h1><p class="hero-lead">
-        Projetos que aproximam estudantes, universidade, profissionais e
-        necessidades da sociedade.
+      <span class="eyebrow">{copy.title}</span><h1>{copy.heading}</h1><p
+        class="hero-lead"
+      >
+        {copy.lead}
       </p>
     </div>
   </header><div class="container split">
     <article>
-      <h2>Fábrica de Software e Tecnologia para a Saúde</h2><p>
-        Projeto coordenado desde 2017 que articula formação discente e
-        desenvolvimento de soluções computacionais para desafios da saúde.
-      </p><p>
-        O trabalho favorece experiências interdisciplinares, aprendizagem
-        baseada em projetos e transferência de conhecimento.
-      </p>
+      <h2>{copy.project}</h2><p>{copy.projectText}</p><p>{copy.projectText2}</p>
     </article><aside class="card">
-      <span class="eyebrow">Em atualização</span><h3>
-        Projetos e resultados
-      </h3><p>
-        Parceiros, produtos e oportunidades de participação serão publicados
-        após curadoria e autorização.
+      <span class="eyebrow">{copy.updating}</span><h3>{copy.results}</h3><p>
+        {copy.resultsText}
       </p>
     </aside>
   </div></BaseLayout

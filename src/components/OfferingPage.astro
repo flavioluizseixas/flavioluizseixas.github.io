@@ -2,8 +2,105 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Agenda from './Agenda.astro';
 import { withBase } from '../lib/site';
-const { offering } = Astro.props;
-const d = offering.data;
+import { courseRoute, route, type Locale } from '../i18n';
+import { localizeOffering } from '../i18n/content';
+const { offering, locale = 'pt' } = Astro.props as {
+  offering: any;
+  locale?: Locale;
+};
+const copy = {
+  pt: {
+    teaching: 'Ensino',
+    undergraduate: 'Graduação',
+    graduate: 'Pós-graduação',
+    archived: 'Disciplina encerrada — semestre',
+    archivedText: 'Este calendário é mantido para consulta histórica.',
+    term: 'Período',
+    classGroup: 'Turma',
+    schedule: 'Horário',
+    room: 'Sala',
+    pending: 'A confirmar',
+    workload: 'Carga horária',
+    credits: 'Créditos',
+    prerequisites: 'Pré-requisitos',
+    or: 'ou',
+    classroom: 'Ambiente virtual',
+    classroomLink: 'Acessar Classroom',
+    updated: 'Última atualização',
+    addCalendar: 'Adicionar ao calendário',
+    pageNav: 'Nesta disciplina',
+    overview: 'Visão geral',
+    calendar: 'Calendário',
+    assessment: 'Avaliação',
+    materials: 'Materiais',
+    references: 'Referências',
+    objective: 'Objetivo',
+    syllabus: 'Conteúdo programático',
+    methodology: 'Metodologia',
+    assessmentFallback:
+      'Consulte o calendário e os avisos da disciplina para conhecer as avaliações e os respectivos critérios.',
+    external: 'link externo',
+    materialsEmpty: 'Os materiais desta disciplina serão publicados em breve.',
+    referencesEmpty:
+      'As referências serão organizadas por tema e publicadas junto ao calendário detalhado da disciplina.',
+    materialTypes: {
+      slides: 'slides',
+      exercicio: 'exercício',
+      notebook: 'notebook',
+      video: 'vídeo',
+      software: 'software',
+      leitura: 'leitura',
+      dataset: 'conjunto de dados'
+    }
+  },
+  en: {
+    teaching: 'Teaching',
+    undergraduate: 'Undergraduate',
+    graduate: 'Graduate',
+    archived: 'Course completed — term',
+    archivedText: 'This calendar is maintained for historical reference.',
+    term: 'Term',
+    classGroup: 'Class',
+    schedule: 'Schedule',
+    room: 'Room',
+    pending: 'To be confirmed',
+    workload: 'Course hours',
+    credits: 'Credits',
+    prerequisites: 'Prerequisites',
+    or: 'or',
+    classroom: 'Virtual environment',
+    classroomLink: 'Open Classroom',
+    updated: 'Last updated',
+    addCalendar: 'Add to calendar',
+    pageNav: 'In this course',
+    overview: 'Overview',
+    calendar: 'Calendar',
+    assessment: 'Assessment',
+    materials: 'Materials',
+    references: 'References',
+    objective: 'Objective',
+    syllabus: 'Syllabus',
+    methodology: 'Methodology',
+    assessmentFallback:
+      'See the course calendar and announcements for assessments and their criteria.',
+    external: 'external link',
+    materialsEmpty: 'Course materials will be published soon.',
+    referencesEmpty:
+      'References will be organized by topic and published with the detailed course calendar.',
+    materialTypes: {
+      slides: 'slides',
+      exercicio: 'exercise',
+      notebook: 'notebook',
+      video: 'video',
+      software: 'software',
+      leitura: 'reading',
+      dataset: 'dataset'
+    }
+  }
+}[locale];
+const d = localizeOffering(offering.data, locale);
+const alternateLocale = locale === 'pt' ? 'en' : 'pt';
+const alternateHref = courseRoute(alternateLocale, d.slug, d.term);
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Course',
@@ -17,7 +114,12 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={`${d.title} · ${d.term}`} description={d.summary}>
+<BaseLayout
+  title={`${d.title} · ${d.term}`}
+  description={d.summary}
+  {locale}
+  {alternateHref}
+>
   <script
     is:inline
     type="application/ld+json"
@@ -26,19 +128,21 @@ const jsonLd = {
   <header class="page-hero">
     <div class="container">
       <div class="breadcrumbs">
-        <a href={withBase('ensino/')}>Ensino</a> / {d.title}
+        <a href={route(locale, 'teaching')}>{copy.teaching}</a> / {d.title}
       </div><span class="eyebrow"
         >{d.code} · {
-          d.level === 'graduacao' ? 'Graduação' : 'Pós-graduação'
+          d.level === 'graduacao' ? copy.undergraduate : copy.graduate
         }</span
       ><h1>{d.title}</h1><p class="hero-lead">{d.summary}</p>{
         !d.current && (
           <div class="archive-banner">
             <>
-              <strong>Disciplina encerrada — semestre {d.term}</strong>
+              <strong>
+                {copy.archived} {d.term}
+              </strong>
               <br />
             </>
-            Este calendário é mantido para consulta histórica.
+            {copy.archivedText}
           </div>
         )
       }{
@@ -50,15 +154,15 @@ const jsonLd = {
         )
       }<div class="course-summary">
         <dl class="facts">
-          <div><dt>Período</dt><dd>{d.term}</dd></div><div>
-            <dt>Turma</dt><dd>{d.class_group}</dd>
-          </div><div><dt>Horário</dt><dd>{d.schedule}</dd></div><div>
-            <dt>Sala</dt><dd>{d.room || 'A confirmar'}</dd>
+          <div><dt>{copy.term}</dt><dd>{d.term}</dd></div><div>
+            <dt>{copy.classGroup}</dt><dd>{d.class_group}</dd>
+          </div><div><dt>{copy.schedule}</dt><dd>{d.schedule}</dd></div><div>
+            <dt>{copy.room}</dt><dd>{d.room || copy.pending}</dd>
           </div>{
             d.workload && (
               <div>
                 <>
-                  <dt>Carga horária</dt>
+                  <dt>{copy.workload}</dt>
                   <dd>{d.workload}</dd>
                 </>
               </div>
@@ -67,7 +171,7 @@ const jsonLd = {
             d.credits && (
               <div>
                 <>
-                  <dt>Créditos</dt>
+                  <dt>{copy.credits}</dt>
                   <dd>{d.credits}</dd>
                 </>
               </div>
@@ -76,13 +180,13 @@ const jsonLd = {
             d.prerequisites.length > 0 && (
               <div>
                 <>
-                  <dt>Pré-requisitos</dt>
-                  <dd>{d.prerequisites.join(' ou ')}</dd>
+                  <dt>{copy.prerequisites}</dt>
+                  <dd>{d.prerequisites.join(` ${copy.or} `)}</dd>
                 </>
               </div>
             )
           }<div>
-            <dt>Ambiente virtual</dt><dd>
+            <dt>{copy.classroom}</dt><dd>
               {
                 d.classroom_url ? (
                   <a
@@ -90,39 +194,52 @@ const jsonLd = {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Acessar Classroom
+                    {copy.classroomLink}
                   </a>
                 ) : (
-                  'A confirmar'
+                  copy.pending
                 )
               }
             </dd>
           </div>
         </dl><div>
-          <span class="label">Última atualização</span><p>{d.updated}</p><a
-            href={withBase(`feed/${d.slug}-${d.term.replace('.', '-')}.ics`)}
-            >Adicionar ao calendário</a
+          <span class="label">{copy.updated}</span><p>{d.updated}</p><a
+            href={withBase(
+              locale === 'pt'
+                ? `feed/${d.slug}-${d.term.replace('.', '-')}.ics`
+                : `feed/en/${d.slug}-${d.term.replace('.', '-')}.ics`
+            )}>{copy.addCalendar}</a
           >
         </div>
       </div>
     </div>
   </header>
-  <nav class="in-page-nav" aria-label="Nesta disciplina">
+  <nav class="in-page-nav" aria-label={copy.pageNav}>
     <div>
-      <a href="#visao-geral">Visão geral</a><a href="#calendario">Calendário</a
-      ><a href="#avaliacao">Avaliação</a><a href="#materiais">Materiais</a><a
-        href="#referencias">Referências</a
+      <a href={locale === 'pt' ? '#visao-geral' : '#overview'}
+        >{copy.overview}</a
+      ><a href={locale === 'pt' ? '#calendario' : '#calendar'}
+        >{copy.calendar}</a
+      ><a href={locale === 'pt' ? '#avaliacao' : '#assessment'}
+        >{copy.assessment}</a
+      ><a href={locale === 'pt' ? '#materiais' : '#materials'}
+        >{copy.materials}</a
+      ><a href={locale === 'pt' ? '#referencias' : '#references'}
+        >{copy.references}</a
       >
     </div>
   </nav>
   <div class="container">
-    <section class="prose narrow course-section" id="visao-geral">
-      <h2>Visão geral</h2>
+    <section
+      class="prose narrow course-section"
+      id={locale === 'pt' ? 'visao-geral' : 'overview'}
+    >
+      <h2>{copy.overview}</h2>
       <p>{d.overview || d.summary}</p>
       {
         d.objective && (
           <>
-            <h3>Objetivo</h3>
+            <h3>{copy.objective}</h3>
             <p>{d.objective}</p>
           </>
         )
@@ -130,7 +247,7 @@ const jsonLd = {
       {
         d.syllabus.length > 0 && (
           <>
-            <h3>Conteúdo programático</h3>
+            <h3>{copy.syllabus}</h3>
             <ol>
               {d.syllabus.map((topic: string) => (
                 <li>{topic}</li>
@@ -142,24 +259,27 @@ const jsonLd = {
       {
         d.methodology && (
           <>
-            <h3>Metodologia</h3>
+            <h3>{copy.methodology}</h3>
             <p>{d.methodology}</p>
           </>
         )
       }
     </section>
-    <Agenda events={d.calendar} />
-    <section class="prose narrow course-section" id="avaliacao">
-      <h2>Avaliação</h2>
+    <Agenda events={d.calendar} {locale} />
+    <section
+      class="prose narrow course-section"
+      id={locale === 'pt' ? 'avaliacao' : 'assessment'}
+    >
+      <h2>{copy.assessment}</h2>
       <p>
-        {
-          d.evaluation ||
-            'Consulte o calendário e os avisos da disciplina para conhecer as avaliações e os respectivos critérios.'
-        }
+        {d.evaluation || copy.assessmentFallback}
       </p>
     </section>
-    <section class="course-section" id="materiais">
-      <h2>Materiais</h2>
+    <section
+      class="course-section"
+      id={locale === 'pt' ? 'materiais' : 'materials'}
+    >
+      <h2>{copy.materials}</h2>
       {
         d.materials.length > 0 ? (
           <div class="resources">
@@ -172,21 +292,26 @@ const jsonLd = {
               >
                 <strong>{m.title}</strong>
                 <span>
-                  {m.type}
-                  {m.external ? ' · link externo' : ''}
+                  {
+                    copy.materialTypes[
+                      m.type as keyof typeof copy.materialTypes
+                    ]
+                  }
+                  {m.external ? ` · ${copy.external}` : ''}
                 </span>
               </a>
             ))}
           </div>
         ) : (
-          <p class="empty">
-            Os materiais desta disciplina serão publicados em breve.
-          </p>
+          <p class="empty">{copy.materialsEmpty}</p>
         )
       }
     </section>
-    <section class="prose narrow course-section" id="referencias">
-      <h2>Referências</h2>
+    <section
+      class="prose narrow course-section"
+      id={locale === 'pt' ? 'referencias' : 'references'}
+    >
+      <h2>{copy.references}</h2>
       {
         d.references.length > 0 ? (
           <ul>
@@ -195,10 +320,7 @@ const jsonLd = {
             ))}
           </ul>
         ) : (
-          <p class="empty">
-            As referências serão organizadas por tema e publicadas junto ao
-            calendário detalhado da disciplina.
-          </p>
+          <p class="empty">{copy.referencesEmpty}</p>
         )
       }
     </section>

@@ -1,8 +1,34 @@
 ---
-import { formatDate, withBase, todayInSaoPaulo } from '../lib/site';
-const { offering } = Astro.props;
+import { formatDate, todayInSaoPaulo } from '../lib/site';
+import { courseRoute, localeTag, type Locale } from '../i18n';
+import { localizeOffering } from '../i18n/content';
+const { offering, locale = 'pt' } = Astro.props as {
+  offering: any;
+  locale?: Locale;
+};
+const copy = {
+  pt: {
+    classGroup: 'Turma',
+    room: 'Sala',
+    roomPending: 'Sala a confirmar',
+    next: 'Próxima atividade',
+    noNext: 'Sem novas atividades previstas',
+    calendar: 'Ver calendário',
+    filter: 'Disciplina'
+  },
+  en: {
+    classGroup: 'Class',
+    room: 'Room',
+    roomPending: 'Room to be confirmed',
+    next: 'Next activity',
+    noNext: 'No upcoming activities',
+    calendar: 'View calendar',
+    filter: 'Course'
+  }
+}[locale];
+const data = localizeOffering(offering.data, locale);
 const today = todayInSaoPaulo();
-const next = offering.data.calendar
+const next = data.calendar
   .filter(
     (e: any) =>
       e.date >= today && !['cancelled', 'completed'].includes(e.status)
@@ -10,35 +36,39 @@ const next = offering.data.calendar
   .sort((a: any, b: any) => a.date.localeCompare(b.date))[0];
 ---
 
-<article class="card course-card" data-pagefind-filter="type:Disciplina">
-  <span class="eyebrow">{offering.data.code} · {offering.data.term}</span>
-  <h3>{offering.data.title}</h3><p class="course-meta">
-    Turma {offering.data.class_group}<br />{offering.data.schedule}<br />{
-      offering.data.room ? `Sala ${offering.data.room}` : 'Sala a confirmar'
+<article class="card course-card" data-pagefind-filter={`type:${copy.filter}`}>
+  <span class="eyebrow">{data.code} · {data.term}</span>
+  <h3>{data.title}</h3><p class="course-meta">
+    {copy.classGroup}
+    {data.class_group}<br />{data.schedule}<br />{
+      data.room ? `${copy.room} ${data.room}` : copy.roomPending
     }
   </p>
   <div class="next">
-    <small>Próxima atividade</small>{
+    <small>{copy.next}</small>{
       next ? (
         <>
           <>
             <strong>{next.title}</strong>
             <time datetime={next.date}>
-              {formatDate(next.date, { weekday: 'short' })}
+              {formatDate(next.date, { weekday: 'short' }, localeTag(locale))}
             </time>
           </>
         </>
       ) : (
-        <strong>Sem novas atividades previstas</strong>
+        <strong>{copy.noNext}</strong>
       )
     }
   </div>
   <div class="card-actions">
     <a
       class="button"
-      href={withBase(
-        `ensino/${offering.data.slug}/${offering.data.term.replace('.', '-')}/#calendario`
-      )}>Ver calendário</a
+      href={courseRoute(
+        locale,
+        data.slug,
+        data.term,
+        locale === 'pt' ? '#calendario' : '#calendar'
+      )}>{copy.calendar}</a
     >
   </div>
 </article>

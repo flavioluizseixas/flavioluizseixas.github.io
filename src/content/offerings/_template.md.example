@@ -1,5 +1,7 @@
 ---
 title: Nome da disciplina
+# Todo texto acadêmico em português usado no site deve ter sua tradução
+# correspondente em src/i18n/content.ts. O build falha se uma tradução faltar.
 code: TCC00000
 slug: nome-da-disciplina
 term: '2026.2'

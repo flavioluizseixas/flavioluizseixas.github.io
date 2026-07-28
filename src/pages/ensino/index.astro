@@ -3,46 +3,70 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CourseCard from '../../components/CourseCard.astro';
 import { withBase } from '../../lib/site';
+import { courseRoute, type Locale } from '../../i18n';
+import { translateContent } from '../../i18n/content';
+const locale: Locale = Astro.props.locale ?? 'pt';
+const copy = {
+  pt: {
+    title: 'Ensino',
+    description: 'Disciplinas atuais e arquivo de períodos anteriores.',
+    heading: 'Disciplinas e calendários',
+    lead: 'Encontre rapidamente aulas, avaliações, materiais e a logística de cada turma.',
+    current: 'Disciplinas atuais',
+    download: 'Baixar calendário completo',
+    previous: 'Disciplinas anteriores',
+    archived: 'Consultar disciplina arquivada'
+  },
+  en: {
+    title: 'Teaching',
+    description: 'Current courses and an archive of previous terms.',
+    heading: 'Courses and calendars',
+    lead: 'Quickly find classes, assessments, materials, and logistics for each course.',
+    current: 'Current courses',
+    download: 'Download full calendar',
+    previous: 'Previous courses',
+    archived: 'View archived course'
+  }
+}[locale];
 const all = await getCollection('offerings');
 const current = all.filter((o) => o.data.current);
 const archived = all.filter((o) => !o.data.current);
 ---
 
 <BaseLayout
-  title="Ensino"
-  description="Disciplinas atuais e arquivo de períodos anteriores."
+  title={copy.title}
+  description={copy.description}
+  {locale}
+  routeName="teaching"
   ><header class="page-hero">
     <div class="container">
-      <span class="eyebrow">Ensino</span><h1>Disciplinas e calendários</h1><p
+      <span class="eyebrow">{copy.title}</span><h1>{copy.heading}</h1><p
         class="hero-lead"
       >
-        Encontre rapidamente aulas, avaliações, materiais e a logística de cada
-        turma.
+        {copy.lead}
       </p>
     </div>
   </header><section class="container">
     <div class="section-head">
-      <h2>Disciplinas atuais</h2><a href={withBase('feed/calendario.ics')}
-        >Baixar calendário completo</a
+      <h2>{copy.current}</h2><a
+        href={withBase(
+          locale === 'pt' ? 'feed/calendario.ics' : 'feed/en/calendar.ics'
+        )}>{copy.download}</a
       >
     </div><div class="grid">
-      {current.map((o) => <CourseCard offering={o} />)}
+      {current.map((o) => <CourseCard offering={o} {locale} />)}
     </div>
   </section><section class="container">
-    <h2>Disciplinas anteriores</h2><div class="grid">
+    <h2>{copy.previous}</h2><div class="grid">
       {
         archived.map((o) => (
           <article class="card">
             <>
               <span class="eyebrow">{o.data.term}</span>
-              <h3>{o.data.title}</h3>
+              <h3>{translateContent(o.data.title, locale)}</h3>
               <p>{o.data.code}</p>
-              <a
-                href={withBase(
-                  `ensino/${o.data.slug}/${o.data.term.replace('.', '-')}/`
-                )}
-              >
-                Consultar disciplina arquivada
+              <a href={courseRoute(locale, o.data.slug, o.data.term)}>
+                {copy.archived}
               </a>
             </>
           </article>

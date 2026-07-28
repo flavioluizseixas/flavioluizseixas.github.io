@@ -1,7 +1,27 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { withBase } from '../../lib/site';
+import { courseRoute, type Locale } from '../../i18n';
+import { translateContent } from '../../i18n/content';
+const locale: Locale = Astro.props.locale ?? 'pt';
+const copy = {
+  pt: {
+    title: 'Arquivo',
+    description: 'Disciplinas anteriores, organizadas por semestre.',
+    eyebrow: 'Memória acadêmica',
+    heading: 'Arquivo de disciplinas',
+    lead: 'Calendários antigos permanecem em URLs próprias e são identificados como disciplinas encerradas.',
+    open: 'Abrir disciplina'
+  },
+  en: {
+    title: 'Archive',
+    description: 'Previous courses organized by term.',
+    eyebrow: 'Academic record',
+    heading: 'Course archive',
+    lead: 'Past calendars remain available at permanent URLs and are clearly identified as completed courses.',
+    open: 'Open course'
+  }
+}[locale];
 const entries = (await getCollection('offerings'))
   .filter((e) => !e.data.current)
   .sort((a, b) => b.data.term.localeCompare(a.data.term));
@@ -9,15 +29,16 @@ const groups = Object.groupBy(entries, (e) => e.data.term);
 ---
 
 <BaseLayout
-  title="Arquivo"
-  description="Disciplinas anteriores, organizadas por semestre."
+  title={copy.title}
+  description={copy.description}
+  {locale}
+  routeName="archive"
   ><header class="page-hero">
     <div class="container">
-      <span class="eyebrow">Memória acadêmica</span><h1>
-        Arquivo de disciplinas
-      </h1><p class="hero-lead">
-        Calendários antigos permanecem em URLs próprias e são identificados como
-        disciplinas encerradas.
+      <span class="eyebrow">{copy.eyebrow}</span><h1>{copy.heading}</h1><p
+        class="hero-lead"
+      >
+        {copy.lead}
       </p>
     </div>
   </header><div class="container narrow">
@@ -28,14 +49,10 @@ const groups = Object.groupBy(entries, (e) => e.data.term);
           {items?.map((item) => (
             <article class="card">
               <span class="eyebrow">{item.data.code}</span>
-              <h3>{item.data.title}</h3>
-              <p>{item.data.summary}</p>
-              <a
-                href={withBase(
-                  `ensino/${item.data.slug}/${item.data.term.replace('.', '-')}/`
-                )}
-              >
-                Abrir disciplina {term}
+              <h3>{translateContent(item.data.title, locale)}</h3>
+              <p>{translateContent(item.data.summary, locale)}</p>
+              <a href={courseRoute(locale, item.data.slug, item.data.term)}>
+                {copy.open} {term}
               </a>
             </article>
           ))}

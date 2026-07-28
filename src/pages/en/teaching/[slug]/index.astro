@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('offerings');
+  return entries
+    .filter((entry) => entry.data.current)
+    .map((offering) => ({
+      params: { slug: offering.data.slug },
+      props: { offering }
+    }));
+}
+
+const { offering } = Astro.props;
+return Astro.redirect(
+  `${import.meta.env.BASE_URL}en/teaching/${offering.data.slug}/${offering.data.term.replace('.', '-')}/`
+);
+---

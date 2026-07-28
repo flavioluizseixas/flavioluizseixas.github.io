@@ -63,6 +63,20 @@ npm run validate:content
 
 O arquivo usa as mesmas colunas `Referências`, `Tipo`, `Status` e `Observações`. Referências podem ficar vazias em atividades para as quais não se aplica uma leitura específica.
 
+## Atualizar conteúdo bilíngue
+
+O português é o idioma editorial de origem. As páginas institucionais mantêm os textos `pt` e `en` lado a lado no próprio arquivo `.astro`. As disciplinas, agendas, cursos e projetos permanecem em uma única fonte Markdown em português; as traduções correspondentes ficam em `src/i18n/content.ts`.
+
+Ao alterar ou adicionar um texto acadêmico:
+
+1. Edite a fonte em `src/content/`.
+2. Adicione a tradução inglesa exata em `englishContent`, em `src/i18n/content.ts`.
+3. Execute `npm run validate:content`.
+
+A validação percorre títulos, resumos, ementas, avisos, tópicos, materiais e eventos. O build falha se algum texto publicável não tiver tradução, evitando que a versão inglesa fique silenciosamente desatualizada.
+
+As rotas em português não têm prefixo (`/ensino/`, `/pesquisa/`). As equivalentes em inglês usam `/en/` e nomes traduzidos (`/en/teaching/`, `/en/research/`). O seletor no cabeçalho grava `site-locale` no `localStorage`; essa escolha sempre prevalece. Apenas na primeira visita, o site consulta `api.country.is` para distinguir Brasil dos demais países e usa o idioma do navegador como fallback.
+
 ## Editar uma disciplina
 
 Cada disciplina por semestre é um único arquivo em `src/content/offerings/`. Para adicionar uma aula, inclua no `calendar`, mantendo ordem cronológica:
@@ -119,7 +133,8 @@ Antes do lançamento, ajuste `site`/domínio, `public/robots.txt` e confirme as 
 
 - `src/content/`: fonte editorial em Markdown.
 - `src/components/`: cartões, agenda e página de disciplina.
-- `src/pages/`: rotas estáticas.
+- `src/pages/`: rotas estáticas em português e wrappers das rotas em inglês.
+- `src/i18n/`: rotas, interface compartilhada e traduções do conteúdo acadêmico.
 - `data/`: planilhas editoriais versionadas.
 - `scripts/`: validação e geração de ICS.
 - `tests/`: testes unitários e de navegação.

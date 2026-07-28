@@ -4,13 +4,62 @@ import orcidData from '../../data/publications.json';
 import {
   abntReference,
   publicationTypeLabels,
+  publicationTypeLabelsEn,
   type Publication
 } from '../../lib/publications';
+import { localeTag, type Locale } from '../../i18n';
 
+const locale: Locale = Astro.props.locale ?? 'pt';
+const copy = {
+  pt: {
+    title: 'Publicações',
+    description:
+      'Produção acadêmica de Flávio Luiz Seixas importada do ORCID e apresentada segundo o estilo ABNT.',
+    eyebrow: 'Produção acadêmica',
+    lead: 'Trabalhos divulgados no ORCID, organizados por ano e apresentados em formato de referência ABNT.',
+    orcid: 'Consultar perfil no ORCID',
+    publications: 'publicações',
+    update: 'atualização',
+    filters: 'Filtros das publicações',
+    type: 'Tipo',
+    allTypes: 'Todos os tipos',
+    year: 'Ano',
+    allYears: 'Todos os anos',
+    result: 'resultado',
+    results: 'resultados',
+    open: 'Consultar publicação',
+    dataTitle: 'Sobre os dados bibliográficos',
+    dataText:
+      'As referências são geradas com os metadados públicos disponíveis no ORCID e no Crossref. A ausência de volume, número ou páginas no registro de origem é preservada, sem completar informações por inferência.'
+  },
+  en: {
+    title: 'Publications',
+    description:
+      'Academic publications by Flávio Luiz Seixas imported from ORCID and presented in ABNT reference style.',
+    eyebrow: 'Academic output',
+    lead: 'Works listed on ORCID, organized by year and presented in ABNT reference format.',
+    orcid: 'View ORCID profile',
+    publications: 'publications',
+    update: 'updated',
+    filters: 'Publication filters',
+    type: 'Type',
+    allTypes: 'All types',
+    year: 'Year',
+    allYears: 'All years',
+    result: 'result',
+    results: 'results',
+    open: 'View publication',
+    dataTitle: 'About the bibliographic data',
+    dataText:
+      'References are generated from public metadata available through ORCID and Crossref. Missing volume, issue, or page information in the source record is preserved and is not inferred.'
+  }
+}[locale];
+const typeLabels =
+  locale === 'pt' ? publicationTypeLabels : publicationTypeLabelsEn;
 const publications = orcidData.publications as Publication[];
 const years = [...new Set(publications.map((publication) => publication.year))];
 const types = [...new Set(publications.map((publication) => publication.type))];
-const syncedAt = new Intl.DateTimeFormat('pt-BR', {
+const syncedAt = new Intl.DateTimeFormat(localeTag(locale), {
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
@@ -19,52 +68,59 @@ const syncedAt = new Intl.DateTimeFormat('pt-BR', {
 ---
 
 <BaseLayout
-  title="Publicações"
-  description="Produção acadêmica de Flávio Luiz Seixas importada do ORCID e apresentada segundo o estilo ABNT."
+  title={copy.title}
+  description={copy.description}
+  {locale}
+  routeName="publications"
 >
   <header class="page-hero publications-hero">
     <div class="container">
-      <span class="eyebrow">Produção acadêmica</span><h1>Publicações</h1><p
+      <span class="eyebrow">{copy.eyebrow}</span><h1>{copy.title}</h1><p
         class="hero-lead"
       >
-        Trabalhos divulgados no ORCID, organizados por ano e apresentados em
-        formato de referência ABNT.
+        {copy.lead}
       </p><div class="hero-actions">
         <a
           class="button"
           href={`https://orcid.org/${orcidData.orcid}`}
           target="_blank"
-          rel="noopener noreferrer">Consultar perfil no ORCID</a
+          rel="noopener noreferrer">{copy.orcid}</a
         ><span class="publication-count"
-          >{publications.length} publicações · atualização {syncedAt}</span
+          >{publications.length}
+          {copy.publications} · {copy.update}
+          {syncedAt}</span
         >
       </div>
     </div>
   </header>
   <div class="container publications-content">
-    <div class="publication-controls" aria-label="Filtros das publicações">
+    <div
+      class="publication-controls"
+      aria-label={copy.filters}
+      data-result-singular={copy.result}
+      data-result-plural={copy.results}
+    >
       <label>
-        Tipo
+        {copy.type}
         <select id="publication-type">
-          <option value="all">Todos os tipos</option>
+          <option value="all">{copy.allTypes}</option>
           {
             types.map((type) => (
-              <option value={type}>
-                {publicationTypeLabels[type] ?? type}
-              </option>
+              <option value={type}>{typeLabels[type] ?? type}</option>
             ))
           }
         </select>
       </label>
       <label>
-        Ano
+        {copy.year}
         <select id="publication-year">
-          <option value="all">Todos os anos</option>
+          <option value="all">{copy.allYears}</option>
           {years.map((year) => <option value={year}>{year}</option>)}
         </select>
       </label>
       <p id="publication-result-count" aria-live="polite">
-        {publications.length} resultados
+        {publications.length}
+        {copy.results}
       </p>
     </div>
     <div class="publication-years">
@@ -82,8 +138,7 @@ const syncedAt = new Intl.DateTimeFormat('pt-BR', {
                     data-type={publication.type}
                   >
                     <span class="tag">
-                      {publicationTypeLabels[publication.type] ??
-                        publication.type}
+                      {typeLabels[publication.type] ?? publication.type}
                     </span>
                     <p class="abnt-reference">{abntReference(publication)}</p>
                     {publication.doi ? (
@@ -101,7 +156,7 @@ const syncedAt = new Intl.DateTimeFormat('pt-BR', {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          Consultar publicação
+                          {copy.open}
                         </a>
                       )
                     )}
@@ -113,12 +168,16 @@ const syncedAt = new Intl.DateTimeFormat('pt-BR', {
       }
     </div>
     <aside class="notice publication-note">
-      <strong>Sobre os dados bibliográficos</strong><br />As referências são
-      geradas com os metadados públicos disponíveis no ORCID e no Crossref. A
-      ausência de volume, número ou páginas no registro de origem é preservada,
-      sem completar informações por inferência.
+      <strong>{copy.dataTitle}</strong><br />{copy.dataText}
     </aside>
     <script>
+      const publicationControls = document.querySelector<HTMLElement>(
+        '.publication-controls'
+      );
+      const resultSingular =
+        publicationControls?.dataset.resultSingular ?? 'resultado';
+      const resultPlural =
+        publicationControls?.dataset.resultPlural ?? 'resultados';
       const typeSelect =
         document.querySelector<HTMLSelectElement>('#publication-type');
       const yearSelect =
@@ -146,7 +205,9 @@ const syncedAt = new Intl.DateTimeFormat('pt-BR', {
             );
           });
         if (resultCount)
-          resultCount.textContent = `${visible} ${visible === 1 ? 'resultado' : 'resultados'}`;
+          resultCount.textContent = `${visible} ${
+            visible === 1 ? resultSingular : resultPlural
+          }`;
       };
       typeSelect?.addEventListener('change', filterPublications);
       yearSelect?.addEventListener('change', filterPublications);

@@ -1,26 +1,67 @@
 ---
 import { eventSlug, formatDate, withBase, todayInSaoPaulo } from '../lib/site';
-const { events, title = 'Calendário completo' } = Astro.props;
+import { localeTag, type Locale } from '../i18n';
+const {
+  events,
+  locale = 'pt',
+  title = locale === 'pt' ? 'Calendário completo' : 'Full calendar'
+} = Astro.props as { events: any[]; locale?: Locale; title?: string };
+const copy = {
+  pt: {
+    agenda: 'Agenda',
+    download: 'Baixar calendário (.ics)',
+    filter: 'Filtrar calendário',
+    all: 'Todos',
+    next: 'Ir para a próxima',
+    changed: 'Alterado',
+    cancelled: 'Cancelado',
+    references: 'Referências:',
+    empty: 'O calendário detalhado desta disciplina será publicado em breve.',
+    labels: {
+      aula: 'Aula',
+      laboratorio: 'Laboratório',
+      atividade: 'Atividade',
+      avaliacao: 'Avaliação',
+      entrega: 'Entrega',
+      apresentacao: 'Apresentação',
+      feriado: 'Feriado',
+      'sem-aula': 'Sem aula'
+    }
+  },
+  en: {
+    agenda: 'Schedule',
+    download: 'Download calendar (.ics)',
+    filter: 'Filter calendar',
+    all: 'All',
+    next: 'Go to next activity',
+    changed: 'Changed',
+    cancelled: 'Cancelled',
+    references: 'References:',
+    empty: 'The detailed course calendar will be published soon.',
+    labels: {
+      aula: 'Lecture',
+      laboratorio: 'Lab',
+      atividade: 'Activity',
+      avaliacao: 'Assessment',
+      entrega: 'Due date',
+      apresentacao: 'Presentation',
+      feriado: 'Public holiday',
+      'sem-aula': 'No class'
+    }
+  }
+}[locale];
 const today = todayInSaoPaulo();
 const types: string[] = [
   ...new Set<string>(events.map((e: any) => String(e.type)))
 ];
-const labels: any = {
-  aula: 'Aula',
-  laboratorio: 'Laboratório',
-  atividade: 'Atividade',
-  avaliacao: 'Avaliação',
-  entrega: 'Entrega',
-  apresentacao: 'Apresentação',
-  feriado: 'Feriado',
-  'sem-aula': 'Sem aula'
-};
+const labels: any = copy.labels;
 const next = events.find(
   (e: any) => e.date >= today && !['cancelled', 'completed'].includes(e.status)
 );
 const moduleLabel = (note?: string) =>
-  note?.match(/^Módulo\s+\d+\s*[—–-]\s*.+$/i)?.[0] ?? null;
-const titleLines = (title: string) => title.split(/;\s+(?=Aula\s+\d+\s*:)/i);
+  note?.match(/^(Módulo|Module)\s+\d+\s*[—–-]\s*.+$/i)?.[0] ?? null;
+const titleLines = (title: string) =>
+  title.split(/;\s+(?=(?:Aula|Lecture)\s+\d+\s*:)/i);
 let previousModule: string | null = null;
 type AgendaItem = {
   event: any;
@@ -35,15 +76,26 @@ const agendaItems: AgendaItem[] = events.map((event: any) => {
 });
 ---
 
-<section id="calendario" aria-labelledby="calendar-title">
+<section
+  id={locale === 'pt' ? 'calendario' : 'calendar'}
+  aria-labelledby="calendar-title"
+>
   <div class="section-head">
     <div>
-      <span class="eyebrow">Agenda</span><h2 id="calendar-title">{title}</h2>
-    </div><a href={withBase('feed/calendario.ics')}>Baixar calendário (.ics)</a>
+      <span class="eyebrow">{copy.agenda}</span><h2 id="calendar-title">
+        {title}
+      </h2>
+    </div><a
+      href={withBase(
+        locale === 'pt' ? 'feed/calendario.ics' : 'feed/en/calendar.ics'
+      )}>{copy.download}</a
+    >
   </div>
   <div class="calendar-controls">
-    <div class="chips" aria-label="Filtrar calendário">
-      <button class="chip" data-filter="all" aria-pressed="true">Todos</button>{
+    <div class="chips" aria-label={copy.filter}>
+      <button class="chip" data-filter="all" aria-pressed="true"
+        >{copy.all}</button
+      >{
         types.map((type) => (
           <button class="chip" data-filter={type} aria-pressed="false">
             {labels[type]}
@@ -56,7 +108,7 @@ const agendaItems: AgendaItem[] = events.map((event: any) => {
           class="button secondary"
           href={`#${eventSlug(next.date, next.title)}`}
         >
-          Ir para a próxima
+          {copy.next}
         </a>
       )
     }
@@ -77,25 +129,35 @@ const agendaItems: AgendaItem[] = events.map((event: any) => {
             id={eventSlug(event.date, event.title)}
           >
             <time class="event-date" datetime={event.date}>
-              {formatDate(event.date, {
-                day: '2-digit',
-                month: 'short',
-                year: undefined
-              })}
-              <small>
-                {formatDate(event.date, {
-                  weekday: 'long',
-                  day: undefined,
-                  month: undefined,
+              {formatDate(
+                event.date,
+                {
+                  day: '2-digit',
+                  month: 'short',
                   year: undefined
-                })}
+                },
+                localeTag(locale)
+              )}
+              <small>
+                {formatDate(
+                  event.date,
+                  {
+                    weekday: 'long',
+                    day: undefined,
+                    month: undefined,
+                    year: undefined
+                  },
+                  localeTag(locale)
+                )}
               </small>
             </time>
             <div>
               <span class:list={['tag', event.type]}>{labels[event.type]}</span>
-              {event.status === 'changed' && <span class="tag"> Alterado</span>}
+              {event.status === 'changed' && (
+                <span class="tag"> {copy.changed}</span>
+              )}
               {event.status === 'cancelled' && (
-                <span class="tag"> Cancelado</span>
+                <span class="tag"> {copy.cancelled}</span>
               )}
             </div>
             <div>
@@ -109,7 +171,8 @@ const agendaItems: AgendaItem[] = events.map((event: any) => {
               {event.note && !module && <p>{event.note}</p>}
               {event.references?.length > 0 && (
                 <p>
-                  <strong>Referências:</strong> {event.references.join(' · ')}
+                  <strong>{copy.references}</strong>{' '}
+                  {event.references.join(' · ')}
                 </p>
               )}
               {event.materials?.length > 0 && (
@@ -125,13 +188,7 @@ const agendaItems: AgendaItem[] = events.map((event: any) => {
       ))
     }
   </ol>
-  {
-    events.length === 0 && (
-      <p class="empty">
-        O calendário detalhado desta disciplina será publicado em breve.
-      </p>
-    )
-  }
+  {events.length === 0 && <p class="empty">{copy.empty}</p>}
 </section>
 <script>
   document.querySelectorAll('[data-filter]').forEach((button) =>

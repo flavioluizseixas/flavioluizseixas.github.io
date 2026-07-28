@@ -178,6 +178,30 @@ p {
   height: 38px;
   cursor: pointer;
 }
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.language-switcher a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 30px;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.language-switcher a[aria-current='true'] {
+  background: var(--deep);
+  color: var(--paper);
+}
 .menu-button {
   display: none;
   border-radius: 8px;
@@ -807,6 +831,12 @@ footer a {
     padding: 3rem 1rem;
   }
   .brand small {
+    display: none;
+  }
+  .language-switcher a {
+    padding-inline: 0.35rem;
+  }
+  .language-switcher a span:last-child {
     display: none;
   }
   .brand-logo-wrap {

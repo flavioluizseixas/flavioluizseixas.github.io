@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import OfferingPage from '../../../components/OfferingPage.astro';
+import OfferingPage from '../../../../components/OfferingPage.astro';
+
 export async function getStaticPaths() {
   const entries = await getCollection('offerings');
   return entries.map((offering) => ({
@@ -11,7 +12,8 @@ export async function getStaticPaths() {
     props: { offering }
   }));
 }
+
 const { offering } = Astro.props;
 ---
 
-<OfferingPage offering={offering} locale="pt" />
+<OfferingPage {offering} locale="en" />

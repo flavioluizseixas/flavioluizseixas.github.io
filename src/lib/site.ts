@@ -13,9 +13,10 @@ export const withBase = (path: string) =>
 
 export const formatDate = (
   iso: string,
-  options: Intl.DateTimeFormatOptions = {}
+  options: Intl.DateTimeFormatOptions = {},
+  locale = 'pt-BR'
 ) =>
-  new Intl.DateTimeFormat('pt-BR', {
+  new Intl.DateTimeFormat(locale, {
     timeZone: 'America/Sao_Paulo',
     day: '2-digit',
     month: 'short',

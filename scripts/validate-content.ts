@@ -1,4 +1,5 @@
-import { loadOfferings } from './content.js';
+import { englishContent } from '../src/i18n/content.js';
+import { loadCollection, loadOfferings, type Offering } from './content.js';
 const allowed = new Set([
   'aula',
   'laboratorio',
@@ -12,7 +13,36 @@ const allowed = new Set([
 const statuses = new Set(['planned', 'changed', 'cancelled', 'completed']);
 const errors: string[] = [];
 const currents = new Map<string, number>();
-for (const offer of loadOfferings()) {
+const offerings = loadOfferings();
+const translatable = new Set<string>();
+const addTranslation = (value: unknown) => {
+  if (typeof value === 'string' && value.trim()) translatable.add(value);
+};
+const addArray = (values: unknown) => {
+  if (Array.isArray(values)) values.forEach(addTranslation);
+};
+const collectOfferingTranslations = (offer: Offering) => {
+  [
+    offer.title,
+    offer.summary,
+    offer.overview,
+    offer.objective,
+    offer.methodology,
+    offer.evaluation,
+    offer.notice,
+    offer.schedule
+  ].forEach(addTranslation);
+  [offer.syllabus, offer.prerequisites].forEach(addArray);
+  offer.materials?.forEach((material) => addTranslation(material.title));
+  offer.calendar?.forEach((event) => {
+    [event.title, event.previous_title, event.note].forEach(addTranslation);
+    addArray(event.topics);
+    event.materials?.forEach((material) => addTranslation(material.title));
+  });
+};
+
+for (const offer of offerings) {
+  collectOfferingTranslations(offer);
   if (offer.current)
     currents.set(offer.slug, (currents.get(offer.slug) || 0) + 1);
   if (!Array.isArray(offer.calendar))
@@ -33,6 +63,16 @@ for (const offer of loadOfferings()) {
       errors.push(`${place}: data inválida “${event.date}”`);
   }
 }
+for (const name of ['courses', 'projects']) {
+  for (const entry of loadCollection<Record<string, unknown>>(name)) {
+    ['title', 'summary'].forEach((key) => addTranslation(entry[key]));
+    addArray(entry.topics);
+  }
+}
+for (const value of translatable) {
+  if (!Object.hasOwn(englishContent, value))
+    errors.push(`tradução inglesa ausente: “${value}”`);
+}
 for (const [slug, count] of currents)
   if (count > 1)
     errors.push(`${slug}: ${count} disciplinas marcadas como atuais`);
@@ -41,5 +81,5 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(
-  `Conteúdo válido: ${loadOfferings().length} disciplinas verificadas.`
+  `Conteúdo válido: ${offerings.length} disciplinas e ${translatable.size} traduções verificadas.`
 );

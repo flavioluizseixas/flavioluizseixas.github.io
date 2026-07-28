@@ -1,29 +1,67 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { type Locale } from '../../i18n';
+const locale: Locale = Astro.props.locale ?? 'pt';
+const copy = {
+  pt: {
+    title: 'Busca',
+    description: 'Busque disciplinas, materiais, pesquisa e páginas do site.',
+    heading: 'O que você procura?',
+    lead: 'Pesquise por disciplina, código, semestre, tópico ou material.',
+    loading: 'Carregando busca…',
+    noScript:
+      'A busca requer JavaScript. Use a navegação principal para explorar o site.',
+    placeholder: 'Nome, código, tópico…',
+    clear: 'Limpar',
+    more: 'Ver mais',
+    label: 'Buscar neste site',
+    filters: 'Filtros',
+    zero: 'Nenhum resultado para [SEARCH_TERM]',
+    unavailable: 'A busca estará disponível após o build de produção.'
+  },
+  en: {
+    title: 'Search',
+    description: 'Search courses, materials, research, and site pages.',
+    heading: 'What are you looking for?',
+    lead: 'Search by course, code, term, topic, or material.',
+    loading: 'Loading search…',
+    noScript:
+      'Search requires JavaScript. Use the main navigation to explore the site.',
+    placeholder: 'Name, code, topic…',
+    clear: 'Clear',
+    more: 'Load more',
+    label: 'Search this site',
+    filters: 'Filters',
+    zero: 'No results for [SEARCH_TERM]',
+    unavailable: 'Search will be available after the production build.'
+  }
+}[locale];
 ---
 
 <BaseLayout
-  title="Busca"
-  description="Busque disciplinas, materiais, pesquisa e páginas do site."
+  title={copy.title}
+  description={copy.description}
+  {locale}
+  routeName="search"
   ><header class="page-hero">
     <div class="container narrow">
-      <span class="eyebrow">Busca</span><h1>O que você procura?</h1><p
+      <span class="eyebrow">{copy.title}</span><h1>{copy.heading}</h1><p
         class="hero-lead"
       >
-        Pesquise por disciplina, código, semestre, tópico ou material.
+        {copy.lead}
       </p>
     </div>
   </header><div class="container narrow">
-    <div id="search"><p>Carregando busca…</p></div><noscript
-      ><p class="empty">
-        A busca requer JavaScript. Use a navegação principal para explorar o
-        site.
-      </p></noscript
+    <div id="search"><p>{copy.loading}</p></div><noscript
+      ><p class="empty">{copy.noScript}</p></noscript
     >
   </div><link
     href={import.meta.env.BASE_URL + 'pagefind/pagefind-ui.css'}
     rel="stylesheet"
-  /><script is:inline define:vars={{ base: import.meta.env.BASE_URL }}>
+  /><script
+    is:inline
+    define:vars={{ base: import.meta.env.BASE_URL, translations: copy }}
+  >
     window.addEventListener('DOMContentLoaded', async () => {
       try {
         await import(base + 'pagefind/pagefind-ui.js');
@@ -31,17 +69,17 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           element: '#search',
           showSubResults: true,
           translations: {
-            placeholder: 'Nome, código, tópico…',
-            clear_search: 'Limpar',
-            load_more: 'Ver mais',
-            search_label: 'Buscar neste site',
-            filters_label: 'Filtros',
-            zero_results: 'Nenhum resultado para [SEARCH_TERM]'
+            placeholder: translations.placeholder,
+            clear_search: translations.clear,
+            load_more: translations.more,
+            search_label: translations.label,
+            filters_label: translations.filters,
+            zero_results: translations.zero
           }
         });
       } catch {
         document.querySelector('#search').innerHTML =
-          '<p class="empty">A busca estará disponível após o build de produção.</p>';
+          `<p class="empty">${translations.unavailable}</p>`;
       }
     });
   </script></BaseLayout

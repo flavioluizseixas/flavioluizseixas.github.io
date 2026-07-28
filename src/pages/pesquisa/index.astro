@@ -1,41 +1,89 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { type Locale } from '../../i18n';
+const locale: Locale = Astro.props.locale ?? 'pt';
+const copy = {
+  pt: {
+    title: 'Pesquisa',
+    description:
+      'Linhas de pesquisa em inteligência artificial, saúde e sistemas de apoio à decisão.',
+    heading: 'Computação para decisões melhores',
+    lead: 'Investigações orientadas por problemas reais, com foco em inteligência artificial responsável e aplicações em saúde.',
+    line: 'Linha',
+    cards: [
+      [
+        'IA aplicada à saúde',
+        'Modelos de aprendizado de máquina para apoiar diagnóstico, prognóstico e organização do cuidado.'
+      ],
+      [
+        'Sinais e imagens médicas',
+        'Extração de informação e reconhecimento de padrões em dados clínicos multimodais.'
+      ],
+      [
+        'Apoio à decisão',
+        'Sistemas que combinam dados, conhecimento e processos para apoiar decisões profissionais.'
+      ]
+    ],
+    noticeTitle: 'Conteúdo em curadoria.',
+    notice: 'Projetos e grupos serão detalhados após validação do professor.'
+  },
+  en: {
+    title: 'Research',
+    description:
+      'Research areas in artificial intelligence, healthcare, and decision support systems.',
+    heading: 'Computing for better decisions',
+    lead: 'Research driven by real-world problems, focusing on responsible artificial intelligence and healthcare applications.',
+    line: 'Area',
+    cards: [
+      [
+        'AI applied to healthcare',
+        'Machine learning models supporting diagnosis, prognosis, and the organization of care.'
+      ],
+      [
+        'Medical signals and images',
+        'Information extraction and pattern recognition in multimodal clinical data.'
+      ],
+      [
+        'Decision support',
+        'Systems that combine data, knowledge, and processes to support professional decisions.'
+      ]
+    ],
+    noticeTitle: 'Content under curation.',
+    notice:
+      'Projects and research groups will be detailed after review by the professor.'
+  }
+}[locale];
 ---
 
 <BaseLayout
-  title="Pesquisa"
-  description="Linhas de pesquisa em inteligência artificial, saúde e sistemas de apoio à decisão."
+  title={copy.title}
+  description={copy.description}
+  {locale}
+  routeName="research"
   ><header class="page-hero">
     <div class="container">
-      <span class="eyebrow">Pesquisa</span><h1>
-        Computação para decisões melhores
-      </h1><p class="hero-lead">
-        Investigações orientadas por problemas reais, com foco em inteligência
-        artificial responsável e aplicações em saúde.
+      <span class="eyebrow">{copy.title}</span><h1>{copy.heading}</h1><p
+        class="hero-lead"
+      >
+        {copy.lead}
       </p>
     </div>
   </header><div class="container">
     <div class="grid">
-      <article class="card">
-        <span class="eyebrow">Linha 01</span><h2>IA aplicada à saúde</h2><p>
-          Modelos de aprendizado de máquina para apoiar diagnóstico, prognóstico
-          e organização do cuidado.
-        </p>
-      </article><article class="card">
-        <span class="eyebrow">Linha 02</span><h2>Sinais e imagens médicas</h2><p
-        >
-          Extração de informação e reconhecimento de padrões em dados clínicos
-          multimodais.
-        </p>
-      </article><article class="card">
-        <span class="eyebrow">Linha 03</span><h2>Apoio à decisão</h2><p>
-          Sistemas que combinam dados, conhecimento e processos para apoiar
-          decisões profissionais.
-        </p>
-      </article>
+      {
+        copy.cards.map((card, index) => (
+          <article class="card">
+            <span class="eyebrow">
+              {copy.line} {String(index + 1).padStart(2, '0')}
+            </span>
+            <h2>{card[0]}</h2>
+            <p>{card[1]}</p>
+          </article>
+        ))
+      }
     </div><div class="notice">
-      <strong>Conteúdo em curadoria.</strong> Projetos e grupos serão detalhados após
-      validação do professor.
+      <strong>{copy.noticeTitle}</strong>
+      {copy.notice}
     </div>
   </div></BaseLayout
 >

@@ -6,7 +6,10 @@ export type Event = {
   title: string;
   type: string;
   status: string;
+  previous_title?: string;
   note?: string;
+  topics?: string[];
+  materials?: { title: string }[];
 };
 export type Offering = {
   title: string;
@@ -15,10 +18,20 @@ export type Offering = {
   term: string;
   current: boolean;
   status: string;
+  summary: string;
+  overview?: string;
+  objective?: string;
+  methodology?: string;
+  evaluation?: string;
+  notice?: string;
+  schedule: string;
+  syllabus?: string[];
+  prerequisites?: string[];
+  materials?: { title: string }[];
   calendar: Event[];
 };
-export function loadOfferings(): Offering[] {
-  const dir = path.resolve('src/content/offerings');
+export function loadCollection<T>(name: string): T[] {
+  const dir = path.resolve('src/content', name);
   return fs
     .readdirSync(dir)
     .filter((f) => f.endsWith('.md'))
@@ -32,4 +45,8 @@ export function loadOfferings(): Offering[] {
         throw new Error(`${file}: YAML inválido — ${error}`);
       }
     });
+}
+
+export function loadOfferings(): Offering[] {
+  return loadCollection<Offering>('offerings');
 }

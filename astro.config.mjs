@@ -9,5 +9,13 @@ export default defineConfig({
   site: process.env.SITE_URL || 'https://flavioluizseixas.github.io',
   base: process.env.BASE_PATH || (isProjectPage ? `/${repository}` : '/'),
   integrations: [mdx(), sitemap()],
-  markdown: { shikiConfig: { theme: 'github-dark' } }
+  markdown: { shikiConfig: { theme: 'github-dark' } },
+  i18n: {
+    defaultLocale: 'pt',
+    locales: ['pt', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+      redirectToDefaultLocale: false
+    }
+  }
 });

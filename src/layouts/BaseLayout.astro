@@ -5,30 +5,52 @@ import '@fontsource/poppins/700.css';
 import '@fontsource/abeezee/400.css';
 import '../styles/global.css';
 import { withBase } from '../lib/site';
+import {
+  commonCopy,
+  localeTag,
+  route,
+  type Locale,
+  type RouteName
+} from '../i18n';
 import icLogo from '../assets/logo-instituto-computacao.png';
 interface Props {
   title: string;
   description: string;
   image?: string;
+  locale?: Locale;
+  routeName?: RouteName;
+  alternateHref?: string;
 }
-const { title, description, image = 'images/social-card.svg' } = Astro.props;
+const {
+  title,
+  description,
+  image = 'images/social-card.svg',
+  locale = 'pt',
+  routeName,
+  alternateHref
+} = Astro.props;
+const copy = commonCopy[locale];
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const fullTitle =
-  title === 'Início'
-    ? 'Flávio Luiz Seixas — Professor e pesquisador'
+  title === copy.homeTitle
+    ? copy.fullHomeTitle
     : `${title} — Flávio Luiz Seixas`;
 const nav = [
-  ['Início', ''],
-  ['Ensino', 'ensino/'],
-  ['Pesquisa', 'pesquisa/'],
-  ['Extensão', 'extensao/'],
-  ['Publicações', 'publicacoes/'],
-  ['Sobre', 'sobre/']
-];
+  [copy.nav.home, 'home'],
+  [copy.nav.teaching, 'teaching'],
+  [copy.nav.research, 'research'],
+  [copy.nav.outreach, 'outreach'],
+  [copy.nav.publications, 'publications'],
+  [copy.nav.about, 'about']
+] as const;
+const resolvedAlternateHref =
+  alternateHref ||
+  (routeName ? route(locale === 'pt' ? 'en' : 'pt', routeName) : undefined);
+const alternateLocale = locale === 'pt' ? 'en' : 'pt';
 ---
 
 <!doctype html>
-<html lang="pt-BR">
+<html lang={localeTag(locale)}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -36,6 +58,18 @@ const nav = [
     <meta name="theme-color" content="#192f59" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
+    {
+      resolvedAlternateHref && (
+        <>
+          <link
+            rel="alternate"
+            hreflang={localeTag(alternateLocale)}
+            href={new URL(resolvedAlternateHref, Astro.site)}
+          />
+          <link rel="alternate" hreflang={localeTag(locale)} href={canonical} />
+        </>
+      )
+    }
     <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
     <meta property="og:type" content="website" /><meta
       property="og:title"
@@ -50,55 +84,138 @@ const nav = [
       document.documentElement.dataset.theme =
         localStorage.getItem('theme') || 'auto';
     </script>
+    <script
+      is:inline
+      define:vars={{
+        currentLocale: locale,
+        alternateLocale,
+        alternateHref: resolvedAlternateHref || ''
+      }}
+    >
+      (() => {
+        const isLocal = ['localhost', '127.0.0.1'].includes(
+          window.location.hostname
+        );
+        let savedLocale = null;
+        try {
+          savedLocale = localStorage.getItem('site-locale');
+        } catch {}
+        if (savedLocale || isLocal || !alternateHref) return;
+
+        const browserLocale = (
+          navigator.languages?.[0] ||
+          navigator.language ||
+          ''
+        ).toLowerCase();
+        const fallbackLocale = browserLocale.startsWith('pt') ? 'pt' : 'en';
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 1800);
+
+        fetch('https://api.country.is/', {
+          signal: controller.signal,
+          referrerPolicy: 'no-referrer'
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error('Country lookup failed');
+            return response.json();
+          })
+          .then((data) => (data.country === 'BR' ? 'pt' : 'en'))
+          .catch(() => fallbackLocale)
+          .then((detectedLocale) => {
+            try {
+              localStorage.setItem('site-locale', detectedLocale);
+            } catch {}
+            if (
+              detectedLocale !== currentLocale &&
+              alternateLocale === detectedLocale
+            )
+              window.location.replace(alternateHref);
+          })
+          .finally(() => window.clearTimeout(timeout));
+      })();
+    </script>
   </head>
   <body>
-    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <a class="skip-link" href="#conteudo">{copy.skip}</a>
     <header class="site-header">
       <div class="header-inner">
         <a
           class="brand"
-          href={withBase('')}
-          aria-label="Página inicial de Flávio Luiz Seixas"
+          href={route(locale, 'home')}
+          aria-label={copy.brandLabel}
           ><span class="brand-logo-wrap"
             ><img
               class="brand-logo"
               src={icLogo.src}
               width={icLogo.width}
               height={icLogo.height}
-              alt="Instituto de Computação da UFF"
+              alt={copy.instituteAlt}
             /></span
           ><span
-            ><strong>Flávio Luiz Seixas</strong><small
-              >Instituto de Computação · UFF</small
+            ><strong>Flávio Luiz Seixas</strong><small>{copy.institute}</small
             ></span
           ></a
         >
         <button
           class="menu-button"
           aria-expanded="false"
-          aria-controls="global-nav">Menu</button
+          aria-controls="global-nav">{copy.menu}</button
         >
-        <nav id="global-nav" aria-label="Navegação principal">
+        <nav id="global-nav" aria-label={copy.navLabel}>
           {
-            nav.map(([label, path]) => (
+            nav.map(([label, name]) => (
               <a
-                href={withBase(path)}
+                href={route(locale, name)}
                 aria-current={
-                  Astro.url.pathname === withBase(path) ? 'page' : undefined
+                  Astro.url.pathname === route(locale, name)
+                    ? 'page'
+                    : undefined
                 }
               >
                 {label}
               </a>
             ))
           }
-          <a class="search-link" href={withBase('busca/')}
-            >Buscar <span aria-hidden="true">⌕</span></a
+          <a class="search-link" href={route(locale, 'search')}
+            >{copy.search} <span aria-hidden="true">⌕</span></a
           >
         </nav>
-        <button
-          class="theme-button"
-          aria-label="Alternar tema"
-          title="Alternar tema">◐</button
+        {
+          resolvedAlternateHref && (
+            <div class="language-switcher" aria-label={copy.language}>
+              <a
+                href={
+                  locale === 'pt' ? Astro.url.pathname : resolvedAlternateHref
+                }
+                data-locale="pt"
+                aria-current={locale === 'pt' ? 'true' : undefined}
+                aria-label={copy.portuguese}
+                title={copy.portuguese}
+              >
+                <>
+                  <span aria-hidden="true">🇧🇷</span>
+                  <span>PT</span>
+                </>
+              </a>
+              <a
+                href={
+                  locale === 'en' ? Astro.url.pathname : resolvedAlternateHref
+                }
+                data-locale="en"
+                aria-current={locale === 'en' ? 'true' : undefined}
+                aria-label={copy.english}
+                title={copy.english}
+              >
+                <>
+                  <span aria-hidden="true">🇺🇸</span>
+                  <span>EN</span>
+                </>
+              </a>
+            </div>
+          )
+        }
+        <button class="theme-button" aria-label={copy.theme} title={copy.theme}
+          >◐</button
         >
       </div>
     </header>
@@ -116,27 +233,30 @@ const nav = [
               src={icLogo.src}
               width={icLogo.width}
               height={icLogo.height}
-              alt="Instituto de Computação da UFF"
+              alt={copy.instituteAlt}
             /></a
           ><strong>Flávio Luiz Seixas</strong><p>
-            Professor de Ciência da Computação<br />Universidade Federal
-            Fluminense
+            {copy.footerRole}<br />{copy.university}
           </p>
         </div><div>
-          <strong>Atalhos</strong><a href={withBase('ensino/')}>Disciplinas</a
-          ><a href={withBase('contato/')}>Contato</a><a
-            href={withBase('arquivo/')}>Arquivo</a
+          <strong>{copy.shortcuts}</strong><a href={route(locale, 'teaching')}
+            >{copy.courses}</a
+          ><a href={route(locale, 'contact')}>{copy.contact}</a><a
+            href={route(locale, 'archive')}>{copy.archive}</a
           >
         </div><div>
-          <strong>Este site</strong><p>
-            Conteúdo acadêmico aberto, rápido e acessível.
-          </p><a href={withBase('feed/calendario.ics')}>Assinar calendário</a>
+          <strong>{copy.thisSite}</strong><p>{copy.siteDescription}</p><a
+            href={withBase(
+              locale === 'pt' ? 'feed/calendario.ics' : 'feed/en/calendar.ics'
+            )}>{copy.subscribe}</a
+          >
         </div>
       </div><p class="footer-note">
-        Atualizado a partir de conteúdo versionado. Horários em Brasília.
+        {copy.footerNote}
       </p>
     </footer>
-    <a class="mobile-courses" href={withBase('ensino/')}>Disciplinas</a>
+    <a class="mobile-courses" href={route(locale, 'teaching')}>{copy.courses}</a
+    >
     <script>
       const menu = document.querySelector('.menu-button');
       const nav = document.querySelector('#global-nav');
@@ -151,6 +271,13 @@ const nav = [
         document.documentElement.dataset.theme = next;
         localStorage.setItem('theme', next);
       });
+      document.querySelectorAll<HTMLElement>('[data-locale]').forEach((link) =>
+        link.addEventListener('click', () => {
+          const selectedLocale = link.dataset.locale;
+          if (selectedLocale)
+            localStorage.setItem('site-locale', selectedLocale);
+        })
+      );
     </script>
   </body>
 </html>
