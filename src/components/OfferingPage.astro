@@ -26,6 +26,7 @@ const copy = {
     or: 'ou',
     classroom: 'Ambiente virtual',
     classroomLink: 'Acessar Classroom',
+    classroomCode: 'Código',
     updated: 'Última atualização',
     addCalendar: 'Adicionar ao calendário',
     pageNav: 'Nesta disciplina',
@@ -70,6 +71,7 @@ const copy = {
     or: 'or',
     classroom: 'Virtual environment',
     classroomLink: 'Open Classroom',
+    classroomCode: 'Code',
     updated: 'Last updated',
     addCalendar: 'Add to calendar',
     pageNav: 'In this course',
@@ -188,14 +190,24 @@ const jsonLd = {
           }<div>
             <dt>{copy.classroom}</dt><dd>
               {
-                d.classroom_url ? (
-                  <a
-                    href={d.classroom_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {copy.classroomLink}
-                  </a>
+                d.classroom_url || d.classroom_code ? (
+                  <>
+                    {d.classroom_url && (
+                      <a
+                        href={d.classroom_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {copy.classroomLink}
+                      </a>
+                    )}
+                    {d.classroom_url && d.classroom_code ? ' · ' : ''}
+                    {d.classroom_code && (
+                      <>
+                        {copy.classroomCode}: <code>{d.classroom_code}</code>
+                      </>
+                    )}
+                  </>
                 ) : (
                   copy.pending
                 )

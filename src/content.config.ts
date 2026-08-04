@@ -59,6 +59,7 @@ const offerings = defineCollection({
     schedule: z.string(),
     room: z.string().nullable(),
     classroom_url: z.string().url().nullable().optional(),
+    classroom_code: z.string().min(1).nullable().optional(),
     timezone: z.literal('America/Sao_Paulo'),
     summary: z.string(),
     overview: z.string().optional(),

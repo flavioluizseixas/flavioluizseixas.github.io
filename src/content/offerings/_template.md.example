@@ -11,6 +11,8 @@ level: graduacao
 class_group: A1
 schedule: Segundas, 18h–20h
 room: null
+classroom_url: null
+classroom_code: null
 timezone: America/Sao_Paulo
 summary: Resumo curto da disciplina.
 language: pt-BR

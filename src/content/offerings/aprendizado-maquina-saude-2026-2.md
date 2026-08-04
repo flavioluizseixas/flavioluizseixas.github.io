@@ -8,8 +8,9 @@ status: active
 level: pos-graduacao
 class_group: Única
 schedule: Sextas-feiras, 14h–18h
-room: null
+room: '321'
 classroom_url: null
+classroom_code: gwyhen5k
 timezone: America/Sao_Paulo
 summary: Inteligência artificial em saúde, do problema clínico e dos dados à validação, implementação, monitoramento e governança.
 overview: A disciplina integra computação, medicina, epidemiologia e informática em saúde no estudo do ciclo de vida de soluções de inteligência artificial. Abrange definição do problema clínico, qualidade e interoperabilidade dos dados, modelagem, validação, interpretação, avaliação clínica, implementação, monitoramento e governança, com discussão crítica de vieses, equidade, privacidade, segurança e regulação.
@@ -55,8 +56,7 @@ references:
   - 'PANESAR, Arjun. Machine Learning and AI for Healthcare: Big Data for Improved Health Outcomes. Berkeley: Apress, 2019.'
   - 'BERNER, Eta S. Clinical Decision Support Systems: Theory and Practice. 2. ed. New York: Springer, 2007.'
 language: pt-BR
-updated: 28/07/2026
-notice: Sala e ambiente virtual serão informados em breve.
+updated: 03/08/2026
 materials: []
 calendar:
   - date: '2026-08-07'

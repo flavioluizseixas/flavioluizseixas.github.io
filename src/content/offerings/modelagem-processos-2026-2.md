@@ -8,8 +8,9 @@ status: active
 level: graduacao
 class_group: A1
 schedule: Sextas-feiras, 18h–22h
-room: null
+room: '321'
 classroom_url: null
+classroom_code: 6yxys3dw
 timezone: America/Sao_Paulo
 summary: Descoberta, modelagem, análise e redesenho de processos de negócio, da situação atual à visão de futuro.
 overview: O curso apresenta conceitos de processos de negócio e uma metodologia que parte do levantamento e do entendimento da situação atual (AS-IS), passa pela avaliação do processo e chega ao desenho da situação futura (TO-BE).
@@ -20,8 +21,7 @@ references:
   - 'ABPMP Brazil. BPM CBOK, 3ª ed., 2013.'
   - 'Paim, R. Gestão de processos: pensar, agir e aprender. Bookman, 2009.'
 language: pt-BR
-updated: 28/07/2026
-notice: Sala e ambiente virtual serão informados em breve.
+updated: 03/08/2026
 materials: []
 calendar:
   - date: '2026-08-07'
