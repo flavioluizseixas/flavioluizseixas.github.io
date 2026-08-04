@@ -53,6 +53,7 @@ export const englishContent: Record<string, string> = {
   'Estrutura de Dados': 'Data Structures',
   'Estrutura de Dados e seus Algoritmos': 'Data Structures and Algorithms',
   'Probabilidade e Estatística': 'Probability and Statistics',
+  'Epidemiologia 1': 'Epidemiology 1',
   'Apresentação do curso': 'Course introduction',
   'Apresentação da ementa, metodologia, avaliação e projeto integrador.':
     'Presentation of the syllabus, methodology, assessment, and integrative project.',

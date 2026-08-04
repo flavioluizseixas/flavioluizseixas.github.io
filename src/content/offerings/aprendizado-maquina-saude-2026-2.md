@@ -33,6 +33,7 @@ prerequisites:
   - Estrutura de Dados
   - Estrutura de Dados e seus Algoritmos
   - Probabilidade e Estatística
+  - Epidemiologia 1
 evaluation: A avaliação considera participação nas aulas e discussões, trabalhos práticos e relatórios, além do projeto final e de sua apresentação.
 references:
   - 'SHORTLIFFE, Edward H.; CIMINO, James J. (eds.). Biomedical Informatics: Computer Applications in Health Care and Biomedicine. 5. ed. Cham: Springer, 2021.'
