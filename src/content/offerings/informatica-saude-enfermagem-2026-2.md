@@ -7,7 +7,7 @@ current: true
 status: active
 level: pos-graduacao
 class_group: Única
-schedule: Seis encontros de 4h; datas e horários a confirmar
+schedule: 10 e 11/08 (presencial); 20 e 27/08 e 03/09 (remoto); horários a confirmar
 room: null
 classroom_url: null
 classroom_code: null
@@ -19,12 +19,12 @@ summary: Dados, sistemas e tecnologias digitais aplicados à pesquisa, à práti
 overview: A disciplina articula Informática em Saúde e Informática em Enfermagem para apoiar a pesquisa, a prática profissional, a tomada de decisão e o desenvolvimento de produtos no Doutorado Profissional em Enfermagem. O percurso parte do problema e dos dados, passa por sistemas, interoperabilidade, cuidado conectado e inteligência artificial e termina com implementação e governança responsáveis.
 objective: Desenvolver a capacidade de decidir quando, por que, qual e como utilizar — ou não utilizar — dados, sistemas e tecnologias digitais para qualificar a pesquisa, a prática profissional, a tomada de decisão e os produtos do Doutorado Profissional em Enfermagem, com avaliação crítica, segurança, ética, equidade e responsabilidade.
 syllabus:
-  - 'Encontro 1 — Problema, dados, decisão e Informática em Saúde: dado, informação, conhecimento, lente sociotécnica e seleção de tecnologia orientada pelo problema.'
-  - 'Encontro 2 — Dados e ferramentas para pesquisa e decisão: ciclo de vida, qualidade, documentação, proteção, coleta, análise, visualização e gestão de referências.'
-  - 'Encontro 3 — Sistemas de informação, RNDS, terminologias e interoperabilidade: prontuário eletrônico, significado, proveniência, segurança e continuidade.'
-  - 'Encontro 4 — Tecnologia aplicada ao produto profissional e cuidado conectado: telessaúde, telenfermagem, mHealth, monitoramento remoto, acessibilidade e equidade.'
-  - 'Encontro 5 — IA crítica e aplicada ao doutorado e à prática: usos, privacidade, autoria, verificação, viés, supervisão e protocolo de uso.'
-  - 'Encontro 6 — Integração, implementação e decisão governável: alternativas, responsabilidades, indicadores, monitoramento e critérios de revisão.'
+  - 'Problema, dados, decisão e Informática em Saúde: dado, informação, conhecimento, lente sociotécnica e seleção de tecnologia orientada pelo problema.'
+  - 'Dados e ferramentas para pesquisa e decisão: ciclo de vida, qualidade, documentação, proteção, coleta, análise, visualização e gestão de referências.'
+  - 'Sistemas de informação, RNDS, terminologias e interoperabilidade: prontuário eletrônico, significado, proveniência, segurança e continuidade.'
+  - 'Tecnologia aplicada ao produto profissional e cuidado conectado: telessaúde, telenfermagem, mHealth, monitoramento remoto, acessibilidade e equidade.'
+  - 'IA crítica e aplicada ao doutorado e à prática: usos, privacidade, autoria, verificação, viés, supervisão e protocolo de uso.'
+  - 'Integração, implementação e decisão governável: alternativas, responsabilidades, indicadores, monitoramento e critérios de revisão.'
 methodology: A disciplina combina 24 horas síncronas em seis encontros de quatro horas e seis horas de atividades independentes. Os encontros 1–3 são presenciais e os encontros 4–6, virtuais. Cada encontro integra um núcleo comum à aplicação no projeto de doutorado, com atividades práticas, crítica entre pares e produção cumulativa de artefatos.
 workload: 30 horas
 prerequisites: []
@@ -32,7 +32,7 @@ evaluation: A proposta de avaliação combina preparação e participação, art
 references: []
 language: pt-BR
 updated: 05/08/2026
-notice: Datas, horários, sala e plataforma dos encontros serão confirmados pelos docentes.
+notice: Horários, sala dos encontros presenciais e plataforma dos encontros remotos serão confirmados pelos docentes.
 materials:
   - title: Apresentação da disciplina
     url: https://informatica-saude-enfermagem.netlify.app/apresentacao_disciplina.html
@@ -62,7 +62,61 @@ materials:
     url: https://informatica-saude-enfermagem.netlify.app/encontro_06.html
     type: slides
     external: true
-calendar: []
+calendar:
+  - date: '2026-08-10'
+    title: 'Encontro 1: Problema, dados, decisão e Informática em Saúde'
+    type: aula
+    status: planned
+    note: Modalidade presencial.
+    materials:
+      - title: Slides do encontro 1
+        url: https://informatica-saude-enfermagem.netlify.app/encontro_01.html
+        type: slides
+        external: true
+  - date: '2026-08-11'
+    title: 'Encontros 2 e 3: Dados e ferramentas para pesquisa e decisão; Sistemas de informação, RNDS, terminologias e interoperabilidade'
+    type: aula
+    status: planned
+    note: Modalidade presencial.
+    materials:
+      - title: Slides do encontro 2
+        url: https://informatica-saude-enfermagem.netlify.app/encontro_02.html
+        type: slides
+        external: true
+      - title: Slides do encontro 3
+        url: https://informatica-saude-enfermagem.netlify.app/encontro_03.html
+        type: slides
+        external: true
+  - date: '2026-08-20'
+    title: 'Encontro 4: Tecnologia aplicada ao produto profissional e cuidado conectado'
+    type: aula
+    status: planned
+    note: Modalidade remota.
+    materials:
+      - title: Slides do encontro 4
+        url: https://informatica-saude-enfermagem.netlify.app/encontro_04.html
+        type: slides
+        external: true
+  - date: '2026-08-27'
+    title: 'Encontro 5: IA crítica e aplicada ao doutorado e à prática'
+    type: aula
+    status: planned
+    note: Modalidade remota.
+    materials:
+      - title: Slides do encontro 5
+        url: https://informatica-saude-enfermagem.netlify.app/encontro_05.html
+        type: slides
+        external: true
+  - date: '2026-09-03'
+    title: 'Encontro 6: Integração, implementação e decisão governável'
+    type: aula
+    status: planned
+    note: Modalidade remota.
+    materials:
+      - title: Slides do encontro 6
+        url: https://informatica-saude-enfermagem.netlify.app/encontro_06.html
+        type: slides
+        external: true
 ---
 
 ## Visão geral

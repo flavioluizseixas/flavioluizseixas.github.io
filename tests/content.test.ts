@@ -20,5 +20,12 @@ describe('conteúdo acadêmico', () => {
       'Flávio Luiz Seixas'
     ]);
     expect(offering?.materials).toHaveLength(7);
+    expect(offering?.calendar.map((event) => event.date)).toEqual([
+      '2026-08-10',
+      '2026-08-11',
+      '2026-08-20',
+      '2026-08-27',
+      '2026-09-03'
+    ]);
   });
 });

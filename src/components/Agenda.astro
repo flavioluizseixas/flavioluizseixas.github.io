@@ -177,8 +177,15 @@ const agendaItems: AgendaItem[] = events.map((event: any) => {
               )}
               {event.materials?.length > 0 && (
                 <p>
-                  {event.materials.map((m: any) => (
-                    <a href={m.url}>{m.title}</a>
+                  {event.materials.map((m: any, index: number) => (
+                    <>
+                      {index > 0 && (
+                        <span class="material-separator" aria-hidden="true">
+                          {' · '}
+                        </span>
+                      )}
+                      <a href={m.url}>{m.title}</a>
+                    </>
                   ))}
                 </p>
               )}

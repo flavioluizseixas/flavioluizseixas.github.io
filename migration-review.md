@@ -6,7 +6,7 @@ Este documento registra dúvidas que **não devem ser corrigidas silenciosamente
 
 - As disciplinas de 2026.1 foram arquivadas. Em 2026.2, Modelagem de Processos de Negócio, Introdução ao Aprendizado de Máquina para Saúde e Informática em Saúde Aplicada à Enfermagem são as disciplinas correntes.
 - Informar sala, link público do Classroom e calendário detalhado de Modelagem de Processos de Negócio e Introdução ao Aprendizado de Máquina para Saúde.
-- Confirmar código, datas, horários, sala e plataforma de Informática em Saúde Aplicada à Enfermagem. O plano, a carga horária, a modalidade e os materiais dos seis encontros já foram publicados.
+- Confirmar código, horários, sala dos encontros presenciais e plataforma dos encontros remotos de Informática em Saúde Aplicada à Enfermagem. O plano, as datas, a carga horária, a modalidade e os materiais dos seis encontros já foram publicados.
 - Confirmar código, turma, dias, horário, sala e calendário de Programação de Aplicações Web. A página pública não forneceu dados suficientes para uma migração completa; o único evento atual é explicitamente indicativo.
 - Confirmar a correção de `29/04/2926` para `29/04/2026` em Modelagem. O evento foi marcado como alterado e mantém a data anterior nos metadados.
 - Informar a sala de Redes (a origem contém `--`) e decidir quais links de Google Classroom podem ser públicos. Nenhum link privado foi migrado.

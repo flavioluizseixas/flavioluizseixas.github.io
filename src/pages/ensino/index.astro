@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CourseCard from '../../components/CourseCard.astro';
-import { withBase } from '../../lib/site';
+import { sortCurrentOfferings, withBase } from '../../lib/site';
 import { courseRoute, type Locale } from '../../i18n';
 import { translateContent } from '../../i18n/content';
 const locale: Locale = Astro.props.locale ?? 'pt';
@@ -29,7 +29,7 @@ const copy = {
   }
 }[locale];
 const all = await getCollection('offerings');
-const current = all.filter((o) => o.data.current);
+const current = sortCurrentOfferings(all.filter((o) => o.data.current));
 const archived = all.filter((o) => !o.data.current);
 ---
 

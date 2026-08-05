@@ -8,6 +8,25 @@ export const profileLinks = [
   { label: 'GitHub', href: 'https://github.com/flavioluizseixas' }
 ];
 
+const currentCourseOrder = [
+  'aprendizado-maquina-saude',
+  'modelagem-processos',
+  'informatica-saude-enfermagem'
+];
+
+export const sortCurrentOfferings = <
+  T extends { data: { slug: string; title: string } }
+>(
+  offerings: T[]
+) =>
+  [...offerings].sort((a, b) => {
+    const aIndex = currentCourseOrder.indexOf(a.data.slug);
+    const bIndex = currentCourseOrder.indexOf(b.data.slug);
+    const aPriority = aIndex === -1 ? currentCourseOrder.length : aIndex;
+    const bPriority = bIndex === -1 ? currentCourseOrder.length : bIndex;
+    return aPriority - bPriority || a.data.title.localeCompare(b.data.title);
+  });
+
 export const withBase = (path: string) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
 

@@ -138,30 +138,42 @@ export const englishContent: Record<string, string> = {
     'technology implementation and governance',
   'A confirmar': 'To be confirmed',
   Única: 'Single section',
-  'Seis encontros de 4h; datas e horários a confirmar':
-    'Six four-hour sessions; dates and times to be confirmed',
+  '10 e 11/08 (presencial); 20 e 27/08 e 03/09 (remoto); horários a confirmar':
+    'August 10 and 11 (in person); August 20 and 27 and September 3 (online); times to be confirmed',
   'A disciplina articula Informática em Saúde e Informática em Enfermagem para apoiar a pesquisa, a prática profissional, a tomada de decisão e o desenvolvimento de produtos no Doutorado Profissional em Enfermagem. O percurso parte do problema e dos dados, passa por sistemas, interoperabilidade, cuidado conectado e inteligência artificial e termina com implementação e governança responsáveis.':
     'This course connects health informatics and nursing informatics to support research, professional practice, decision-making, and project development in the Professional Doctorate in Nursing. The pathway starts with the problem and the data, moves through systems, interoperability, connected care, and artificial intelligence, and concludes with responsible implementation and governance.',
   'Desenvolver a capacidade de decidir quando, por que, qual e como utilizar — ou não utilizar — dados, sistemas e tecnologias digitais para qualificar a pesquisa, a prática profissional, a tomada de decisão e os produtos do Doutorado Profissional em Enfermagem, com avaliação crítica, segurança, ética, equidade e responsabilidade.':
     'Develop the ability to decide when, why, which, and how to use—or not use—data, information systems, and digital technologies to improve research, professional practice, decision-making, and projects in the Professional Doctorate in Nursing, with critical evaluation, safety, ethics, equity, and accountability.',
-  'Encontro 1 — Problema, dados, decisão e Informática em Saúde: dado, informação, conhecimento, lente sociotécnica e seleção de tecnologia orientada pelo problema.':
-    'Session 1 — Problems, data, decisions, and Health Informatics: data, information, knowledge, a sociotechnical lens, and problem-driven technology selection.',
-  'Encontro 2 — Dados e ferramentas para pesquisa e decisão: ciclo de vida, qualidade, documentação, proteção, coleta, análise, visualização e gestão de referências.':
-    'Session 2 — Data and tools for research and decision-making: life cycle, quality, documentation, protection, collection, analysis, visualization, and reference management.',
-  'Encontro 3 — Sistemas de informação, RNDS, terminologias e interoperabilidade: prontuário eletrônico, significado, proveniência, segurança e continuidade.':
-    'Session 3 — Information systems, RNDS, terminologies, and interoperability: electronic health records, meaning, provenance, security, and continuity.',
-  'Encontro 4 — Tecnologia aplicada ao produto profissional e cuidado conectado: telessaúde, telenfermagem, mHealth, monitoramento remoto, acessibilidade e equidade.':
-    'Session 4 — Technology applied to professional projects and connected care: telehealth, telenursing, mHealth, remote monitoring, accessibility, and equity.',
-  'Encontro 5 — IA crítica e aplicada ao doutorado e à prática: usos, privacidade, autoria, verificação, viés, supervisão e protocolo de uso.':
-    'Session 5 — Critical AI applied to doctoral work and practice: uses, privacy, authorship, verification, bias, oversight, and usage protocols.',
-  'Encontro 6 — Integração, implementação e decisão governável: alternativas, responsabilidades, indicadores, monitoramento e critérios de revisão.':
-    'Session 6 — Integration, implementation, and governable decisions: alternatives, responsibilities, indicators, monitoring, and review criteria.',
+  'Problema, dados, decisão e Informática em Saúde: dado, informação, conhecimento, lente sociotécnica e seleção de tecnologia orientada pelo problema.':
+    'Problems, data, decisions, and Health Informatics: data, information, knowledge, a sociotechnical lens, and problem-driven technology selection.',
+  'Dados e ferramentas para pesquisa e decisão: ciclo de vida, qualidade, documentação, proteção, coleta, análise, visualização e gestão de referências.':
+    'Data and tools for research and decision-making: life cycle, quality, documentation, protection, collection, analysis, visualization, and reference management.',
+  'Sistemas de informação, RNDS, terminologias e interoperabilidade: prontuário eletrônico, significado, proveniência, segurança e continuidade.':
+    'Information systems, RNDS, terminologies, and interoperability: electronic health records, meaning, provenance, security, and continuity.',
+  'Tecnologia aplicada ao produto profissional e cuidado conectado: telessaúde, telenfermagem, mHealth, monitoramento remoto, acessibilidade e equidade.':
+    'Technology applied to professional projects and connected care: telehealth, telenursing, mHealth, remote monitoring, accessibility, and equity.',
+  'IA crítica e aplicada ao doutorado e à prática: usos, privacidade, autoria, verificação, viés, supervisão e protocolo de uso.':
+    'Critical AI applied to doctoral work and practice: uses, privacy, authorship, verification, bias, oversight, and usage protocols.',
+  'Integração, implementação e decisão governável: alternativas, responsabilidades, indicadores, monitoramento e critérios de revisão.':
+    'Integration, implementation, and governable decisions: alternatives, responsibilities, indicators, monitoring, and review criteria.',
   'A disciplina combina 24 horas síncronas em seis encontros de quatro horas e seis horas de atividades independentes. Os encontros 1–3 são presenciais e os encontros 4–6, virtuais. Cada encontro integra um núcleo comum à aplicação no projeto de doutorado, com atividades práticas, crítica entre pares e produção cumulativa de artefatos.':
     'The course combines 24 synchronous hours across six four-hour sessions with six hours of independent work. Sessions 1–3 are in person and sessions 4–6 are online. Each session connects a shared core with application to the doctoral project through practical activities, peer critique, and cumulative project artifacts.',
   'A proposta de avaliação combina preparação e participação, artefatos cumulativos, leituras orientadas e um brief decisório com apresentação final. Pesos, prazos e critérios institucionais serão confirmados pelos docentes.':
     'The proposed assessment combines preparation and participation, cumulative artifacts, guided readings, and a decision brief with a final presentation. Weights, deadlines, and institutional criteria will be confirmed by the instructors.',
-  'Datas, horários, sala e plataforma dos encontros serão confirmados pelos docentes.':
-    'Session dates, times, room, and online platform will be confirmed by the instructors.',
+  'Horários, sala dos encontros presenciais e plataforma dos encontros remotos serão confirmados pelos docentes.':
+    'Session times, the room for in-person sessions, and the platform for online sessions will be confirmed by the instructors.',
+  'Encontro 1: Problema, dados, decisão e Informática em Saúde':
+    'Session 1: Problems, data, decisions, and Health Informatics',
+  'Encontros 2 e 3: Dados e ferramentas para pesquisa e decisão; Sistemas de informação, RNDS, terminologias e interoperabilidade':
+    'Sessions 2 and 3: Data and tools for research and decision-making; Information systems, RNDS, terminologies, and interoperability',
+  'Encontro 4: Tecnologia aplicada ao produto profissional e cuidado conectado':
+    'Session 4: Technology applied to professional projects and connected care',
+  'Encontro 5: IA crítica e aplicada ao doutorado e à prática':
+    'Session 5: Critical AI applied to doctoral work and practice',
+  'Encontro 6: Integração, implementação e decisão governável':
+    'Session 6: Integration, implementation, and governable decisions',
+  'Modalidade presencial.': 'In-person session.',
+  'Modalidade remota.': 'Online session.',
   'Slides do encontro 1': 'Session 1 slides',
   'Slides do encontro 2': 'Session 2 slides',
   'Slides do encontro 3': 'Session 3 slides',
