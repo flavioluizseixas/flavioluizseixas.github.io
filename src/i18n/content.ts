@@ -156,8 +156,6 @@ export const englishContent: Record<string, string> = {
     'Critical AI applied to doctoral work and practice: uses, privacy, authorship, verification, bias, oversight, and usage protocols.',
   'Integração, implementação e decisão governável: alternativas, responsabilidades, indicadores, monitoramento e critérios de revisão.':
     'Integration, implementation, and governable decisions: alternatives, responsibilities, indicators, monitoring, and review criteria.',
-  'A disciplina combina 24 horas síncronas em seis encontros de quatro horas e seis horas de atividades independentes. Os encontros 1–3 são presenciais e os encontros 4–6, virtuais. Cada encontro integra um núcleo comum à aplicação no projeto de doutorado, com atividades práticas, crítica entre pares e produção cumulativa de artefatos.':
-    'The course combines 24 synchronous hours across six four-hour sessions with six hours of independent work. Sessions 1–3 are in person and sessions 4–6 are online. Each session connects a shared core with application to the doctoral project through practical activities, peer critique, and cumulative project artifacts.',
   'A proposta de avaliação combina preparação e participação, artefatos cumulativos, leituras orientadas e um brief decisório com apresentação final. Pesos, prazos e critérios institucionais serão confirmados pelos docentes.':
     'The proposed assessment combines preparation and participation, cumulative artifacts, guided readings, and a decision brief with a final presentation. Weights, deadlines, and institutional criteria will be confirmed by the instructors.',
   'Horários, sala dos encontros presenciais e plataforma dos encontros remotos serão confirmados pelos docentes.':
