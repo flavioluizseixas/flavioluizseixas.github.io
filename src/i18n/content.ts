@@ -117,6 +117,57 @@ export const englishContent: Record<string, string> = {
   'Apresentação do projeto final': 'Final project presentation',
   'Apresentação e discussão dos miniprojetos desenvolvidos pelas equipes.':
     'Presentation and discussion of the mini-projects developed by the teams.',
+  'Informática em Saúde Aplicada à Enfermagem':
+    'Health Informatics Applied to Nursing',
+  'Dados, sistemas e tecnologias digitais aplicados à pesquisa, à prática profissional, à decisão e aos produtos do Doutorado Profissional em Enfermagem.':
+    'Data, information systems, and digital technologies applied to research, professional practice, decision-making, and projects in the Professional Doctorate in Nursing.',
+  'informática em saúde e informática em enfermagem':
+    'health informatics and nursing informatics',
+  'ciclo de vida e governança de dados': 'data life cycle and governance',
+  'sistemas de informação e prontuário eletrônico':
+    'information systems and electronic health records',
+  'RNDS, terminologias e interoperabilidade':
+    'RNDS, terminologies, and interoperability',
+  'cuidado conectado e produtos profissionais':
+    'connected care and professional products',
+  'inteligência artificial crítica e aplicada':
+    'critical and applied artificial intelligence',
+  'ética, LGPD, segurança, acessibilidade e equidade':
+    'ethics, Brazil’s LGPD, security, accessibility, and equity',
+  'implementação e governança de tecnologias':
+    'technology implementation and governance',
+  'A confirmar': 'To be confirmed',
+  Única: 'Single section',
+  'Seis encontros de 4h; datas e horários a confirmar':
+    'Six four-hour sessions; dates and times to be confirmed',
+  'A disciplina articula Informática em Saúde e Informática em Enfermagem para apoiar a pesquisa, a prática profissional, a tomada de decisão e o desenvolvimento de produtos no Doutorado Profissional em Enfermagem. O percurso parte do problema e dos dados, passa por sistemas, interoperabilidade, cuidado conectado e inteligência artificial e termina com implementação e governança responsáveis.':
+    'This course connects health informatics and nursing informatics to support research, professional practice, decision-making, and project development in the Professional Doctorate in Nursing. The pathway starts with the problem and the data, moves through systems, interoperability, connected care, and artificial intelligence, and concludes with responsible implementation and governance.',
+  'Desenvolver a capacidade de decidir quando, por que, qual e como utilizar — ou não utilizar — dados, sistemas e tecnologias digitais para qualificar a pesquisa, a prática profissional, a tomada de decisão e os produtos do Doutorado Profissional em Enfermagem, com avaliação crítica, segurança, ética, equidade e responsabilidade.':
+    'Develop the ability to decide when, why, which, and how to use—or not use—data, information systems, and digital technologies to improve research, professional practice, decision-making, and projects in the Professional Doctorate in Nursing, with critical evaluation, safety, ethics, equity, and accountability.',
+  'Encontro 1 — Problema, dados, decisão e Informática em Saúde: dado, informação, conhecimento, lente sociotécnica e seleção de tecnologia orientada pelo problema.':
+    'Session 1 — Problems, data, decisions, and Health Informatics: data, information, knowledge, a sociotechnical lens, and problem-driven technology selection.',
+  'Encontro 2 — Dados e ferramentas para pesquisa e decisão: ciclo de vida, qualidade, documentação, proteção, coleta, análise, visualização e gestão de referências.':
+    'Session 2 — Data and tools for research and decision-making: life cycle, quality, documentation, protection, collection, analysis, visualization, and reference management.',
+  'Encontro 3 — Sistemas de informação, RNDS, terminologias e interoperabilidade: prontuário eletrônico, significado, proveniência, segurança e continuidade.':
+    'Session 3 — Information systems, RNDS, terminologies, and interoperability: electronic health records, meaning, provenance, security, and continuity.',
+  'Encontro 4 — Tecnologia aplicada ao produto profissional e cuidado conectado: telessaúde, telenfermagem, mHealth, monitoramento remoto, acessibilidade e equidade.':
+    'Session 4 — Technology applied to professional projects and connected care: telehealth, telenursing, mHealth, remote monitoring, accessibility, and equity.',
+  'Encontro 5 — IA crítica e aplicada ao doutorado e à prática: usos, privacidade, autoria, verificação, viés, supervisão e protocolo de uso.':
+    'Session 5 — Critical AI applied to doctoral work and practice: uses, privacy, authorship, verification, bias, oversight, and usage protocols.',
+  'Encontro 6 — Integração, implementação e decisão governável: alternativas, responsabilidades, indicadores, monitoramento e critérios de revisão.':
+    'Session 6 — Integration, implementation, and governable decisions: alternatives, responsibilities, indicators, monitoring, and review criteria.',
+  'A disciplina combina 24 horas síncronas em seis encontros de quatro horas e seis horas de atividades independentes. Os encontros 1–3 são presenciais e os encontros 4–6, virtuais. Cada encontro integra um núcleo comum à aplicação no projeto de doutorado, com atividades práticas, crítica entre pares e produção cumulativa de artefatos.':
+    'The course combines 24 synchronous hours across six four-hour sessions with six hours of independent work. Sessions 1–3 are in person and sessions 4–6 are online. Each session connects a shared core with application to the doctoral project through practical activities, peer critique, and cumulative project artifacts.',
+  'A proposta de avaliação combina preparação e participação, artefatos cumulativos, leituras orientadas e um brief decisório com apresentação final. Pesos, prazos e critérios institucionais serão confirmados pelos docentes.':
+    'The proposed assessment combines preparation and participation, cumulative artifacts, guided readings, and a decision brief with a final presentation. Weights, deadlines, and institutional criteria will be confirmed by the instructors.',
+  'Datas, horários, sala e plataforma dos encontros serão confirmados pelos docentes.':
+    'Session dates, times, room, and online platform will be confirmed by the instructors.',
+  'Slides do encontro 1': 'Session 1 slides',
+  'Slides do encontro 2': 'Session 2 slides',
+  'Slides do encontro 3': 'Session 3 slides',
+  'Slides do encontro 4': 'Session 4 slides',
+  'Slides do encontro 5': 'Session 5 slides',
+  'Slides do encontro 6': 'Session 6 slides',
   'Modelagem de Processos de Negócios': 'Business Process Modeling',
   'Descoberta, modelagem, análise e redesenho de processos de negócio, da situação atual à visão de futuro.':
     'Business process discovery, modeling, analysis, and redesign, from the current state to the future vision.',
@@ -324,6 +375,7 @@ export const localizeOffering = <T extends Record<string, any>>(
   if (locale === 'pt') return source;
   return {
     ...source,
+    code: translateContent(source.code, locale),
     title: translateContent(source.title, locale),
     summary: translateContent(source.summary, locale),
     overview: translateContent(source.overview, locale),
@@ -332,6 +384,7 @@ export const localizeOffering = <T extends Record<string, any>>(
     evaluation: translateContent(source.evaluation, locale),
     notice: translateContent(source.notice, locale),
     schedule: translateContent(source.schedule, locale),
+    class_group: translateContent(source.class_group, locale),
     syllabus: translatedArray(source.syllabus, locale),
     prerequisites: translatedArray(source.prerequisites, locale),
     materials: (source.materials ?? []).map((material: any) => ({

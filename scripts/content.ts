@@ -25,6 +25,7 @@ export type Offering = {
   evaluation?: string;
   notice?: string;
   schedule: string;
+  instructors?: string[];
   syllabus?: string[];
   prerequisites?: string[];
   materials?: { title: string }[];

@@ -32,3 +32,20 @@ test('disciplina e agenda são renderizadas em inglês', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Assessment' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
+
+test('disciplina de Informática em Saúde exibe docentes e encontros', async ({
+  page
+}) => {
+  await page.goto('/ensino/informatica-saude-enfermagem/2026-2/');
+  await expect(
+    page.getByRole('heading', {
+      name: 'Informática em Saúde Aplicada à Enfermagem',
+      exact: true
+    })
+  ).toBeVisible();
+  await expect(page.locator('.facts')).toContainText(
+    'Bianca Dargam Gomes Vieira · Flávio Luiz Seixas'
+  );
+  await expect(page.locator('#materiais .resource')).toHaveCount(7);
+  await expect(page.locator('#materiais a[href*="/encontro_"]')).toHaveCount(6);
+});

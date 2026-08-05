@@ -11,4 +11,14 @@ describe('conteúdo acadêmico', () => {
       expect(dates).toEqual([...dates].sort());
     }
   });
+  it('publica a co-docência da disciplina de Informática em Saúde', () => {
+    const offering = loadOfferings().find(
+      (o) => o.slug === 'informatica-saude-enfermagem' && o.current
+    );
+    expect(offering?.instructors).toEqual([
+      'Bianca Dargam Gomes Vieira',
+      'Flávio Luiz Seixas'
+    ]);
+    expect(offering?.materials).toHaveLength(7);
+  });
 });
