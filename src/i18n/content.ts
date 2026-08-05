@@ -57,39 +57,55 @@ export const englishContent: Record<string, string> = {
   'Apresentação do curso': 'Course introduction',
   'Apresentação da ementa, metodologia, avaliação e projeto integrador.':
     'Presentation of the syllabus, methodology, assessment, and integrative project.',
+  'Slides da apresentação da disciplina': 'Course introduction slides',
   'Hackathon: definição do problema e prototipação':
     'Hackathon: problem definition and prototyping',
   'Montagem de equipes, definição do problema, imersão, ideação e prototipação.':
     'Team formation, problem definition, immersion, ideation, and prototyping.',
   'Aula 1: Introdução e evolução da IA na medicina':
     'Lecture 1: Introduction and evolution of AI in medicine',
+  'Slides da aula 1': 'Lecture 1 slides',
   'Módulo 1 — Fundamentos e ecossistema de dados.':
     'Module 1 — Foundations and data ecosystem.',
   'Aula 2: Tipos de dados clínicos e qualidade':
     'Lecture 2: Clinical data types and quality',
+  'Slides da aula 2': 'Lecture 2 slides',
   'Aula 3: Interoperabilidade e padrões clínicos':
     'Lecture 3: Interoperability and clinical standards',
+  'Slides da aula 3': 'Lecture 3 slides',
   'Aula 4: Formulação do problema e ciclo de vida do modelo':
     'Lecture 4: Problem formulation and model life cycle',
+  'Slides da aula 4': 'Lecture 4 slides',
   'Módulo 2 — Desenho de estudos e aprendizado de máquina clássico.':
     'Module 2 — Study design and classical machine learning.',
   'Aula 5: Avaliação de desempenho e validação; Aula 6: Aprendizado supervisionado e não supervisionado clássico':
     'Lecture 5: Performance evaluation and validation; Lecture 6: Classical supervised and unsupervised learning',
+  'Slides da aula 5': 'Lecture 5 slides',
+  'Slides da aula 6': 'Lecture 6 slides',
   'Apresentação de artigo 1': 'Paper presentation 1',
   'Aula 7: Deep learning 1 — visão computacional médica':
     'Lecture 7: Deep learning 1 — medical computer vision',
+  'Slides da aula 7': 'Lecture 7 slides',
   'Módulo 3 — Aprendizado profundo e NLP.': 'Module 3 — Deep learning and NLP.',
   'Aula 8: Deep learning 2 — transformers e sinais biomédicos':
     'Lecture 8: Deep learning 2 — transformers and biomedical signals',
+  'Slides da aula 8': 'Lecture 8 slides',
   'Aula 9: Processamento de linguagem natural biomédico; Aula 10: Modelos de linguagem e multimodalidade':
     'Lecture 9: Biomedical natural language processing; Lecture 10: Language models and multimodality',
+  'Slides da aula 9': 'Lecture 9 slides',
+  'Slides da aula 10': 'Lecture 10 slides',
   'Aula 11: Análise de sobrevivência, predição de risco; Aula 12: Inferência causal e evidência de mundo real':
     'Lecture 11: Survival analysis and risk prediction; Lecture 12: Causal inference and real-world evidence',
+  'Slides da aula 11': 'Lecture 11 slides',
+  'Slides da aula 12': 'Lecture 12 slides',
   'Módulo 4 — Sobrevivência, inferência causal e decisão.':
     'Module 4 — Survival, causal inference, and decision-making.',
   'Semana de extensão (SEMEXT)': 'University Outreach Week (SEMEXT)',
   'Aula 13: Sistemas de apoio à decisão clínica e implementação; Aula 14: Explicabilidade, equidade e privacidade; Aula 15: Regulação, relato científico e MLOps':
     'Lecture 13: Clinical decision support systems and implementation; Lecture 14: Explainability, equity, and privacy; Lecture 15: Regulation, scientific reporting, and MLOps',
+  'Slides da aula 13': 'Lecture 13 slides',
+  'Slides da aula 14': 'Lecture 14 slides',
+  'Slides da aula 15': 'Lecture 15 slides',
   'Módulo 5 — Ética, regulação e prática profissional.':
     'Module 5 — Ethics, regulation, and professional practice.',
   'Apresentação de artigo 2': 'Paper presentation 2',
@@ -97,6 +113,7 @@ export const englishContent: Record<string, string> = {
   'Não haverá aula.': 'There will be no class.',
   'Aula 16: O futuro da medicina baseada em IA':
     'Lecture 16: The future of AI-based medicine',
+  'Slides da aula 16': 'Lecture 16 slides',
   'Apresentação do projeto final': 'Final project presentation',
   'Apresentação e discussão dos miniprojetos desenvolvidos pelas equipes.':
     'Presentation and discussion of the mini-projects developed by the teams.',

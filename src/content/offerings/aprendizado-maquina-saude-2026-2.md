@@ -57,7 +57,7 @@ references:
   - 'PANESAR, Arjun. Machine Learning and AI for Healthcare: Big Data for Improved Health Outcomes. Berkeley: Apress, 2019.'
   - 'BERNER, Eta S. Clinical Decision Support Systems: Theory and Practice. 2. ed. New York: Springer, 2007.'
 language: pt-BR
-updated: 03/08/2026
+updated: 05/08/2026
 materials: []
 calendar:
   - date: '2026-08-07'
@@ -67,6 +67,11 @@ calendar:
     note: Apresentação da ementa, metodologia, avaliação e projeto integrador.
     references:
       - SHORTLIFFE; CIMINO (2021); RAJKOMAR; DEAN; KOHANE (2019)
+    materials:
+      - title: Slides da apresentação da disciplina
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-0/
+        type: slides
+        external: true
   - date: '2026-08-14'
     title: 'Hackathon: definição do problema e prototipação'
     type: atividade
@@ -79,6 +84,11 @@ calendar:
     note: Módulo 1 — Fundamentos e ecossistema de dados.
     references:
       - SHORTLIFFE; CIMINO (2021); RAJKOMAR; DEAN; KOHANE (2019); BEAM; KOHANE (2018)
+    materials:
+      - title: Slides da aula 1
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-1/
+        type: slides
+        external: true
   - date: '2026-08-28'
     title: 'Aula 2: Tipos de dados clínicos e qualidade'
     type: aula
@@ -86,6 +96,11 @@ calendar:
     note: Módulo 1 — Fundamentos e ecossistema de dados.
     references:
       - SHORTLIFFE; CIMINO (2021)
+    materials:
+      - title: Slides da aula 2
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-2/
+        type: slides
+        external: true
   - date: '2026-09-04'
     title: 'Aula 3: Interoperabilidade e padrões clínicos'
     type: aula
@@ -93,6 +108,11 @@ calendar:
     note: Módulo 1 — Fundamentos e ecossistema de dados.
     references:
       - BENSON; GRIEVE (2021)
+    materials:
+      - title: Slides da aula 3
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-3/
+        type: slides
+        external: true
   - date: '2026-09-11'
     title: 'Aula 4: Formulação do problema e ciclo de vida do modelo'
     type: aula
@@ -100,6 +120,11 @@ calendar:
     note: Módulo 2 — Desenho de estudos e aprendizado de máquina clássico.
     references:
       - JAMES et al. (2023); COLLINS et al. (2024)
+    materials:
+      - title: Slides da aula 4
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-4/
+        type: slides
+        external: true
   - date: '2026-09-18'
     title: 'Aula 5: Avaliação de desempenho e validação; Aula 6: Aprendizado supervisionado e não supervisionado clássico'
     type: aula
@@ -107,6 +132,15 @@ calendar:
     note: Módulo 2 — Desenho de estudos e aprendizado de máquina clássico.
     references:
       - JAMES et al. (2023); COLLINS et al. (2024)
+    materials:
+      - title: Slides da aula 5
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-5/
+        type: slides
+        external: true
+      - title: Slides da aula 6
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-6/
+        type: slides
+        external: true
   - date: '2026-09-25'
     title: Apresentação de artigo 1
     type: apresentacao
@@ -119,6 +153,11 @@ calendar:
     note: Módulo 3 — Aprendizado profundo e NLP.
     references:
       - PANESAR (2019); TOPOL (2019)
+    materials:
+      - title: Slides da aula 7
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-7/
+        type: slides
+        external: true
   - date: '2026-10-09'
     title: 'Aula 8: Deep learning 2 — transformers e sinais biomédicos'
     type: aula
@@ -126,6 +165,11 @@ calendar:
     note: Módulo 3 — Aprendizado profundo e NLP.
     references:
       - PANESAR (2019)
+    materials:
+      - title: Slides da aula 8
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-8/
+        type: slides
+        external: true
   - date: '2026-10-16'
     title: 'Aula 9: Processamento de linguagem natural biomédico; Aula 10: Modelos de linguagem e multimodalidade'
     type: aula
@@ -133,6 +177,15 @@ calendar:
     note: Módulo 3 — Aprendizado profundo e NLP.
     references:
       - WORLD HEALTH ORGANIZATION (2024)
+    materials:
+      - title: Slides da aula 9
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-9/
+        type: slides
+        external: true
+      - title: Slides da aula 10
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-10/
+        type: slides
+        external: true
   - date: '2026-10-23'
     title: 'Aula 11: Análise de sobrevivência, predição de risco; Aula 12: Inferência causal e evidência de mundo real'
     type: aula
@@ -140,6 +193,15 @@ calendar:
     note: Módulo 4 — Sobrevivência, inferência causal e decisão.
     references:
       - WANG; LI; REDDY (2019); HERNÁN; ROBINS (2020)
+    materials:
+      - title: Slides da aula 11
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-11/
+        type: slides
+        external: true
+      - title: Slides da aula 12
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-12/
+        type: slides
+        external: true
   - date: '2026-10-30'
     title: Semana de extensão (SEMEXT)
     type: atividade
@@ -152,6 +214,19 @@ calendar:
     note: Módulo 5 — Ética, regulação e prática profissional.
     references:
       - BERNER (2007); WORLD HEALTH ORGANIZATION (2021); ANVISA (2022); FDA (2025); COLLINS et al. (2024)
+    materials:
+      - title: Slides da aula 13
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-13/
+        type: slides
+        external: true
+      - title: Slides da aula 14
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-14/
+        type: slides
+        external: true
+      - title: Slides da aula 15
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-15/
+        type: slides
+        external: true
   - date: '2026-11-13'
     title: Apresentação de artigo 2
     type: apresentacao
@@ -169,6 +244,11 @@ calendar:
     note: Módulo 5 — Ética, regulação e prática profissional.
     references:
       - TOPOL (2019); WORLD HEALTH ORGANIZATION (2024)
+    materials:
+      - title: Slides da aula 16
+        url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-16/
+        type: slides
+        external: true
   - date: '2026-12-04'
     title: Apresentação do projeto final
     type: apresentacao
