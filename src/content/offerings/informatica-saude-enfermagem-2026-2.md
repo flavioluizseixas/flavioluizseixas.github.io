@@ -38,30 +38,6 @@ materials:
     url: https://informatica-saude-enfermagem.netlify.app/apresentacao_disciplina.html
     type: slides
     external: true
-  - title: Slides do encontro 1
-    url: https://informatica-saude-enfermagem.netlify.app/encontro_01.html
-    type: slides
-    external: true
-  - title: Slides do encontro 2
-    url: https://informatica-saude-enfermagem.netlify.app/encontro_02.html
-    type: slides
-    external: true
-  - title: Slides do encontro 3
-    url: https://informatica-saude-enfermagem.netlify.app/encontro_03.html
-    type: slides
-    external: true
-  - title: Slides do encontro 4
-    url: https://informatica-saude-enfermagem.netlify.app/encontro_04.html
-    type: slides
-    external: true
-  - title: Slides do encontro 5
-    url: https://informatica-saude-enfermagem.netlify.app/encontro_05.html
-    type: slides
-    external: true
-  - title: Slides do encontro 6
-    url: https://informatica-saude-enfermagem.netlify.app/encontro_06.html
-    type: slides
-    external: true
 calendar:
   - date: '2026-08-10'
     title: 'Encontro 1: Problema, dados, decisão e Informática em Saúde'

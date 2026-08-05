@@ -58,8 +58,11 @@ test('disciplina de Informática em Saúde exibe docentes e encontros', async ({
   await expect(page.locator('.facts')).toContainText(
     'Bianca Dargam Gomes Vieira · Flávio Luiz Seixas'
   );
-  await expect(page.locator('#materiais .resource')).toHaveCount(7);
-  await expect(page.locator('#materiais a[href*="/encontro_"]')).toHaveCount(6);
+  await expect(page.locator('#materiais .resource')).toHaveCount(1);
+  await expect(page.locator('#materiais a[href*="/encontro_"]')).toHaveCount(0);
+  await expect(page.locator('#calendario a[href*="/encontro_"]')).toHaveCount(
+    6
+  );
   await expect(page.locator('#calendario .event')).toHaveCount(5);
   await expect(page.locator('#visao-geral ol li')).toHaveCount(6);
   await expect(page.locator('#visao-geral ol')).not.toContainText('Encontro 1');
