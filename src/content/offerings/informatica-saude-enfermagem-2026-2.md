@@ -30,7 +30,7 @@ prerequisites: []
 evaluation: A proposta de avaliação combina preparação e participação, artefatos cumulativos, leituras orientadas e um brief decisório com apresentação final. Pesos, prazos e critérios institucionais serão confirmados pelos docentes.
 references: []
 language: pt-BR
-updated: 05/08/2026
+updated: 17/08/2026
 notice: Horários, sala dos encontros presenciais e plataforma dos encontros remotos serão confirmados pelos docentes.
 materials:
   - title: Apresentação da disciplina
@@ -48,6 +48,10 @@ calendar:
         url: https://informatica-saude-enfermagem.netlify.app/encontro_01.html
         type: slides
         external: true
+      - title: Apostila do encontro 1
+        url: https://informatica-saude-enfermagem.netlify.app/materiais/apostilas/apostila_encontro_01.pdf?v=2026-08-17
+        type: leitura
+        external: true
   - date: '2026-08-11'
     title: 'Encontros 2 e 3: Dados e ferramentas para pesquisa e decisão; Sistemas de informação, RNDS, terminologias e interoperabilidade'
     type: aula
@@ -58,9 +62,17 @@ calendar:
         url: https://informatica-saude-enfermagem.netlify.app/encontro_02.html
         type: slides
         external: true
+      - title: Apostila do encontro 2
+        url: https://informatica-saude-enfermagem.netlify.app/materiais/apostilas/apostila_encontro_02.pdf?v=2026-08-17
+        type: leitura
+        external: true
       - title: Slides do encontro 3
         url: https://informatica-saude-enfermagem.netlify.app/encontro_03.html
         type: slides
+        external: true
+      - title: Apostila do encontro 3
+        url: https://informatica-saude-enfermagem.netlify.app/materiais/apostilas/apostila_encontro_03.pdf?v=2026-08-17
+        type: leitura
         external: true
   - date: '2026-08-20'
     title: 'Encontro 4: Tecnologia aplicada ao produto profissional e cuidado conectado'
@@ -72,6 +84,10 @@ calendar:
         url: https://informatica-saude-enfermagem.netlify.app/encontro_04.html
         type: slides
         external: true
+      - title: Apostila do encontro 4
+        url: https://informatica-saude-enfermagem.netlify.app/materiais/apostilas/apostila_encontro_04.pdf?v=2026-08-17
+        type: leitura
+        external: true
   - date: '2026-08-27'
     title: 'Encontro 5: IA crítica e aplicada ao doutorado e à prática'
     type: aula
@@ -82,6 +98,10 @@ calendar:
         url: https://informatica-saude-enfermagem.netlify.app/encontro_05.html
         type: slides
         external: true
+      - title: Apostila do encontro 5
+        url: https://informatica-saude-enfermagem.netlify.app/materiais/apostilas/apostila_encontro_05.pdf?v=2026-08-17
+        type: leitura
+        external: true
   - date: '2026-09-03'
     title: 'Encontro 6: Integração, implementação e decisão governável'
     type: aula
@@ -91,6 +111,10 @@ calendar:
       - title: Slides do encontro 6
         url: https://informatica-saude-enfermagem.netlify.app/encontro_06.html
         type: slides
+        external: true
+      - title: Apostila do encontro 6
+        url: https://informatica-saude-enfermagem.netlify.app/materiais/apostilas/apostila_encontro_06.pdf?v=2026-08-17
+        type: leitura
         external: true
 ---
 

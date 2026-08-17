@@ -66,6 +66,9 @@ test('disciplina de Informática em Saúde exibe docentes e encontros', async ({
   await expect(page.locator('#calendario a[href*="/encontro_"]')).toHaveCount(
     6
   );
+  await expect(
+    page.locator('#calendario a[href*="/materiais/apostilas/"]')
+  ).toHaveCount(6);
   await expect(page.locator('#calendario .event')).toHaveCount(5);
   await expect(page.locator('#visao-geral ol li')).toHaveCount(6);
   await expect(page.locator('#visao-geral ol')).not.toContainText('Encontro 1');
