@@ -38,11 +38,14 @@ test('disciplina e agenda são renderizadas em inglês', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 
-test('links de slides múltiplos são separados visualmente', async ({
+test('slides e apostilas são associados às respectivas aulas', async ({
   page
 }) => {
   await page.goto('/ensino/aprendizado-maquina-saude/2026-2/');
-  await expect(page.locator('#calendario .material-separator')).toHaveCount(5);
+  await expect(
+    page.locator('#calendario a[href*="/apostilas/encontro_"]')
+  ).toHaveCount(16);
+  await expect(page.locator('#calendario .material-separator')).toHaveCount(21);
 });
 
 test('disciplina de Informática em Saúde exibe docentes e encontros', async ({
