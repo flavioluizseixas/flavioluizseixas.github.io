@@ -1,11 +1,19 @@
 import { test, expect } from '@playwright/test';
+import { loadCollection } from '../../scripts/content';
+import type { ExtensionProject } from '../../src/lib/extension-project-schema';
+import { NEW_PROJECT_DAYS } from '../../data/extension-catalog';
+
+const projects = loadCollection<ExtensionProject>('extension-projects');
+const opportunities = projects.filter(
+  (project) => project.status === 'inscricoes-abertas'
+);
 
 test('oportunidades abertas aparecem uma única vez e não integram a busca', async ({
   page
 }) => {
   await page.goto('/extensao/');
   await expect(page.locator('#novas-oportunidades .project-card')).toHaveCount(
-    3
+    opportunities.length
   );
   await expect(page.locator('#project-results .project-card')).toHaveCount(0);
   const slugs = await page
@@ -13,14 +21,24 @@ test('oportunidades abertas aparecem uma única vez e não integram a busca', as
     .evaluateAll((cards) =>
       cards.map((card) => card.getAttribute('data-project'))
     );
-  expect(new Set(slugs).size).toBe(3);
+  expect([...new Set(slugs)].sort()).toEqual(
+    projects.map((project) => project.slug).sort()
+  );
   await expect(page.locator('.extension-intro')).toContainText(
-    'Os projetos divulgados até o momento são da Enfermagem'
+    'pesquisa em parceria com a Fiocruz'
   );
   const logos = page.locator('.project-card .project-logo img');
-  await expect(logos).toHaveCount(3);
-  for (const logo of await logos.all()) {
-    await expect(logo).toHaveAttribute('alt', 'Logo da Enfermagem');
+  await expect(logos).toHaveCount(
+    projects.filter((project) => project.logo).length
+  );
+  for (const project of projects.filter((project) => project.logo)) {
+    const logo = page.locator(
+      `[data-project="${project.slug}"] .project-logo img`
+    );
+    await expect(logo).toHaveAttribute('alt', project.logo!.alt);
+    expect(await logo.getAttribute('src')).toContain(
+      project.logo!.src.split('.')[0]
+    );
     await logo.scrollIntoViewIfNeeded();
     await expect
       .poll(() =>
@@ -53,7 +71,7 @@ test('filtros na URL não ocultam nem duplicam oportunidades abertas', async ({
   await page.goto('/extensao/?q=gisele&status=em-andamento&area=saude-digital');
   await expect(
     page.locator('#novas-oportunidades .project-card:visible')
-  ).toHaveCount(3);
+  ).toHaveCount(opportunities.length);
   await expect(page.locator('#project-results .project-card')).toHaveCount(0);
   await page.locator('[data-project="acenf"] .project-link').click();
   await expect(page).toHaveURL(/\/extensao\/projetos\/acenf\/$/);
@@ -62,31 +80,35 @@ test('filtros na URL não ocultam nem duplicam oportunidades abertas', async ({
   await page.reload();
   await expect(
     page.locator('#novas-oportunidades .project-card:visible')
-  ).toHaveCount(3);
+  ).toHaveCount(opportunities.length);
   await expect(page.locator('#project-results .project-card')).toHaveCount(0);
 });
 
 test('páginas individuais contêm descrição, equipe, metadados e links de retorno', async ({
   page
 }) => {
-  for (const [slug, member] of [
-    ['acenf', 'Gisele Morais'],
-    ['auditoria-saude-suplementar', 'Talita Barcelos'],
-    ['qualificacao-denuncias-enfermagem', 'Patrícia Oliveira']
-  ]) {
+  for (const project of projects) {
+    const { slug } = project;
     await page.goto(`/extensao/projetos/${slug}/`);
-    await expect(page.locator('main h1')).toHaveCount(1);
+    await expect(page.locator('main h1')).toHaveText(project.titulo);
     const logo = page.locator('.project-detail-hero .project-logo img');
-    await expect(logo).toHaveAttribute('alt', 'Logo da Enfermagem');
-    await expect
-      .poll(() =>
-        logo.evaluate(
-          (img: HTMLImageElement) => img.complete && img.naturalWidth > 0
+    if (project.logo) {
+      await expect(logo).toHaveAttribute('alt', project.logo.alt);
+      expect(await logo.getAttribute('src')).toContain(
+        project.logo.src.split('.')[0]
+      );
+      await expect
+        .poll(() =>
+          logo.evaluate(
+            (img: HTMLImageElement) => img.complete && img.naturalWidth > 0
+          )
         )
-      )
-      .toBe(true);
+        .toBe(true);
+    } else {
+      await expect(logo).toHaveCount(0);
+    }
     await expect(page.locator('.project-facts')).toContainText(
-      '4 horas semanais'
+      project.carga_horaria
     );
     for (const heading of [
       'Sobre o projeto',
@@ -101,10 +123,9 @@ test('páginas individuais contêm descrição, equipe, metadados e links de ret
         page.getByRole('heading', { name: heading, exact: true })
       ).toBeVisible();
     }
-    await expect(page.locator('.project-team')).toContainText(member);
-    await expect(page.locator('.project-team')).toContainText(
-      'Flávio Luiz Seixas'
-    );
+    for (const member of project.equipe) {
+      await expect(page.locator('.project-team')).toContainText(member.nome);
+    }
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
       new RegExp(`/extensao/projetos/${slug}/$`)
@@ -136,7 +157,7 @@ test('navegação em inglês identifica o conteúdo disponível em português', 
     .getByRole('link', { name: 'Explore projects in Portuguese' })
     .click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
-  await expect(page.locator('[data-project]')).toHaveCount(3);
+  await expect(page.locator('[data-project]')).toHaveCount(projects.length);
 });
 
 test('conteúdo e links continuam disponíveis sem JavaScript', async ({
@@ -145,7 +166,7 @@ test('conteúdo e links continuam disponíveis sem JavaScript', async ({
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4321/extensao/');
-  await expect(page.locator('[data-project]')).toHaveCount(3);
+  await expect(page.locator('[data-project]')).toHaveCount(projects.length);
   await expect(page.getByRole('searchbox')).toHaveCount(0);
   await page.locator('[data-project="acenf"] .project-link').click();
   await expect(
@@ -157,12 +178,19 @@ test('conteúdo e links continuam disponíveis sem JavaScript', async ({
 test('badges vencem automaticamente mesmo com conteúdo de um build anterior', async ({
   page
 }) => {
-  await page.clock.setFixedTime(new Date('2026-11-12T15:00:00Z'));
+  const latestPublication = Math.max(
+    ...projects.map((project) =>
+      Date.parse(`${project.data_publicacao}T15:00:00Z`)
+    )
+  );
+  await page.clock.setFixedTime(
+    new Date(latestPublication + (NEW_PROJECT_DAYS + 1) * 86_400_000)
+  );
   await page.goto('/extensao/');
   await expect(page.locator('.project-new:visible')).toHaveCount(0);
   await expect(
     page.locator('#novas-oportunidades .project-card:visible')
-  ).toHaveCount(3);
+  ).toHaveCount(opportunities.length);
 });
 
 test('catálogo e detalhes cabem em 360, 768, 1024 e 1440 px nos dois temas', async ({
@@ -176,7 +204,8 @@ test('catálogo e detalhes cabem em 360, 768, 1024 e 1440 px nos dois temas', as
     for (const theme of ['light', 'dark']) {
       for (const path of [
         '/extensao/',
-        '/extensao/projetos/qualificacao-denuncias-enfermagem/'
+        '/extensao/projetos/qualificacao-denuncias-enfermagem/',
+        '/extensao/projetos/ventilacao-mecanica-trajetorias-ml/'
       ]) {
         await page.goto(path);
         await page.evaluate((value) => {

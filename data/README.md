@@ -18,7 +18,7 @@ Este diretório é a fonte de todo o conteúdo editorial e das imagens. Para mud
 
 A coleção Astro percorre todos os `.md` de `extension-projects/`, inclusive subpastas, e gera o catálogo `/extensao/` e as páginas `/extensao/projetos/{slug}/`. O nome da pasta não muda a URL. Os arquivos `.example` não são publicados. Não existe uma lista manual de projetos a atualizar.
 
-Os projetos atuais são da Enfermagem e usam a imagem `images/enfermagem.png`. Novos projetos podem indicar outras logos ou omitir o campo. O arquivo referenciado precisa existir e ter texto alternativo. PNG, JPEG, WebP, AVIF, GIF e SVG são aceitos.
+Os projetos da Enfermagem usam `images/enfermagem.png`; a pesquisa sobre ventilação mecânica em parceria com a Fiocruz usa `images/fiocruz.jpg`. Novos projetos podem indicar outras logos ou omitir o campo. O arquivo referenciado precisa existir e ter texto alternativo. PNG, JPEG, WebP, AVIF, GIF e SVG são aceitos.
 
 ## Onde editar
 

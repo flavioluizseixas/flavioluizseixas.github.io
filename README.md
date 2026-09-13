@@ -81,7 +81,7 @@ As rotas em português não têm prefixo (`/ensino/`, `/pesquisa/`). As equivale
 
 O catálogo `/extensao/` usa a coleção Astro `extensionProjects`, separada dos projetos institucionais de pesquisa/extensão em `data/projects/`. Cada oportunidade tem um arquivo Markdown em `data/extension-projects/`; o front matter alimenta cards, filtros, equipe, metadados e a URL `/extensao/projetos/{slug}/`. O corpo contém a descrição completa.
 
-O carregador percorre automaticamente o diretório e suas subpastas durante o build. Adicionar um `.md` válido basta para gerar o cartão e a página individual: não é preciso cadastrar o projeto em uma lista ou editar os componentes. Os três projetos divulgados até o momento são da Enfermagem, ligados ao PEA/UFF; o catálogo aceita novas áreas sem alterações no código.
+O carregador percorre automaticamente o diretório e suas subpastas durante o build. Adicionar um `.md` válido basta para gerar o cartão e a página individual: não é preciso cadastrar o projeto em uma lista ou editar os componentes. O catálogo reúne projetos da Enfermagem ligados ao PEA/UFF e uma pesquisa sobre ventilação mecânica em parceria com a Fiocruz; novas áreas e modalidades são aceitas sem alterações no código.
 
 Para adicionar um projeto:
 
@@ -96,7 +96,7 @@ O badge **Novo** vale por 60 dias corridos, incluindo o dia 60, a partir de `dat
 
 A busca é exclusiva dos projetos em andamento e concluídos. Ela ignora caixa e acentos e combina título, resumo, áreas, palavras-chave e equipe. Filtros podem ser compartilhados pela URL, por exemplo `/extensao/?status=em-andamento&area=saude-digital`. Quando não há projetos nesses estados, a seção apresenta uma mensagem e oculta os filtros. As oportunidades abertas continuam visíveis durante a busca. Sem JavaScript, todos os projetos e suas páginas continuam acessíveis.
 
-O documento original dos três projetos de 2026.2 foi preservado em `data/sources/` somente como histórico. A fonte de edição e publicação é `data/extension-projects/`. Build e testes não dependem de `prompts/` nem do histórico. Ainda não há versões inglesas fornecidas: `/en/outreach/` mantém a apresentação institucional em inglês e aponta para o catálogo em português. As páginas individuais são publicadas apenas em português, sem anunciar traduções inexistentes; as demais rotas mantêm o seletor PT/EN. Esta coleção não exige entradas em `englishContent` até haver traduções revisadas.
+Os documentos originais dos projetos foram preservados em `data/sources/` somente como histórico. A fonte de edição e publicação é `data/extension-projects/`. Build e testes não dependem de `prompts/` nem do histórico. Ainda não há versões inglesas fornecidas: `/en/outreach/` mantém a apresentação institucional em inglês e aponta para o catálogo em português. As páginas individuais são publicadas apenas em português, sem anunciar traduções inexistentes; as demais rotas mantêm o seletor PT/EN. Esta coleção não exige entradas em `englishContent` até haver traduções revisadas.
 
 Exemplo de logo no front matter:
 
@@ -106,7 +106,7 @@ logo:
   alt: Logo da Enfermagem
 ```
 
-O caminho é relativo a `data/images/` e aceita subpastas. Logos são opcionais e específicas de cada projeto; os três projetos atuais compartilham a imagem fornecida da Enfermagem. A mesma logo aparece no cartão e na página individual. Uma referência a imagem inexistente faz a validação falhar.
+O caminho é relativo a `data/images/` e aceita subpastas. Logos são opcionais e específicas de cada projeto: os projetos da Enfermagem usam `enfermagem.png`, e a pesquisa em parceria com a Fiocruz usa `fiocruz.jpg`. A mesma logo aparece no cartão e na página individual. Uma referência a imagem inexistente faz a validação falhar.
 
 ## Editar uma disciplina
 
@@ -156,7 +156,11 @@ A URL da disciplina em cada semestre é imutável: `/ensino/{slug}/{ano-semestre
 
 ## GitHub Pages
 
-O workflow em `.github/workflows/deploy.yml` valida pull requests e publica pushes em `main`. Ative **Settings → Pages → Source: GitHub Actions**. O `astro.config.mjs` detecta project pages pelo nome de `GITHUB_REPOSITORY`; `SITE_URL` e `BASE_PATH` podem substituir a configuração automaticamente.
+O workflow em `.github/workflows/deploy.yml` valida pull requests e publica pushes em `main`. Ele também permite publicar manualmente pela aba **Actions → Validar e publicar → Run workflow**, selecionando `main`. Ative **Settings → Pages → Build and deployment → Source: GitHub Actions**. O `astro.config.mjs` detecta project pages pelo nome de `GITHUB_REPOSITORY`; `SITE_URL` e `BASE_PATH` podem substituir a configuração automaticamente.
+
+Se o log executar `actions/jekyll-build-pages` e mostrar `Invalid YAML front matter` em arquivos `.astro`, a publicação está usando Jekyll. O bloco inicial de um componente Astro contém JavaScript/TypeScript; o Jekyll tenta interpretá-lo como YAML. Selecione **GitHub Actions** como origem e use o workflow **Validar e publicar**, que executa `npm run build` e envia somente `dist/`. O workflow existente dispensa a criação de um template Jekyll. Adicionar apenas `.nojekyll` à raiz não compila o código Astro.
+
+Referência: [configurar a origem de publicação do GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow).
 
 Antes do lançamento, ajuste o domínio em `data/site.json`, `data/static/robots.txt` e confirme as pendências em [migration-review.md](docs/migration-review.md). O mapa de URLs antigas está em [legacy-redirects.json](data/legacy-redirects.json).
 
