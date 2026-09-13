@@ -26,6 +26,7 @@ const validPayload = () => ({
 });
 
 function harness() {
+  const logs: string[] = [];
   const rows: unknown[][] = [Array(12).fill('header')];
   const files: {
     folder: string;
@@ -77,7 +78,10 @@ function harness() {
     })
   };
   const context = vm.createContext({
-    console,
+    console: {
+      log: (value: string) => logs.push(value),
+      error: (value: string) => logs.push(value)
+    },
     Date,
     PropertiesService: {
       getScriptProperties: () => ({
@@ -156,6 +160,7 @@ function harness() {
     properties,
     faults,
     locks,
+    logs,
     context
   };
 }
@@ -238,6 +243,53 @@ describe('configuração e validação do formulário', () => {
 });
 
 describe('gravação no Apps Script (serviços Google simulados)', () => {
+  it.each([
+    ['ROOT_FOLDER_ID', null, 'ROOT_NOT_CONFIGURED'],
+    ['REGISTRATIONS_PAUSED', null, 'SETUP_REQUIRED'],
+    ['REGISTRATIONS_PAUSED', 'true', 'SERVICE_PAUSED'],
+    ['REGISTRATIONS_PAUSED', 'False ', 'SERVICE_PAUSED'],
+    ['PROJECT_02-2026_acenf', null, 'PROJECT_NOT_INITIALIZED'],
+    ['PROJECT_02-2026_acenf', '{invalid', 'PROJECT_CONFIG_INVALID'],
+    ['PROJECT_02-2026_acenf', '{"rootId":"root"}', 'PROJECT_CONFIG_INVALID'],
+    ['PROJECT_02-2026_acenf', '{"rootId":"different"}', 'ROOT_CHANGED']
+  ])(
+    'registra a causa privada de indisponibilidade: %s = %s',
+    (key, value, reason) => {
+      const app = harness();
+      if (value === null) app.properties.delete(key!);
+      else app.properties.set(key!, value!);
+      expect(app.submit(validPayload())).toEqual({
+        ok: false,
+        code: 'unavailable'
+      });
+      expect(JSON.parse(app.logs.at(-1)!)).toMatchObject({
+        event: 'REGISTRATION_FAILED',
+        reason
+      });
+      expect(app.files).toHaveLength(0);
+    }
+  );
+
+  it('registra a etapa da falha sem expor dados do aluno nem a exceção bruta', () => {
+    const app = harness();
+    const payload = validPayload();
+    app.faults.append = true;
+    expect(app.submit(payload)).toEqual({ ok: false, code: 'retry' });
+    const log = app.logs.at(-1)!;
+    expect(JSON.parse(log)).toMatchObject({
+      stage: 'APPEND_RESPONSE',
+      reason: 'GOOGLE_SERVICE_ERROR'
+    });
+    for (const privateText of [
+      payload.name,
+      payload.email,
+      payload.interest,
+      payload.file.base64,
+      'Private Google error'
+    ])
+      expect(log).not.toContain(privateText);
+  });
+
   it('grava respostas e PDF somente na pasta cadastrada para o projeto', () => {
     const app = harness();
     const payload = {

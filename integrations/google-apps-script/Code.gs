@@ -1,5 +1,33 @@
-// Execute setupRegistrations_ somente no editor, com a conta institucional.
-// Funções terminadas em _ não podem ser chamadas por google.script.run.
+// Selecione estas funções no editor com a conta responsável pela implantação.
+// As entradas sem _ também são visíveis ao RPC: a verificação de identidade é obrigatória.
+function prepararInscricoes() {
+  requireAdministrativeUser_();
+  return setupRegistrations_();
+}
+
+function diagnosticarInscricoes() {
+  requireAdministrativeUser_();
+  return diagnoseRegistrations_();
+}
+
+function testarArmazenamento() {
+  requireAdministrativeUser_();
+  return testRegistrationStorage_();
+}
+
+function requireAdministrativeUser_() {
+  // getEffectiveUser sozinho identifica o dono mesmo em chamadas anônimas.
+  // Exigir também a identidade ativa impede que visitantes executem a administração.
+  const active = Session.getActiveUser().getEmail().trim().toLowerCase();
+  const effective = Session.getEffectiveUser().getEmail().trim().toLowerCase();
+  if (!active || !effective || active !== effective) {
+    throw new Error(
+      'Acesso administrativo negado. Execute pelo editor do Apps Script com a conta responsável pela implantação.'
+    );
+  }
+}
+
+// Implementações internas: funções terminadas em _ não são chamadas por google.script.run.
 function setupRegistrations_() {
   const properties = PropertiesService.getScriptProperties();
   const rootId = properties.getProperty('ROOT_FOLDER_ID');
@@ -104,8 +132,9 @@ function doGet(event) {
 }
 
 function submitRegistration(payload) {
+  const context = { stage: 'INITIALIZE' };
   try {
-    return saveRegistration_(payload);
+    return saveRegistration_(payload, context);
   } catch (error) {
     // Não devolver exceções do Google, IDs internos nem dados pessoais ao navegador.
     const code = Object.prototype.hasOwnProperty.call(
@@ -114,12 +143,22 @@ function submitRegistration(payload) {
     )
       ? error.message
       : 'retry';
+    console.error(
+      JSON.stringify({
+        event: 'REGISTRATION_FAILED',
+        code: code,
+        reason: error.registrationReason || 'GOOGLE_SERVICE_ERROR',
+        stage: context.stage
+      })
+    );
     return { ok: false, code: code };
   }
 }
 
-function fail_(code) {
-  throw new Error(code);
+function fail_(code, reason) {
+  const error = new Error(code);
+  error.registrationReason = reason || code;
+  throw error;
 }
 
 function normalizeSubmission_(payload) {
@@ -256,20 +295,29 @@ function safeCell_(value) {
   return /^[=+\-@\t\r\n]/.test(value) ? "'" + value : value;
 }
 
-function saveRegistration_(payload) {
+function saveRegistration_(payload, context) {
   const properties = PropertiesService.getScriptProperties();
-  if (properties.getProperty('REGISTRATIONS_PAUSED') !== 'false')
-    fail_('unavailable');
+  const rootId = properties.getProperty('ROOT_FOLDER_ID');
+  if (!rootId) fail_('unavailable', 'ROOT_NOT_CONFIGURED');
+  const paused = properties.getProperty('REGISTRATIONS_PAUSED');
+  if (paused === null) fail_('unavailable', 'SETUP_REQUIRED');
+  if (paused !== 'false') fail_('unavailable', 'SERVICE_PAUSED');
+  context.stage = 'VALIDATE_SUBMISSION';
   const submission = normalizeSubmission_(payload);
   const project = submission.project;
-  const resources = JSON.parse(
-    properties.getProperty(resourceKey_(project)) || 'null'
-  );
-  if (
-    !resources ||
-    resources.rootId !== properties.getProperty('ROOT_FOLDER_ID')
-  )
-    fail_('unavailable');
+  context.stage = 'PROJECT_RESOURCES';
+  let resources;
+  try {
+    resources = JSON.parse(
+      properties.getProperty(resourceKey_(project)) || 'null'
+    );
+  } catch (_) {
+    fail_('unavailable', 'PROJECT_CONFIG_INVALID');
+  }
+  if (!resources) fail_('unavailable', 'PROJECT_NOT_INITIALIZED');
+  if (resources.rootId !== rootId) fail_('unavailable', 'ROOT_CHANGED');
+  if (!resources.pdfFolderId || !resources.spreadsheetId)
+    fail_('unavailable', 'PROJECT_CONFIG_INVALID');
   const hash = digest_(
     JSON.stringify([
       submission.name,
@@ -282,11 +330,14 @@ function saveRegistration_(payload) {
     ])
   );
   const lock = LockService.getScriptLock();
+  context.stage = 'ACQUIRE_LOCK';
   if (!lock.tryLock(5000)) fail_('retry');
   try {
+    context.stage = 'OPEN_SPREADSHEET';
     const sheet = SpreadsheetApp.openById(
       resources.spreadsheetId
     ).getSheets()[0];
+    context.stage = 'FIND_PREVIOUS_SUBMISSION';
     const previous = rowForRequest_(sheet, submission.requestId);
     if (previous) return receipt_(previous, hash);
     const today = Utilities.formatDate(
@@ -299,8 +350,10 @@ function saveRegistration_(payload) {
       (project.deadline && today > project.deadline)
     )
       fail_('closed');
+    context.stage = 'CHECK_QUOTA';
     takeQuota_(properties, submission.email);
     const protocol = 'EXT-' + submission.requestId;
+    context.stage = 'CREATE_PDF';
     const folder = DriveApp.getFolderById(resources.pdfFolderId);
     const pdf = folder.createFile(
       Utilities.newBlob(submission.bytes, 'application/pdf', protocol + '.pdf')
@@ -320,7 +373,9 @@ function saveRegistration_(payload) {
       REGISTRATION_CONFIG.privacyVersion
     ];
     try {
+      context.stage = 'APPEND_RESPONSE';
       sheet.appendRow(row);
+      context.stage = 'FLUSH_RESPONSE';
       SpreadsheetApp.flush();
     } catch (error) {
       // Um timeout pode ocorrer depois de o Sheets gravar: verificar antes de remover o PDF.
@@ -334,4 +389,142 @@ function saveRegistration_(payload) {
   } finally {
     lock.releaseLock();
   }
+}
+
+// Diagnóstico privado: executar no editor, nunca expor por doGet/google.script.run.
+// Lê configuração, metadados e cabeçalhos; não lê as respostas dos alunos.
+function diagnoseRegistrations_() {
+  const properties = PropertiesService.getScriptProperties();
+  const rootId = properties.getProperty('ROOT_FOLDER_ID');
+  const checks = [];
+  let rootUrl = null;
+  function check(item, action) {
+    try {
+      action();
+      checks.push({ item: item, ok: true });
+    } catch (error) {
+      checks.push({ item: item, ok: false, detail: error.message });
+    }
+  }
+  check('ROOT_FOLDER_ID', function () {
+    if (!rootId)
+      throw new Error('Defina o ID da pasta raiz nas Propriedades do script.');
+    const root = DriveApp.getFolderById(rootId);
+    if (root.isTrashed()) throw new Error('A pasta raiz está na lixeira.');
+    if (root.getSharingAccess() !== DriveApp.Access.PRIVATE)
+      throw new Error('Mantenha o Acesso geral da pasta raiz como Restrito.');
+    rootUrl = root.getUrl();
+  });
+  check('REGISTRATIONS_PAUSED', function () {
+    const paused = properties.getProperty('REGISTRATIONS_PAUSED');
+    if (paused === null)
+      throw new Error(
+        'Inicialização pendente: execute prepararInscricoes até concluir sem erros.'
+      );
+    if (paused !== 'false')
+      throw new Error(
+        'Serviço pausado. Para retomar após conferir a configuração, use o valor false (minúsculo, sem espaços).'
+      );
+  });
+  REGISTRATION_CONFIG.projects.forEach(function (project) {
+    check(resourceKey_(project), function () {
+      const raw = properties.getProperty(resourceKey_(project));
+      if (!raw)
+        throw new Error('Projeto não preparado: execute prepararInscricoes.');
+      const resources = JSON.parse(raw);
+      if (!resources || resources.rootId !== rootId)
+        throw new Error(
+          'Cadastro incompatível com a pasta raiz atual. Confira ROOT_FOLDER_ID.'
+        );
+      if (!resources.pdfFolderId || !resources.spreadsheetId)
+        throw new Error(
+          'Cadastro incompleto. Não edite as propriedades PROJECT_* manualmente.'
+        );
+      const folder = DriveApp.getFolderById(resources.pdfFolderId);
+      if (folder.isTrashed())
+        throw new Error('A pasta de históricos está na lixeira.');
+      if (DriveApp.getFileById(resources.spreadsheetId).isTrashed())
+        throw new Error('A planilha de respostas está na lixeira.');
+      const sheet = SpreadsheetApp.openById(
+        resources.spreadsheetId
+      ).getSheets()[0];
+      const expected = REGISTRATION_CONFIG.copy.storage.headers;
+      const headers = sheet
+        .getRange(1, 1, 1, expected.length)
+        .getDisplayValues()[0];
+      if (JSON.stringify(headers) !== JSON.stringify(expected))
+        throw new Error(
+          'Cabeçalhos ou ordem das colunas diferentes da configuração. Confira a primeira aba da planilha.'
+        );
+    });
+  });
+  const report = {
+    ok: checks.every(function (entry) {
+      return entry.ok;
+    }),
+    rootUrl: rootUrl,
+    allowedOrigins: REGISTRATION_CONFIG.allowedOrigins,
+    projects: REGISTRATION_CONFIG.projects.length,
+    checks: checks
+  };
+  console.log(JSON.stringify(report, null, 2));
+  return report;
+}
+
+// Teste real e privado de escrita. Só os arquivos criados nesta execução vão à lixeira.
+// Não gera inscrição, não consome a cota de inscrições e não altera planilhas existentes.
+function testRegistrationStorage_() {
+  const temporary = [];
+  const report = { ok: false, stage: 'ROOT_FOLDER', cleanupErrors: [] };
+  try {
+    const rootId =
+      PropertiesService.getScriptProperties().getProperty('ROOT_FOLDER_ID');
+    if (!rootId)
+      throw new Error('Defina ROOT_FOLDER_ID nas Propriedades do script.');
+    const root = DriveApp.getFolderById(rootId);
+    if (root.isTrashed() || root.getSharingAccess() !== DriveApp.Access.PRIVATE)
+      throw new Error('Use uma pasta raiz ativa com Acesso geral Restrito.');
+    report.stage = 'CREATE_TEST_FOLDER';
+    const folder = root.createFolder(
+      '_teste-inscricoes-' + Utilities.getUuid()
+    );
+    temporary.push(folder);
+    report.temporaryFolderUrl = folder.getUrl();
+    report.stage = 'WRITE_DRIVE';
+    const text = 'Teste de escrita das inscrições. Sem dados de alunos.';
+    const file = folder.createFile(
+      Utilities.newBlob(text, 'text/plain', 'teste.txt')
+    );
+    temporary.push(file);
+    if (file.getBlob().getDataAsString() !== text)
+      throw new Error('O conteúdo lido no Drive difere do conteúdo escrito.');
+    report.stage = 'CREATE_SPREADSHEET';
+    const spreadsheet = SpreadsheetApp.create('_teste-inscricoes');
+    const spreadsheetFile = DriveApp.getFileById(spreadsheet.getId());
+    temporary.push(spreadsheetFile);
+    spreadsheetFile.moveTo(folder);
+    report.stage = 'WRITE_SHEETS';
+    const sheet = spreadsheet.getSheets()[0];
+    sheet.appendRow(['Diagnóstico', 'OK']);
+    SpreadsheetApp.flush();
+    if (sheet.getRange(1, 1, 1, 2).getDisplayValues()[0][1] !== 'OK')
+      throw new Error(
+        'Não foi possível confirmar a leitura da linha de teste.'
+      );
+    report.ok = true;
+    report.stage = 'COMPLETE';
+  } catch (error) {
+    report.error = error.message;
+  } finally {
+    temporary.reverse().forEach(function (resource) {
+      try {
+        resource.setTrashed(true);
+      } catch (error) {
+        report.cleanupErrors.push(error.message);
+      }
+    });
+    if (report.cleanupErrors.length) report.ok = false;
+  }
+  console.log(JSON.stringify(report, null, 2));
+  return report;
 }
