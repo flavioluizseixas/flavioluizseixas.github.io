@@ -14,7 +14,7 @@ Os projetos oferecem oportunidades de atuação interdisciplinar entre **Computa
 **Área:** Saúde Digital, Enfermagem, Business Intelligence e Desenvolvimento de Sistemas  
 **Status:** Inscrições abertas  
 **Semestre de divulgação:** 02-2026  
-**Carga horária:** 4 horas semanais  
+**Carga horária:** 4 horas semanais
 
 ### Resumo
 
@@ -73,7 +73,7 @@ Estudantes interessados em **desenvolvimento de sistemas, saúde digital, aplica
 **Área:** Saúde Digital, Enfermagem, Gestão em Saúde e Sistemas de Apoio à Decisão  
 **Status:** Inscrições abertas  
 **Semestre de divulgação:** 02-2026  
-**Carga horária:** 4 horas semanais  
+**Carga horária:** 4 horas semanais
 
 ### Resumo
 
@@ -132,7 +132,7 @@ Estudantes interessados em **sistemas de informação, organização e recupera�
 **Área:** Saúde Digital, Enfermagem, Gestão da Informação e Desenvolvimento de Sistemas  
 **Status:** Inscrições abertas  
 **Semestre de divulgação:** 02-2026  
-**Carga horária:** 4 horas semanais  
+**Carga horária:** 4 horas semanais
 
 ### Resumo
 
@@ -192,7 +192,7 @@ Estudantes interessados em **desenvolvimento de sistemas, modelagem de processos
 Para manter a página padronizada, novos projetos podem utilizar a seguinte estrutura:
 
 ```yaml
-titulo: "Título do projeto"
+titulo: 'Título do projeto'
 
 modalidade:
   - Iniciação Científica
@@ -202,45 +202,45 @@ area:
   - Saúde Digital
   - Desenvolvimento de Sistemas
 
-status: "Inscrições abertas"
-semestre_divulgacao: "02-2026"
-carga_horaria: "4 horas semanais"
+status: 'Inscrições abertas'
+semestre_divulgacao: '02-2026'
+carga_horaria: '4 horas semanais'
 
 equipe:
-  - nome: "Flávio Luiz Seixas"
-    vinculo: "Instituto de Computação / UFF"
+  - nome: 'Flávio Luiz Seixas'
+    vinculo: 'Instituto de Computação / UFF'
 
-  - nome: "Nome do(a) pesquisador(a)"
-    vinculo: "Mestrado Profissional em Enfermagem Assistencial (PEA/UFF)"
+  - nome: 'Nome do(a) pesquisador(a)'
+    vinculo: 'Mestrado Profissional em Enfermagem Assistencial (PEA/UFF)'
 
 resumo: >
   Descrição breve do problema, objetivo do projeto e solução
   que será investigada ou desenvolvida.
 
 impactos_potenciais:
-  - "Impacto potencial 1"
-  - "Impacto potencial 2"
-  - "Impacto potencial 3"
+  - 'Impacto potencial 1'
+  - 'Impacto potencial 2'
+  - 'Impacto potencial 3'
 
 o_que_o_aluno_podera_desenvolver:
-  - "Atividade ou produto 1"
-  - "Atividade ou produto 2"
-  - "Atividade ou produto 3"
+  - 'Atividade ou produto 1'
+  - 'Atividade ou produto 2'
+  - 'Atividade ou produto 3'
 
 perfil_desejado: >
   Breve descrição dos interesses, conhecimentos ou características
   desejáveis para o estudante.
 
 tecnologias_competencias:
-  - "Desenvolvimento web"
-  - "Modelagem de dados"
-  - "Engenharia de requisitos"
-  - "UX/UI"
+  - 'Desenvolvimento web'
+  - 'Modelagem de dados'
+  - 'Engenharia de requisitos'
+  - 'UX/UI'
 
 palavras_chave:
-  - "Saúde Digital"
-  - "Enfermagem"
-  - "Desenvolvimento de Sistemas"
+  - 'Saúde Digital'
+  - 'Enfermagem'
+  - 'Desenvolvimento de Sistemas'
 ```
 
 ---

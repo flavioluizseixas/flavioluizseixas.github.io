@@ -1,5 +1,9 @@
 # PRD — Novo site acadêmico de Flávio Luiz Seixas
 
+> Organização editorial atual: textos e dados em data/, imagens em data/images/,
+> projetos individuais em data/extension-projects/. Use data/README.md como
+> referência de edição; exemplos históricos abaixo são orientações de implementação.
+
 **Versão:** 1.0  
 **Data:** 21/07/2026  
 **Destino:** GitHub Pages  

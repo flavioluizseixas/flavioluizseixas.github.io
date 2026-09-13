@@ -1,8 +1,10 @@
 ---
+import { catalogCopy as copy } from '../../data/extension-catalog';
 import type { ExtensionProject } from '../lib/extension-project-schema';
 import { withBase } from '../lib/site';
 import { filterValue, projectSearchText } from '../lib/extension-projects';
 import ExtensionProjectBadges from './ExtensionProjectBadges.astro';
+import ExtensionProjectLogo from './ExtensionProjectLogo.astro';
 interface Props {
   project: ExtensionProject;
   featured?: boolean;
@@ -18,6 +20,7 @@ const { project, featured = false } = Astro.props;
   data-area={JSON.stringify(project.area.map(filterValue))}
   data-modalidade={JSON.stringify(project.modalidade.map(filterValue))}
 >
+  <ExtensionProjectLogo logo={project.logo} />
   <ExtensionProjectBadges {project} />
   <h3>{project.titulo}</h3>
   <p class="project-summary">{project.resumo_curto}</p>
@@ -28,23 +31,26 @@ const { project, featured = false } = Astro.props;
       !featured && project.area.length > 2 && (
         <span title={project.area.slice(2).join(' · ')}>
           {' '}
-          · +{project.area.length - 2} áreas
+          · +{project.area.length - 2} {copy.areas}
         </span>
       )
     }
   </p>
   <p class="project-meta">
-    <span>{project.carga_horaria.replace(' horas semanais', ' h/semana')}</span
-    ><span aria-label={`Semestre de divulgação: ${project.semestre_divulgacao}`}
+    <span
+      >{
+        project.carga_horaria.replace(copy.weeklyHours, copy.weeklyHoursShort)
+      }</span
+    ><span aria-label={`${copy.semester}: ${project.semestre_divulgacao}`}
       >{project.semestre_divulgacao}</span
     >
   </p>
   <a
     class="project-link"
     href={withBase(`extensao/projetos/${project.slug}/`)}
-    aria-label={`${featured ? 'Conhecer projeto' : 'Ver detalhes'}: ${project.titulo}`}
+    aria-label={`${featured ? copy.discover : copy.details}: ${project.titulo}`}
   >
-    {featured ? 'Conhecer projeto' : 'Ver detalhes'}
+    {featured ? copy.discover : copy.details}
     <span aria-hidden="true">→</span>
   </a>
 </article>

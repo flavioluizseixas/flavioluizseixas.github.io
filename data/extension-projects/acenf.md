@@ -1,6 +1,9 @@
 ---
 id: acenf
 slug: acenf
+logo:
+  src: enfermagem.png
+  alt: Logo da Enfermagem
 titulo: ACEnf — Aplicativo para Auditoria Clínica de Enfermagem
 resumo_curto: Aplicativo móvel para registrar não conformidades em auditorias
   clínicas de enfermagem e integrar informações a painéis de Business

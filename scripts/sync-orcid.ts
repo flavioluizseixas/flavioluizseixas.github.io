@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import site from '../data/site.json';
 
-const ORCID = '0000-0002-7160-0818';
+const ORCID = site.orcid;
 const API = `https://pub.orcid.org/v3.0/${ORCID}`;
 
 type AnyRecord = Record<string, any>;
@@ -46,7 +47,7 @@ const publications = await inBatches(works, 1, async (work: AnyRecord) => {
     try {
       crossref = (
         await getJson(
-          `https://api.crossref.org/works/${encodeURIComponent(doi)}?mailto=fseixas@ic.uff.br`
+          `https://api.crossref.org/works/${encodeURIComponent(doi)}?mailto=${encodeURIComponent(`${site.email.user}@${site.email.domain}`)}`
         )
       ).message;
     } catch (error) {
@@ -86,7 +87,7 @@ const publications = await inBatches(works, 1, async (work: AnyRecord) => {
 publications.sort(
   (a, b) => b.year - a.year || a.title.localeCompare(b.title, 'pt-BR')
 );
-const target = path.resolve('src/data/publications.json');
+const target = path.resolve('data/publications.json');
 fs.mkdirSync(path.dirname(target), { recursive: true });
 fs.writeFileSync(
   target,

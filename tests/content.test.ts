@@ -1,5 +1,43 @@
 import { describe, it, expect } from 'vitest';
-import { loadOfferings } from '../scripts/content';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { loadCollection, loadOfferings } from '../scripts/content';
+
+describe('carregamento editorial', () => {
+  it('descobre novos Markdown em subpastas e ignora modelos e imagens', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'site-content-'));
+    const collection = path.join(root, 'extension-projects');
+    const nested = path.join(collection, 'enfermagem');
+    fs.mkdirSync(nested, { recursive: true });
+    const first = path.join(collection, 'primeiro.md');
+    const second = path.join(nested, 'segundo.md');
+    const template = path.join(collection, '_template.md.example');
+    const image = path.join(collection, 'logo.png');
+    try {
+      fs.writeFileSync(first, '---\nid: primeiro\n---\nDescrição.');
+      fs.writeFileSync(template, 'Modelo não publicável.');
+      fs.writeFileSync(image, 'Não é Markdown.');
+      expect(loadCollection('extension-projects', root)).toEqual([
+        { id: 'primeiro' }
+      ]);
+      fs.writeFileSync(second, '---\r\nid: segundo\r\n---\r\nDescrição.');
+      expect(
+        loadCollection<{ id: string }>('extension-projects', root)
+          .map((entry) => entry.id)
+          .sort()
+      ).toEqual(['primeiro', 'segundo']);
+    } finally {
+      for (const file of [first, second, template, image]) {
+        if (fs.existsSync(file)) fs.unlinkSync(file);
+      }
+      fs.rmdirSync(nested);
+      fs.rmdirSync(collection);
+      fs.rmdirSync(root);
+    }
+  });
+});
+
 describe('conteúdo acadêmico', () => {
   it('tem no máximo um período corrente por disciplina', () => {
     const current = loadOfferings().filter((o) => o.current);

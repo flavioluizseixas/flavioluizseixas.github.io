@@ -12,7 +12,9 @@ import {
   type Locale,
   type RouteName
 } from '../i18n';
-import icLogo from '../assets/logo-instituto-computacao.png';
+import site from '../../data/site.json';
+import { contentImage, contentImageUrl } from '../lib/images';
+const icLogo = contentImage(site.images.institute);
 interface Props {
   title: string;
   description: string;
@@ -24,7 +26,7 @@ interface Props {
 const {
   title,
   description,
-  image = 'images/social-card.svg',
+  image = contentImageUrl(site.images.social),
   locale = 'pt',
   routeName,
   alternateHref
@@ -32,9 +34,7 @@ const {
 const copy = commonCopy[locale];
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const fullTitle =
-  title === copy.homeTitle
-    ? copy.fullHomeTitle
-    : `${title} — Flávio Luiz Seixas`;
+  title === copy.homeTitle ? copy.fullHomeTitle : `${title} — ${site.name}`;
 const nav = [
   [copy.nav.home, 'home'],
   [copy.nav.teaching, 'teaching'],
@@ -70,14 +70,18 @@ const alternateLocale = locale === 'pt' ? 'en' : 'pt';
         </>
       )
     }
-    <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+    <link
+      rel="icon"
+      href={contentImageUrl(site.images.favicon)}
+      type="image/svg+xml"
+    />
     <meta property="og:type" content="website" /><meta
       property="og:title"
       content={fullTitle}
     />
     <meta property="og:description" content={description} /><meta
       property="og:image"
-      content={new URL(withBase(image), Astro.site)}
+      content={new URL(image, Astro.site)}
     />
     <title>{fullTitle}</title>
     <script is:inline>
@@ -152,8 +156,7 @@ const alternateLocale = locale === 'pt' ? 'en' : 'pt';
               alt={copy.instituteAlt}
             /></span
           ><span
-            ><strong>Flávio Luiz Seixas</strong><small>{copy.institute}</small
-            ></span
+            ><strong>{site.name}</strong><small>{copy.institute}</small></span
           ></a
         >
         <button
@@ -225,7 +228,7 @@ const alternateLocale = locale === 'pt' ? 'en' : 'pt';
         <div>
           <a
             class="footer-ic-link"
-            href="https://www.ic.uff.br/"
+            href={site.instituteUrl}
             target="_blank"
             rel="noopener noreferrer"
             ><img
@@ -235,7 +238,7 @@ const alternateLocale = locale === 'pt' ? 'en' : 'pt';
               height={icLogo.height}
               alt={copy.instituteAlt}
             /></a
-          ><strong>Flávio Luiz Seixas</strong><p>
+          ><strong>{site.name}</strong><p>
             {copy.footerRole}<br />{copy.university}
           </p>
         </div><div>

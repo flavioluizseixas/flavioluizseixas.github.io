@@ -45,7 +45,7 @@ const event = z.object({
 const offerings = defineCollection({
   loader: glob({
     pattern: '**/*.{md,mdx}',
-    base: './src/content/offerings',
+    base: './data/offerings',
     generateId: ({ entry }) => entry.replace(/\.(md|mdx)$/, '')
   }),
   schema: z.object({
@@ -82,7 +82,7 @@ const offerings = defineCollection({
 });
 
 const courses = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/courses' }),
+  loader: glob({ pattern: '**/*.md', base: './data/courses' }),
   schema: z.object({
     title: z.string(),
     code: z.string(),
@@ -93,7 +93,7 @@ const courses = defineCollection({
 });
 
 const projects = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
+  loader: glob({ pattern: '**/*.md', base: './data/projects' }),
   schema: z.object({
     title: z.string(),
     kind: z.enum(['pesquisa', 'extensao']),
@@ -102,20 +102,10 @@ const projects = defineCollection({
   })
 });
 
-const publications = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/publications' }),
-  schema: z.object({
-    title: z.string(),
-    year: z.number(),
-    venue: z.string(),
-    url: z.string().optional()
-  })
-});
-
 const extensionProjects = defineCollection({
   loader: glob({
     pattern: '**/*.md',
-    base: './src/content/extension-projects',
+    base: './data/extension-projects',
     generateId: ({ data }) => String(data.id)
   }),
   schema: extensionProjectSchema
@@ -125,6 +115,5 @@ export const collections = {
   offerings,
   courses,
   projects,
-  publications,
   extensionProjects
 };

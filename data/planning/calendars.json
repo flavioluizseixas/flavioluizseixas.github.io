@@ -1,0 +1,12 @@
+{
+  "mpn": {
+    "spreadsheet": "data/planning/MPN Planejamento.xlsx",
+    "sheet": "2026.2",
+    "offering": "data/offerings/modelagem-processos-2026-2.md"
+  },
+  "ams": {
+    "spreadsheet": "data/planning/AMS Planejamento.xlsx",
+    "sheet": "2026.2",
+    "offering": "data/offerings/aprendizado-maquina-saude-2026-2.md"
+  }
+}

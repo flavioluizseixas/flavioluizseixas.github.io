@@ -1,4 +1,6 @@
 ---
+import site from '../../data/site.json';
+import { pageCopy } from '../../data/i18n/OfferingPage';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Agenda from './Agenda.astro';
 import { withBase } from '../lib/site';
@@ -8,100 +10,7 @@ const { offering, locale = 'pt' } = Astro.props as {
   offering: any;
   locale?: Locale;
 };
-const copy = {
-  pt: {
-    teaching: 'Ensino',
-    undergraduate: 'Graduação',
-    graduate: 'Pós-graduação',
-    archived: 'Disciplina encerrada — semestre',
-    archivedText: 'Este calendário é mantido para consulta histórica.',
-    term: 'Período',
-    classGroup: 'Turma',
-    instructors: 'Docentes',
-    schedule: 'Horário',
-    room: 'Sala',
-    pending: 'A confirmar',
-    workload: 'Carga horária',
-    credits: 'Créditos',
-    prerequisites: 'Pré-requisitos',
-    or: 'ou',
-    classroom: 'Ambiente virtual',
-    classroomLink: 'Acessar Classroom',
-    classroomCode: 'Código',
-    updated: 'Última atualização',
-    addCalendar: 'Adicionar ao calendário',
-    pageNav: 'Nesta disciplina',
-    overview: 'Visão geral',
-    calendar: 'Calendário',
-    assessment: 'Avaliação',
-    materials: 'Materiais',
-    references: 'Referências',
-    objective: 'Objetivo',
-    syllabus: 'Conteúdo programático',
-    methodology: 'Metodologia',
-    assessmentFallback:
-      'Consulte o calendário e os avisos da disciplina para conhecer as avaliações e os respectivos critérios.',
-    external: 'link externo',
-    materialsEmpty: 'Os materiais desta disciplina serão publicados em breve.',
-    referencesEmpty:
-      'As referências serão organizadas por tema e publicadas junto ao calendário detalhado da disciplina.',
-    materialTypes: {
-      slides: 'slides',
-      exercicio: 'exercício',
-      notebook: 'notebook',
-      video: 'vídeo',
-      software: 'software',
-      leitura: 'leitura',
-      dataset: 'conjunto de dados'
-    }
-  },
-  en: {
-    teaching: 'Teaching',
-    undergraduate: 'Undergraduate',
-    graduate: 'Graduate',
-    archived: 'Course completed — term',
-    archivedText: 'This calendar is maintained for historical reference.',
-    term: 'Term',
-    classGroup: 'Class',
-    instructors: 'Instructors',
-    schedule: 'Schedule',
-    room: 'Room',
-    pending: 'To be confirmed',
-    workload: 'Course hours',
-    credits: 'Credits',
-    prerequisites: 'Prerequisites',
-    or: 'or',
-    classroom: 'Virtual environment',
-    classroomLink: 'Open Classroom',
-    classroomCode: 'Code',
-    updated: 'Last updated',
-    addCalendar: 'Add to calendar',
-    pageNav: 'In this course',
-    overview: 'Overview',
-    calendar: 'Calendar',
-    assessment: 'Assessment',
-    materials: 'Materials',
-    references: 'References',
-    objective: 'Objective',
-    syllabus: 'Syllabus',
-    methodology: 'Methodology',
-    assessmentFallback:
-      'See the course calendar and announcements for assessments and their criteria.',
-    external: 'external link',
-    materialsEmpty: 'Course materials will be published soon.',
-    referencesEmpty:
-      'References will be organized by topic and published with the detailed course calendar.',
-    materialTypes: {
-      slides: 'slides',
-      exercicio: 'exercise',
-      notebook: 'notebook',
-      video: 'video',
-      software: 'software',
-      leitura: 'reading',
-      dataset: 'dataset'
-    }
-  }
-}[locale];
+const copy = pageCopy[locale];
 const d = localizeOffering(offering.data, locale);
 const alternateLocale = locale === 'pt' ? 'en' : 'pt';
 const alternateHref = courseRoute(alternateLocale, d.slug, d.term);
@@ -113,7 +22,7 @@ const jsonLd = {
   description: d.summary,
   provider: {
     '@type': 'CollegeOrUniversity',
-    name: 'Universidade Federal Fluminense'
+    name: site.university
   }
 };
 ---

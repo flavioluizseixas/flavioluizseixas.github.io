@@ -1,4 +1,5 @@
 ---
+import { catalogCopy as copy } from '../../data/extension-catalog';
 import { getCollection } from 'astro:content';
 import ExtensionProjectCard from './ExtensionProjectCard.astro';
 import {
@@ -25,13 +26,12 @@ const options = (key: 'modalidade' | 'area') =>
   >
     <div class="section-head">
       <div>
-        <span class="eyebrow">Iniciação Científica e Extensão</span><h2
+        <span class="eyebrow">{copy.eyebrow}</span><h2
           id="new-projects-heading"
         >
-          Oportunidades com inscrições abertas
+          {copy.opportunities}
         </h2><p>
-          Conheça os projetos que estão recebendo estudantes e encontre uma
-          oportunidade de participação.
+          {copy.introduction}
         </p>
       </div>
     </div>
@@ -50,7 +50,7 @@ const options = (key: 'modalidade' | 'area') =>
     data-project-catalog
   >
     <div class="section-head project-results-heading">
-      <h2 id="explore-heading">Em andamento e concluídos</h2>
+      <h2 id="explore-heading">{copy.explore}</h2>
       <p
         data-result-count
         role="status"
@@ -64,39 +64,39 @@ const options = (key: 'modalidade' | 'area') =>
     <form
       class="project-controls"
       role="search"
-      aria-label="Buscar e filtrar projetos em andamento e concluídos"
+      aria-label={copy.searchLabel}
       hidden
     >
       <label class="project-search"
-        >Buscar projetos
+        >{copy.search}
         <input
           type="search"
           name="q"
-          placeholder="Buscar projetos..."
+          placeholder={copy.searchPlaceholder}
           autocomplete="off"
           aria-controls="project-results"
         />
       </label>
       <div class="project-field">
-        <label for="project-status">Status</label>
+        <label for="project-status">{copy.status}</label>
         <select
           id="project-status"
           name="status"
           aria-controls="project-results"
         >
-          <option value="">Todos</option>
-          <option value="em-andamento">Em andamento</option>
-          <option value="concluido">Concluídos</option>
+          <option value="">{copy.allStatuses}</option>
+          <option value="em-andamento">{copy.ongoing}</option>
+          <option value="concluido">{copy.completed}</option>
         </select>
       </div>
       <div class="project-field">
-        <label for="project-modalidade">Modalidade</label>
+        <label for="project-modalidade">{copy.modality}</label>
         <select
           id="project-modalidade"
           name="modalidade"
           aria-controls="project-results"
         >
-          <option value="">Todas</option>
+          <option value="">{copy.allOptions}</option>
           {
             options('modalidade').map((value) => (
               <option value={filterValue(value)}>{value}</option>
@@ -105,9 +105,9 @@ const options = (key: 'modalidade' | 'area') =>
         </select>
       </div>
       <div class="project-field">
-        <label for="project-area">Área</label>
+        <label for="project-area">{copy.area}</label>
         <select id="project-area" name="area" aria-controls="project-results">
-          <option value="">Todas</option>
+          <option value="">{copy.allOptions}</option>
           {
             options('area').map((value) => (
               <option value={filterValue(value)}>{value}</option>
@@ -115,15 +115,12 @@ const options = (key: 'modalidade' | 'area') =>
           }
         </select>
       </div>
-      <button type="reset" class="button secondary">Limpar filtros</button>
+      <button type="reset" class="button secondary">{copy.clear}</button>
     </form>
     {
       projects.length > 0 && (
         <noscript>
-          <p>
-            Os projetos em andamento e concluídos estão listados abaixo. Ative o
-            JavaScript para usar a busca e os filtros.
-          </p>
+          <p>{copy.noScript}</p>
         </noscript>
       )
     }
@@ -136,17 +133,13 @@ const options = (key: 'modalidade' | 'area') =>
     </div>
     <div class="empty" data-project-empty hidden={projects.length > 0}>
       <p>
-        {
-          projects.length
-            ? 'Nenhum projeto encontrado com esses filtros.'
-            : 'Ainda não há projetos em andamento ou concluídos no catálogo.'
-        }
+        {projects.length ? copy.noResults : copy.empty}
       </p>
       <button
         type="button"
         class="button secondary"
         data-clear-projects
-        hidden={projects.length === 0}>Limpar filtros</button
+        hidden={projects.length === 0}>{copy.clear}</button
       >
     </div>
   </section>
@@ -156,12 +149,11 @@ const options = (key: 'modalidade' | 'area') =>
     aria-labelledby="participate-heading"
   >
     <div>
-      <h2 id="participate-heading">Participe</h2><p>
-        Conheça o perfil e as possibilidades de atuação em cada projeto. Para
-        conversar sobre participação e colaboração, entre em contato.
+      <h2 id="participate-heading">{copy.participate}</h2><p>
+        {copy.participation}
       </p>
     </div>
-    <a class="button" href={route('pt', 'contact')}>Entrar em contato</a>
+    <a class="button" href={route('pt', 'contact')}>{copy.contact}</a>
   </section>
 </div>
 

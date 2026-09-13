@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { loadCollection } from '../scripts/content';
+import { loadCollection, loadCollectionEntries } from '../scripts/content';
 import {
   extensionProjectSchema,
   type ExtensionProject
@@ -110,8 +110,8 @@ describe('catálogo de extensão', () => {
     expect(find('business intelligence')).toEqual(['acenf']);
   });
 
-  it('valida as três fontes e rejeita datas, estados, slugs e inscrições inválidos', () => {
-    expect(projects).toHaveLength(3);
+  it('valida as fontes e rejeita datas, estados, slugs e inscrições inválidos', () => {
+    expect(projects.length).toBeGreaterThan(0);
     for (const entry of projects)
       expect(extensionProjectSchema.safeParse(entry).success).toBe(true);
     for (const invalid of [
@@ -129,6 +129,32 @@ describe('catálogo de extensão', () => {
         extensionProjectSchema.parse({ ...projects[0], link_inscricao })
           .link_inscricao
       ).toBeUndefined();
+    }
+  });
+
+  it('aceita logos locais opcionais e rejeita referências inválidas', () => {
+    for (const logo of [
+      undefined,
+      { src: 'enfermagem.png', alt: 'Logo da Enfermagem' },
+      { src: 'projetos/minha-logo.svg', alt: 'Logo do projeto' }
+    ]) {
+      expect(
+        extensionProjectSchema.safeParse({ ...projects[0], logo }).success
+      ).toBe(true);
+    }
+    for (const logo of [
+      { src: '../prompts/logo.png', alt: 'Logo' },
+      { src: '/logo.png', alt: 'Logo' },
+      { src: 'https://example.org/logo.png', alt: 'Logo' },
+      { src: 'logo.png', alt: '' }
+    ]) {
+      expect(
+        extensionProjectSchema.safeParse({ ...projects[0], logo }).success
+      ).toBe(false);
+    }
+    for (const entry of projects) {
+      if (entry.logo)
+        expect(fs.existsSync(`data/images/${entry.logo.src}`)).toBe(true);
     }
   });
 
@@ -170,11 +196,10 @@ describe('catálogo de extensão', () => {
   });
 
   it('mantém as seções acadêmicas preenchidas no conteúdo publicado', () => {
-    for (const entry of projects) {
-      const content = fs.readFileSync(
-        `src/content/extension-projects/${entry.slug}.md`,
-        'utf8'
-      );
+    for (const {
+      data: entry,
+      body: content
+    } of loadCollectionEntries<ExtensionProject>('extension-projects')) {
       const sections = new Map(
         content
           .split(/^## /m)

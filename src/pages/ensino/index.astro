@@ -1,4 +1,5 @@
 ---
+import { pageCopy } from '../../../data/pages/ensino';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CourseCard from '../../components/CourseCard.astro';
@@ -6,28 +7,7 @@ import { sortCurrentOfferings, withBase } from '../../lib/site';
 import { courseRoute, type Locale } from '../../i18n';
 import { translateContent } from '../../i18n/content';
 const locale: Locale = Astro.props.locale ?? 'pt';
-const copy = {
-  pt: {
-    title: 'Ensino',
-    description: 'Disciplinas atuais e arquivo de períodos anteriores.',
-    heading: 'Disciplinas e calendários',
-    lead: 'Encontre rapidamente aulas, avaliações, materiais e a logística de cada turma.',
-    current: 'Disciplinas atuais',
-    download: 'Baixar calendário completo',
-    previous: 'Disciplinas anteriores',
-    archived: 'Consultar disciplina arquivada'
-  },
-  en: {
-    title: 'Teaching',
-    description: 'Current courses and an archive of previous terms.',
-    heading: 'Courses and calendars',
-    lead: 'Quickly find classes, assessments, materials, and logistics for each course.',
-    current: 'Current courses',
-    download: 'Download full calendar',
-    previous: 'Previous courses',
-    archived: 'View archived course'
-  }
-}[locale];
+const copy = pageCopy[locale];
 const all = await getCollection('offerings');
 const current = sortCurrentOfferings(all.filter((o) => o.data.current));
 const archived = all.filter((o) => !o.data.current);

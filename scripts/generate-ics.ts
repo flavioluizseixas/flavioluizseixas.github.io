@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import site from '../data/site.json';
 import path from 'node:path';
 import { loadOfferings, type Offering } from './content.js';
 import { localizeOffering } from '../src/i18n/content.js';
@@ -18,7 +19,7 @@ function calendar(name: string, offers: Offering[], language = 'PT-BR') {
       .map((e) =>
         [
           'BEGIN:VEVENT',
-          `UID:${o.slug}-${o.term}-${e.date}-${Buffer.from(e.title).toString('hex').slice(0, 16)}@flavioluizseixas.github.io`,
+          `UID:${o.slug}-${o.term}-${e.date}-${Buffer.from(e.title).toString('hex').slice(0, 16)}@${site.calendarUidDomain}`,
           `DTSTAMP:${stamp}`,
           `DTSTART;VALUE=DATE:${e.date.replaceAll('-', '')}`,
           `SUMMARY:${esc(e.title)} — ${esc(o.title)}`,
@@ -56,14 +57,14 @@ for (const o of offers) {
 fs.writeFileSync(
   path.join(out, 'calendario.ics'),
   calendar(
-    'Disciplinas de Flávio Luiz Seixas',
+    site.calendarTitles.pt,
     offers.filter((o) => o.current)
   )
 );
 fs.writeFileSync(
   path.join(outEn, 'calendar.ics'),
   calendar(
-    'Courses taught by Flávio Luiz Seixas',
+    site.calendarTitles.en,
     offers
       .filter((offering) => offering.current)
       .map((offering) => localizeOffering(offering, 'en') as Offering),

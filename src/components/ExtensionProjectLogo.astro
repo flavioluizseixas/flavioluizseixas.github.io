@@ -1,0 +1,25 @@
+---
+import type { ExtensionProject } from '../lib/extension-project-schema';
+import { contentImageUrl } from '../lib/images';
+
+interface Props {
+  logo: ExtensionProject['logo'];
+  prominent?: boolean;
+}
+const { logo, prominent = false } = Astro.props;
+---
+
+{
+  logo && (
+    <div class:list={['project-logo', { 'project-logo-prominent': prominent }]}>
+      <img
+        src={contentImageUrl(logo.src)}
+        alt={logo.alt}
+        width="96"
+        height="96"
+        loading={prominent ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    </div>
+  )
+}

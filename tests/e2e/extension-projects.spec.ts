@@ -14,6 +14,22 @@ test('oportunidades abertas aparecem uma única vez e não integram a busca', as
       cards.map((card) => card.getAttribute('data-project'))
     );
   expect(new Set(slugs).size).toBe(3);
+  await expect(page.locator('.extension-intro')).toContainText(
+    'Os projetos divulgados até o momento são da Enfermagem'
+  );
+  const logos = page.locator('.project-card .project-logo img');
+  await expect(logos).toHaveCount(3);
+  for (const logo of await logos.all()) {
+    await expect(logo).toHaveAttribute('alt', 'Logo da Enfermagem');
+    await logo.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        logo.evaluate(
+          (img: HTMLImageElement) => img.complete && img.naturalWidth > 0
+        )
+      )
+      .toBe(true);
+  }
   await expect(
     page.getByRole('heading', {
       name: 'Em andamento e concluídos',
@@ -60,6 +76,15 @@ test('páginas individuais contêm descrição, equipe, metadados e links de ret
   ]) {
     await page.goto(`/extensao/projetos/${slug}/`);
     await expect(page.locator('main h1')).toHaveCount(1);
+    const logo = page.locator('.project-detail-hero .project-logo img');
+    await expect(logo).toHaveAttribute('alt', 'Logo da Enfermagem');
+    await expect
+      .poll(() =>
+        logo.evaluate(
+          (img: HTMLImageElement) => img.complete && img.naturalWidth > 0
+        )
+      )
+      .toBe(true);
     await expect(page.locator('.project-facts')).toContainText(
       '4 horas semanais'
     );

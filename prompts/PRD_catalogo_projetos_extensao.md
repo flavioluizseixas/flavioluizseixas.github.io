@@ -109,86 +109,10 @@ Não migrar o projeto para outro gerador de site.
 
 ## 4.2 Modelo preferencial de armazenamento
 
-Se o projeto atual suportar Markdown com front matter, utilizar preferencialmente:
-
-```text
-extensao/
-├── index.*
-├── projetos/
-│   ├── acenf.md
-│   ├── auditoria-saude-suplementar.md
-│   └── qualificacao-denuncias-enfermagem.md
-```
-
-Cada projeto deverá possuir metadados estruturados no front matter e conteúdo Markdown.
-
-Exemplo:
-
-```yaml
----
-id: acenf
-slug: acenf
-titulo: "ACEnf — Aplicativo para Auditoria Clínica de Enfermagem"
-resumo_curto: "Aplicativo móvel para apoiar o registro de não conformidades durante auditorias clínicas de enfermagem."
-
-modalidade:
-  - Iniciação Científica
-  - Extensão
-
-area:
-  - Saúde Digital
-  - Desenvolvimento de Sistemas
-  - Business Intelligence
-
-status: inscricoes-abertas
-
-semestre_divulgacao: "02-2026"
-data_publicacao: "2026-09-12"
-
-carga_horaria: "4 horas semanais"
-
-destaque: true
-
-equipe:
-  - nome: "Flávio Luiz Seixas"
-    vinculo: "Instituto de Computação / UFF"
-  - nome: "Gisele Morais"
-    vinculo: "Mestrado Profissional em Enfermagem Assistencial (PEA/UFF)"
-
-palavras_chave:
-  - Saúde Digital
-  - Auditoria Clínica
-  - Enfermagem
-  - Aplicativo Móvel
-  - Business Intelligence
----
-```
-
-Depois do front matter:
-
-```markdown
-## Sobre o projeto
-
-...
-
-## Impactos potenciais na sociedade
-
-...
-
-## O que o aluno poderá desenvolver
-
-...
-
-## Perfil desejado
-
-...
-
-## Tecnologias e competências envolvidas
-
-...
-```
-
----
+Usar um arquivo Markdown por projeto em data/extension-projects/. O modelo
+canônico, com campos e seções editáveis, fica em
+data/extension-projects/_template.md.example. O catálogo lê esse diretório
+automaticamente; logos são arquivos em data/images/, referenciados no Markdown.
 
 ## 4.3 Alternativa
 
@@ -311,7 +235,7 @@ A página deve seguir a seguinte hierarquia.
 ```text
 [Header existente]
 
-EXTENSÃO
+Extensão
 Tecnologia construída em colaboração
 
 [Introdução da Fábrica de Software e Tecnologia para a Saúde]
@@ -449,8 +373,8 @@ Opções:
 
 ```text
 Todos
-Inscrições abertas
-Em andamento
+INSCRIÇÕES ABERTAS
+EM ANDAMENTO
 Concluídos
 ```
 
@@ -776,66 +700,13 @@ Os filtros, badges, ordenação e listagem devem se atualizar automaticamente.
 
 # 24. Projetos iniciais
 
-Cadastrar inicialmente os três projetos de 2026.2.
+O conteúdo editorial dos projetos fica em Markdown individuais em
+data/extension-projects/. Consulte acenf.md, auditoria-saude-suplementar.md e
+qualificacao-denuncias-enfermagem.md. As logos ficam em data/images/ e são
+referenciadas pelo campo logo de cada projeto. Os projetos iniciais são da Enfermagem.
 
----
-
-## 24.1 ACEnf — Aplicativo para Auditoria Clínica de Enfermagem
-
-```yaml
-titulo: "ACEnf — Aplicativo para Auditoria Clínica de Enfermagem"
-status: inscricoes-abertas
-semestre_divulgacao: "02-2026"
-carga_horaria: "4 horas semanais"
-destaque: true
-equipe:
-  - nome: "Flávio Luiz Seixas"
-    vinculo: "Instituto de Computação / UFF"
-  - nome: "Gisele Morais"
-    vinculo: "Mestrado Profissional em Enfermagem Assistencial (PEA/UFF)"
-```
-
-Descrição e campos detalhados: utilizar o conteúdo já preparado para esse projeto.
-
----
-
-## 24.2 Tecnologia Digital de Apoio à Auditoria em Saúde Suplementar
-
-```yaml
-titulo: "Tecnologia Digital de Apoio à Auditoria em Saúde Suplementar"
-status: inscricoes-abertas
-semestre_divulgacao: "02-2026"
-carga_horaria: "4 horas semanais"
-destaque: true
-equipe:
-  - nome: "Flávio Luiz Seixas"
-    vinculo: "Instituto de Computação / UFF"
-  - nome: "Talita Barcelos"
-    vinculo: "Mestrado Profissional em Enfermagem Assistencial (PEA/UFF)"
-```
-
-Descrição e campos detalhados: utilizar o conteúdo já preparado para esse projeto.
-
----
-
-## 24.3 Sistema para Qualificação de Denúncias na Fiscalização Profissional de Enfermagem
-
-```yaml
-titulo: "Sistema para Qualificação de Denúncias na Fiscalização Profissional de Enfermagem"
-status: inscricoes-abertas
-semestre_divulgacao: "02-2026"
-carga_horaria: "4 horas semanais"
-destaque: true
-equipe:
-  - nome: "Flávio Luiz Seixas"
-    vinculo: "Instituto de Computação / UFF"
-  - nome: "Patrícia Oliveira"
-    vinculo: "Mestrado Profissional em Enfermagem Assistencial (PEA/UFF)"
-```
-
-Descrição e campos detalhados: utilizar o conteúdo já preparado para esse projeto.
-
----
+A apresentação da página fica em data/pages/extensao.ts; os textos do catálogo,
+em data/extension-catalog.ts. Consulte data/README.md para manutenção.
 
 # 25. Diretrizes visuais
 

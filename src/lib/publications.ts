@@ -1,3 +1,10 @@
+import {
+  publicationTypeLabels,
+  publicationTypeLabelsEn
+} from '../../data/i18n/publications';
+export { publicationTypeLabels, publicationTypeLabelsEn };
+import site from '../../data/site.json';
+
 export interface Publication {
   id: string;
   title: string;
@@ -21,7 +28,7 @@ export function abntAuthor(name: string) {
 }
 
 export function abntAuthors(authors: string[]) {
-  if (!authors.length) return 'SEIXAS, Flávio Luiz et al.';
+  if (!authors.length) return site.publicationFallbackAuthor;
   if (authors.length > 3) return `${abntAuthor(authors[0])} et al.`;
   return authors.map(abntAuthor).join('; ');
 }
@@ -44,17 +51,3 @@ export function abntReference(publication: Publication) {
     .replace(/\s+/g, ' ')
     .replace(/\.\./g, '.');
 }
-
-export const publicationTypeLabels: Record<string, string> = {
-  'journal-article': 'Artigo em periódico',
-  'conference-paper': 'Trabalho em evento',
-  'book-chapter': 'Capítulo de livro',
-  book: 'Livro'
-};
-
-export const publicationTypeLabelsEn: Record<string, string> = {
-  'journal-article': 'Journal article',
-  'conference-paper': 'Conference paper',
-  'book-chapter': 'Book chapter',
-  book: 'Book'
-};

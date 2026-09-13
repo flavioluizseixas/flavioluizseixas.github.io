@@ -1,27 +1,11 @@
 ---
+import { pageCopy } from '../../../data/pages/arquivo';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { courseRoute, type Locale } from '../../i18n';
 import { translateContent } from '../../i18n/content';
 const locale: Locale = Astro.props.locale ?? 'pt';
-const copy = {
-  pt: {
-    title: 'Arquivo',
-    description: 'Disciplinas anteriores, organizadas por semestre.',
-    eyebrow: 'Memória acadêmica',
-    heading: 'Arquivo de disciplinas',
-    lead: 'Calendários antigos permanecem em URLs próprias e são identificados como disciplinas encerradas.',
-    open: 'Abrir disciplina'
-  },
-  en: {
-    title: 'Archive',
-    description: 'Previous courses organized by term.',
-    eyebrow: 'Academic record',
-    heading: 'Course archive',
-    lead: 'Past calendars remain available at permanent URLs and are clearly identified as completed courses.',
-    open: 'Open course'
-  }
-}[locale];
+const copy = pageCopy[locale];
 const entries = (await getCollection('offerings'))
   .filter((e) => !e.data.current)
   .sort((a, b) => b.data.term.localeCompare(a.data.term));

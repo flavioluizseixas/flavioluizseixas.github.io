@@ -18,6 +18,15 @@ export const extensionProjectSchema = z.object({
   slug,
   titulo: text,
   resumo_curto: text,
+  logo: z
+    .object({
+      src: text.regex(
+        /^(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.(?:png|jpe?g|webp|avif|gif|svg)$/,
+        'Use um arquivo em data/images, como enfermagem.png'
+      ),
+      alt: text
+    })
+    .optional(),
   modalidade: z.array(text).min(1),
   area: z.array(text).min(1),
   status: z.enum(['inscricoes-abertas', 'em-andamento', 'concluido']),

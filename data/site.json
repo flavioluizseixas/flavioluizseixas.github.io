@@ -1,0 +1,20 @@
+{
+  "name": "Flávio Luiz Seixas",
+  "url": "https://flavioluizseixas.github.io",
+  "university": "Universidade Federal Fluminense",
+  "instituteUrl": "https://www.ic.uff.br/",
+  "email": { "user": "fseixas", "domain": "ic.uff.br" },
+  "orcid": "0000-0002-7160-0818",
+  "calendarUidDomain": "flavioluizseixas.github.io",
+  "calendarTitles": {
+    "pt": "Disciplinas de Flávio Luiz Seixas",
+    "en": "Courses taught by Flávio Luiz Seixas"
+  },
+  "publicationFallbackAuthor": "SEIXAS, Flávio Luiz et al.",
+  "images": {
+    "institute": "logo-instituto-computacao.png",
+    "portrait": "flavio-seixas-retrato-transparente.png",
+    "social": "social-card.svg",
+    "favicon": "favicon.svg"
+  }
+}

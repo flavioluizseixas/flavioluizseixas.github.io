@@ -1,4 +1,7 @@
-import { englishContent } from '../src/i18n/content.js';
+import { englishContent } from '../data/i18n/content.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import site from '../data/site.json';
 import { loadCollection, loadOfferings, type Offering } from './content.js';
 import { extensionProjectSchema } from '../src/lib/extension-project-schema.js';
 const allowed = new Set([
@@ -23,7 +26,9 @@ for (const entry of extensionProjects) {
     errors.push(`Projeto ${entry.id || '(sem id)'}: ${result.error.message}`);
     continue;
   }
-  const { id, slug } = result.data;
+  const { id, slug, logo } = result.data;
+  if (logo && !fs.existsSync(path.resolve('data/images', logo.src)))
+    errors.push(`Projeto ${id}: logo ausente em data/images/${logo.src}`);
   if (extensionIds.has(id)) errors.push(`Projeto: id duplicado “${id}”`);
   if (extensionSlugs.has(slug))
     errors.push(`Projeto: slug duplicado “${slug}”`);
@@ -31,6 +36,10 @@ for (const entry of extensionProjects) {
   extensionSlugs.add(slug);
 }
 const currents = new Map<string, number>();
+for (const image of Object.values(site.images)) {
+  if (!fs.existsSync(path.resolve('data/images', image)))
+    errors.push(`Imagem do site ausente em data/images/${image}`);
+}
 const offerings = loadOfferings();
 const translatable = new Set<string>();
 const addTranslation = (value: unknown) => {

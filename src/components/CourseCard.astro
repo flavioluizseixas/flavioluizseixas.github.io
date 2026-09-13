@@ -1,4 +1,5 @@
 ---
+import { pageCopy } from '../../data/i18n/CourseCard';
 import { formatDate, todayInSaoPaulo } from '../lib/site';
 import { courseRoute, localeTag, type Locale } from '../i18n';
 import { localizeOffering } from '../i18n/content';
@@ -6,28 +7,7 @@ const { offering, locale = 'pt' } = Astro.props as {
   offering: any;
   locale?: Locale;
 };
-const copy = {
-  pt: {
-    classGroup: 'Turma',
-    instructors: 'Docentes',
-    room: 'Sala',
-    roomPending: 'Sala a confirmar',
-    next: 'Próxima atividade',
-    noNext: 'Sem novas atividades previstas',
-    calendar: 'Ver calendário',
-    filter: 'Disciplina'
-  },
-  en: {
-    classGroup: 'Class',
-    instructors: 'Instructors',
-    room: 'Room',
-    roomPending: 'Room to be confirmed',
-    next: 'Next activity',
-    noNext: 'No upcoming activities',
-    calendar: 'View calendar',
-    filter: 'Course'
-  }
-}[locale];
+const copy = pageCopy[locale];
 const data = localizeOffering(offering.data, locale);
 const today = todayInSaoPaulo();
 const next = data.calendar

@@ -1,6 +1,9 @@
 ---
 id: auditoria-saude-suplementar
 slug: auditoria-saude-suplementar
+logo:
+  src: enfermagem.png
+  alt: Logo da Enfermagem
 titulo: Tecnologia Digital de Apoio à Auditoria em Saúde Suplementar
 resumo_curto: Solução digital para organizar e consultar normas e orientações da
   ANS, apoiando a auditoria externa em saúde suplementar.

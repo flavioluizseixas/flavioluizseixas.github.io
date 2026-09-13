@@ -1,12 +1,11 @@
+import {
+  catalogCopy,
+  NEW_PROJECT_DAYS,
+  PROJECT_STATUS_LABELS
+} from '../../data/extension-catalog';
+export { NEW_PROJECT_DAYS, PROJECT_STATUS_LABELS };
 import type { ExtensionProject } from './extension-project-schema';
 import { todayInSaoPaulo } from './site';
-
-export const NEW_PROJECT_DAYS = 60;
-export const PROJECT_STATUS_LABELS = {
-  'inscricoes-abertas': 'Inscrições abertas',
-  'em-andamento': 'Em andamento',
-  concluido: 'Concluído'
-} as const;
 
 export function isNewProject(publication: string, today = todayInSaoPaulo()) {
   const age = (Date.parse(today) - Date.parse(publication)) / 86_400_000;
@@ -90,4 +89,4 @@ export const projectSearchText = (project: ExtensionProject) =>
   );
 
 export const resultCount = (count: number) =>
-  `${count} ${count === 1 ? 'projeto encontrado' : 'projetos encontrados'}`;
+  `${count} ${count === 1 ? catalogCopy.resultSingular : catalogCopy.resultPlural}`;

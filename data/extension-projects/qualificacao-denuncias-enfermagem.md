@@ -1,6 +1,9 @@
 ---
 id: qualificacao-denuncias-enfermagem
 slug: qualificacao-denuncias-enfermagem
+logo:
+  src: enfermagem.png
+  alt: Logo da Enfermagem
 titulo: Sistema para Qualificação de Denúncias na Fiscalização Profissional de
   Enfermagem
 resumo_curto: Ferramenta digital para orientar o registro de denúncias e

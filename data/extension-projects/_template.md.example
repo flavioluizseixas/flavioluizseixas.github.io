@@ -3,6 +3,10 @@ id: identificador-do-projeto
 slug: identificador-do-projeto
 titulo: Título do projeto
 resumo_curto: Descreva brevemente o problema e a proposta do projeto.
+# Opcional: arquivo relativo a data/images; personalize para cada projeto.
+# logo:
+#   src: enfermagem.png
+#   alt: Logo da Enfermagem
 modalidade:
   - Iniciação Científica
   - Extensão

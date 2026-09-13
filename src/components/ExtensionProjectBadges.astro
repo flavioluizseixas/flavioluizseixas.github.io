@@ -1,4 +1,5 @@
 ---
+import { catalogCopy as copy } from '../../data/extension-catalog';
 import type { ExtensionProject } from '../lib/extension-project-schema';
 import { isNewProject, PROJECT_STATUS_LABELS } from '../lib/extension-projects';
 interface Props {
@@ -14,7 +15,7 @@ const { project } = Astro.props;
   <span
     class="tag project-new"
     data-new-project={project.data_publicacao}
-    hidden={!isNewProject(project.data_publicacao)}>Novo</span
+    hidden={!isNewProject(project.data_publicacao)}>{copy.new}</span
   >
 </div>
 

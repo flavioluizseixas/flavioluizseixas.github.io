@@ -23,7 +23,7 @@ Comandos principais:
 
 ## Atualizar as publicações
 
-A página de publicações usa uma cópia versionada em `src/data/publications.json`, portanto continua funcionando mesmo se o ORCID estiver temporariamente indisponível. Para sincronizar novos trabalhos:
+A página de publicações usa uma cópia versionada em `data/publications.json`, portanto continua funcionando mesmo se o ORCID estiver temporariamente indisponível. Para sincronizar novos trabalhos:
 
 ```bash
 npm run sync:orcid
@@ -34,7 +34,7 @@ Revise as referências geradas antes da publicação. Os registros são apresent
 
 ## Atualizar o calendário de Processos de Negócio
 
-A fonte versionada é `data/MPN Planejamento.xlsx`. Edite a aba do semestre e mantenha as colunas `Data` e `Conteúdo` preenchidas. As demais colunas aceitas são:
+A fonte versionada é `data/planning/MPN Planejamento.xlsx`. Edite a aba do semestre e mantenha as colunas `Data` e `Conteúdo` preenchidas. As demais colunas aceitas são:
 
 - `Referências`: texto bibliográfico exibido no evento.
 - `Tipo`: `aula`, `laboratorio`, `atividade`, `avaliacao`, `entrega`, `apresentacao`, `feriado` ou `sem-aula`. Se ficar vazio, será inferido pelo título.
@@ -51,10 +51,10 @@ npm run validate:content
 Outro semestre ou arquivo pode ser selecionado sem alterar o script:
 
 ```bash
-npm run sync:calendar:mpn -- --sheet 2027.1 --file "data/MPN Planejamento.xlsx" --offering src/content/offerings/modelagem-processos-2027-1.md
+npm run sync:calendar:mpn -- --sheet 2027.1 --file "data/planning/MPN Planejamento.xlsx" --offering data/offerings/modelagem-processos-2027-1.md
 ```
 
-Para Aprendizado de Máquina para Saúde, a fonte versionada é `data/AMS Planejamento.xlsx`. Depois de editar a aba `2026.2`, execute:
+Para Aprendizado de Máquina para Saúde, a fonte versionada é `data/planning/AMS Planejamento.xlsx`. Depois de editar a aba `2026.2`, execute:
 
 ```bash
 npm run sync:calendar:ams
@@ -65,12 +65,12 @@ O arquivo usa as mesmas colunas `Referências`, `Tipo`, `Status` e `Observaçõe
 
 ## Atualizar conteúdo bilíngue
 
-O português é o idioma editorial de origem. As páginas institucionais mantêm os textos `pt` e `en` lado a lado no próprio arquivo `.astro`. As disciplinas, agendas, cursos e projetos permanecem em uma única fonte Markdown em português; as traduções correspondentes ficam em `src/i18n/content.ts`.
+O português é o idioma editorial de origem. As páginas institucionais mantêm os textos `pt` e `en` lado a lado em `data/pages/`. As disciplinas, agendas, cursos e projetos permanecem em uma única fonte Markdown em português; as traduções correspondentes ficam em `data/i18n/content.ts`. Textos compartilhados de navegação, agenda e disciplinas ficam em `data/i18n/`. Os arquivos `.astro` apenas organizam e apresentam esses dados.
 
 Ao alterar ou adicionar um texto acadêmico:
 
-1. Edite a fonte em `src/content/`.
-2. Adicione a tradução inglesa exata em `englishContent`, em `src/i18n/content.ts`.
+1. Edite a fonte em `data/`.
+2. Adicione a tradução inglesa exata em `englishContent`, em `data/i18n/content.ts`.
 3. Execute `npm run validate:content`.
 
 A validação percorre títulos, resumos, ementas, avisos, tópicos, materiais e eventos. O build falha se algum texto publicável não tiver tradução, evitando que a versão inglesa fique silenciosamente desatualizada.
@@ -79,26 +79,38 @@ As rotas em português não têm prefixo (`/ensino/`, `/pesquisa/`). As equivale
 
 ## Publicar projetos da Fábrica de Software
 
-O catálogo `/extensao/` usa a coleção Astro `extensionProjects`, separada dos projetos institucionais de pesquisa/extensão em `src/content/projects/`. Cada oportunidade tem um arquivo Markdown em `src/content/extension-projects/`; o front matter alimenta cards, filtros, equipe, metadados e a URL `/extensao/projetos/{slug}/`. O corpo contém a descrição completa.
+O catálogo `/extensao/` usa a coleção Astro `extensionProjects`, separada dos projetos institucionais de pesquisa/extensão em `data/projects/`. Cada oportunidade tem um arquivo Markdown em `data/extension-projects/`; o front matter alimenta cards, filtros, equipe, metadados e a URL `/extensao/projetos/{slug}/`. O corpo contém a descrição completa.
+
+O carregador percorre automaticamente o diretório e suas subpastas durante o build. Adicionar um `.md` válido basta para gerar o cartão e a página individual: não é preciso cadastrar o projeto em uma lista ou editar os componentes. Os três projetos divulgados até o momento são da Enfermagem, ligados ao PEA/UFF; o catálogo aceita novas áreas sem alterações no código.
 
 Para adicionar um projeto:
 
-1. Copie `src/content/extension-projects/_template.md.example` para um arquivo `.md` na mesma pasta.
+1. Copie `data/extension-projects/_template.md.example` para um arquivo `.md` na mesma pasta.
 2. Preencha todos os campos, usando `id` e `slug` únicos, sem acentos ou espaços. Atualize a data de publicação (`AAAA-MM-DD`) e o semestre (`01-AAAA` ou `02-AAAA`).
-3. Escreva o conteúdo acadêmico nas seções do Markdown. Equipe e palavras-chave são exibidas a partir do front matter.
+3. Escreva o conteúdo acadêmico nas seções do Markdown. Equipe e palavras-chave são exibidas a partir do front matter. Para exibir uma logo, coloque a imagem em `data/images/` e informe `logo.src` e `logo.alt`.
 4. Execute `npm run validate:content`, `npm test`, `npm run check` e `npm run build`; revise e faça commit.
 
 Status aceitos: `inscricoes-abertas`, `em-andamento` e `concluido`. Modalidades e áreas são listas livres; as opções dos filtros são geradas automaticamente. Um `link_inscricao` HTTP/HTTPS real é opcional; o botão de participação só aparece com esse campo preenchido e inscrições abertas. Sem formulário, o catálogo mantém o acesso à página institucional de contato.
 
-O badge **Novo** vale por 60 dias corridos, incluindo o dia 60, a partir de `data_publicacao`, com referência ao dia em São Paulo. Ajuste `NEW_PROJECT_DAYS` em `src/lib/extension-projects.ts` para alterar o período. O navegador também remove badges vencidos ao abrir a página. Todas as oportunidades com inscrições abertas aparecem na primeira seção, independentemente da idade ou do campo opcional `destaque`, sem limite de três e sem repetir cards na busca. Mudanças de status e conteúdo exigem novo build.
+O badge **Novo** vale por 60 dias corridos, incluindo o dia 60, a partir de `data_publicacao`, com referência ao dia em São Paulo. Ajuste `NEW_PROJECT_DAYS` em `data/extension-catalog.ts` para alterar o período; esse arquivo também reúne os textos do catálogo e das páginas individuais. O navegador também remove badges vencidos ao abrir a página. Todas as oportunidades com inscrições abertas aparecem na primeira seção, independentemente da idade ou do campo opcional `destaque`, sem limite de três e sem repetir cards na busca. Mudanças de status e conteúdo exigem novo build.
 
 A busca é exclusiva dos projetos em andamento e concluídos. Ela ignora caixa e acentos e combina título, resumo, áreas, palavras-chave e equipe. Filtros podem ser compartilhados pela URL, por exemplo `/extensao/?status=em-andamento&area=saude-digital`. Quando não há projetos nesses estados, a seção apresenta uma mensagem e oculta os filtros. As oportunidades abertas continuam visíveis durante a busca. Sem JavaScript, todos os projetos e suas páginas continuam acessíveis.
 
-Os três projetos de 2026.2 foram incorporados dos documentos de preparação `projetos_iniciacao_extensao_2026-2.md` e `PRD_catalogo_projetos_extensao.md`, em `prompts/`. Build e testes usam os conteúdos publicados em `src/content/`, sem depender desses documentos de preparação. Ainda não há versões inglesas fornecidas: `/en/outreach/` mantém a apresentação institucional em inglês e aponta para o catálogo em português. As páginas individuais são publicadas apenas em português, sem anunciar traduções inexistentes; as demais rotas mantêm o seletor PT/EN. Esta coleção não exige entradas em `englishContent` até haver traduções revisadas.
+O documento original dos três projetos de 2026.2 foi preservado em `data/sources/` somente como histórico. A fonte de edição e publicação é `data/extension-projects/`. Build e testes não dependem de `prompts/` nem do histórico. Ainda não há versões inglesas fornecidas: `/en/outreach/` mantém a apresentação institucional em inglês e aponta para o catálogo em português. As páginas individuais são publicadas apenas em português, sem anunciar traduções inexistentes; as demais rotas mantêm o seletor PT/EN. Esta coleção não exige entradas em `englishContent` até haver traduções revisadas.
+
+Exemplo de logo no front matter:
+
+```yaml
+logo:
+  src: enfermagem.png
+  alt: Logo da Enfermagem
+```
+
+O caminho é relativo a `data/images/` e aceita subpastas. Logos são opcionais e específicas de cada projeto; os três projetos atuais compartilham a imagem fornecida da Enfermagem. A mesma logo aparece no cartão e na página individual. Uma referência a imagem inexistente faz a validação falhar.
 
 ## Editar uma disciplina
 
-Cada disciplina por semestre é um único arquivo em `src/content/offerings/`. Para adicionar uma aula, inclua no `calendar`, mantendo ordem cronológica:
+Cada disciplina por semestre é um único arquivo em `data/offerings/`. Para adicionar uma aula, inclua no `calendar`, mantendo ordem cronológica:
 
 ```yaml
 - date: '2026-08-12'
@@ -130,11 +142,11 @@ materials:
     external: false
 ```
 
-Arquivos locais ficam em `public/files/`. Não publique links privados, tokens ou dados de alunos.
+Arquivos locais ficam em `data/static/files/` e são publicados em `/files/`. Não publique links privados, tokens ou dados de alunos.
 
 ## Abrir um semestre
 
-1. Copie `src/content/offerings/_template.md.example` para um novo `.md`.
+1. Copie `data/offerings/_template.md.example` para um novo `.md`.
 2. Altere período, turma, logística e calendário.
 3. Marque a disciplina do semestre anterior como `current: false` e `status: archived`.
 4. Marque apenas a disciplina do novo semestre como `current: true`.
@@ -146,18 +158,29 @@ A URL da disciplina em cada semestre é imutável: `/ensino/{slug}/{ano-semestre
 
 O workflow em `.github/workflows/deploy.yml` valida pull requests e publica pushes em `main`. Ative **Settings → Pages → Source: GitHub Actions**. O `astro.config.mjs` detecta project pages pelo nome de `GITHUB_REPOSITORY`; `SITE_URL` e `BASE_PATH` podem substituir a configuração automaticamente.
 
-Antes do lançamento, ajuste `site`/domínio, `public/robots.txt` e confirme as pendências em [migration-review.md](migration-review.md). O mapa de URLs antigas está em [legacy-redirects.json](legacy-redirects.json).
+Antes do lançamento, ajuste o domínio em `data/site.json`, `data/static/robots.txt` e confirme as pendências em [migration-review.md](docs/migration-review.md). O mapa de URLs antigas está em [legacy-redirects.json](data/legacy-redirects.json).
 
 ## Estrutura
 
-- `src/content/`: fonte editorial em Markdown.
-- `src/components/`: cartões, agenda e página de disciplina.
-- `src/pages/`: rotas estáticas em português e wrappers das rotas em inglês.
-- `src/i18n/`: rotas, interface compartilhada e traduções do conteúdo acadêmico.
-- `data/`: planilhas editoriais versionadas.
-- `scripts/`: validação e geração de ICS.
-- `tests/`: testes unitários e de navegação.
-- `prompts/`: PRD original.
+| Diretório ou arquivo                                 | Responsabilidade                                                                 |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `data/extension-projects/`                           | Um Markdown por projeto divulgado, incluindo a referência à logo                 |
+| `data/courses/`, `data/offerings/`, `data/projects/` | Disciplinas, ofertas semestrais e projetos institucionais                        |
+| `data/pages/`, `data/i18n/`                          | Textos das páginas, interface e traduções                                        |
+| `data/site.json`, `data/profile.ts`                  | Identidade, contato, imagens do site, perfis e ordem das disciplinas             |
+| `data/extension-catalog.ts`                          | Textos e configuração editorial do catálogo                                      |
+| `data/publications.json`                             | Cópia versionada das publicações                                                 |
+| `data/images/`                                       | Logos, retrato e imagens; processadas pelo Astro/Vite                            |
+| `data/planning/`                                     | Planilhas e configuração de importação em `calendars.json`                       |
+| `data/static/`                                       | Arquivos copiados sem processamento, como `robots.txt` e materiais para download |
+| `data/sources/`                                      | Histórico editorial; não alimenta as páginas                                     |
+| `src/`                                               | Rotas, componentes, layouts, estilos, carregadores e lógica                      |
+| `scripts/`                                           | Validação, sincronização de dados e geração de ICS                               |
+| `docs/`                                              | Inventário de conteúdo e revisão da migração                                     |
+| `tests/`                                             | Testes unitários e de navegação                                                  |
+| `prompts/`                                           | Instruções de trabalho locais; não armazena imagens nem conteúdo a publicar      |
+
+Consulte [data/README.md](data/README.md) para escolher o arquivo de edição. Somente `data/static/` é copiado integralmente para o site; planilhas, fontes históricas e arquivos editoriais não são expostos como downloads automaticamente.
 
 ## Decisões de implementação
 

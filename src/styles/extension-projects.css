@@ -21,6 +21,9 @@
   margin: 0;
   font-size: 0.95rem;
 }
+.extension-intro p + p {
+  margin-top: 0.75rem;
+}
 .extension-catalog {
   padding-top: 2rem;
   padding-bottom: 0;
@@ -41,6 +44,27 @@
 }
 .project-card:hover {
   border-color: var(--blue);
+}
+.project-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.project-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.project-logo-prominent {
+  width: 112px;
+  height: 112px;
 }
 .project-featured {
   border-top: 3px solid var(--blue);

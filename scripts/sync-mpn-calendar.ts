@@ -4,6 +4,7 @@ import process from 'node:process';
 import * as prettier from 'prettier';
 import XLSX from 'xlsx';
 import YAML from 'yaml';
+import calendars from '../data/planning/calendars.json';
 
 type CalendarType =
   | 'aula'
@@ -16,11 +17,10 @@ type CalendarType =
   | 'sem-aula';
 type CalendarStatus = 'planned' | 'changed' | 'cancelled' | 'completed';
 
-const defaults = {
-  spreadsheet: 'data/MPN Planejamento.xlsx',
-  sheet: '2026.2',
-  offering: 'src/content/offerings/modelagem-processos-2026-2.md'
-};
+const calendarName = argument('calendar', 'mpn');
+if (!Object.hasOwn(calendars, calendarName))
+  throw new Error(`Calendário desconhecido: ${calendarName}`);
+const defaults = calendars[calendarName as keyof typeof calendars];
 
 function argument(name: string, fallback: string) {
   const index = process.argv.indexOf(`--${name}`);

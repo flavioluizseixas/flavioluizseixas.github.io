@@ -1,0 +1,36 @@
+export const pageCopy = {
+  pt: {
+    title: 'Contato',
+    description:
+      'Contato institucional e endereço profissional de Flávio Luiz Seixas.',
+    heading: 'Vamos conversar',
+    lead: 'Para assuntos acadêmicos, orientação e colaboração, prefira o e-mail institucional.',
+    email: 'E-mail',
+    at: 'arroba',
+    emailNote:
+      'O endereço é montado no navegador para reduzir coleta automatizada simples.',
+    address: 'Endereço profissional',
+    room: 'Instituto de Computação — sala 431',
+    campus: 'Campus UFF da Praia Vermelha',
+    street: 'Av. Gal. Milton Tavares de Souza, s/nº',
+    city: 'Boa Viagem, Niterói — RJ',
+    postal: 'CEP 24210-346'
+  },
+  en: {
+    title: 'Contact',
+    description:
+      'Institutional contact information and professional address for Flávio Luiz Seixas.',
+    heading: 'Let’s talk',
+    lead: 'For academic matters, supervision, and collaboration, please use my institutional email.',
+    email: 'Email',
+    at: 'at',
+    emailNote:
+      'The address is assembled in your browser to reduce basic automated harvesting.',
+    address: 'Professional address',
+    room: 'Institute of Computing — room 431',
+    campus: 'UFF Praia Vermelha Campus',
+    street: 'Av. Gal. Milton Tavares de Souza, s/nº',
+    city: 'Boa Viagem, Niterói — RJ, Brazil',
+    postal: 'Postal code 24210-346'
+  }
+};

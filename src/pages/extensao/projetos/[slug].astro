@@ -1,4 +1,6 @@
 ---
+import { detailCopy as copy } from '../../../../data/extension-catalog';
+import ExtensionProjectLogo from '../../../components/ExtensionProjectLogo.astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ExtensionProjectBadges from '../../../components/ExtensionProjectBadges.astro';
@@ -24,32 +26,40 @@ const { Content } = await render(project);
 <BaseLayout title={data.titulo} description={data.resumo_curto}>
   <header class="page-hero project-detail-hero">
     <div class="container">
-      <nav class="breadcrumbs" aria-label="Caminho de navegação">
-        <a href={route('pt', 'outreach')}>Extensão</a><span aria-hidden="true">
+      <nav class="breadcrumbs" aria-label={copy.breadcrumbs}>
+        <a href={route('pt', 'outreach')}>{copy.outreach}</a><span
+          aria-hidden="true"
+        >
           /
         </span>
-        <a href={`${route('pt', 'outreach')}#todos-os-projetos`}>Projetos</a
+        <a href={`${route('pt', 'outreach')}#todos-os-projetos`}
+          >{copy.projects}</a
         ><span aria-hidden="true"> / </span>
         <span aria-current="page">{data.titulo}</span>
       </nav>
+      <ExtensionProjectLogo logo={data.logo} prominent />
       <ExtensionProjectBadges project={data} />
       <h1>{data.titulo}</h1>
       <p class="hero-lead">{data.resumo_curto}</p>
       <dl class="facts project-facts">
-        <div><dt>Status</dt><dd>{PROJECT_STATUS_LABELS[data.status]}</dd></div>
-        <div><dt>Modalidade</dt><dd>{data.modalidade.join(' / ')}</dd></div>
-        <div><dt>Dedicação</dt><dd>{data.carga_horaria}</dd></div>
         <div>
-          <dt>Semestre de divulgação</dt><dd>{data.semestre_divulgacao}</dd>
+          <dt>{copy.status}</dt><dd>{PROJECT_STATUS_LABELS[data.status]}</dd>
+        </div>
+        <div>
+          <dt>{copy.modality}</dt><dd>{data.modalidade.join(' / ')}</dd>
+        </div>
+        <div><dt>{copy.workload}</dt><dd>{data.carga_horaria}</dd></div>
+        <div>
+          <dt>{copy.semester}</dt><dd>{data.semestre_divulgacao}</dd>
         </div>
       </dl>
-      <p class="course-meta">Áreas: {data.area.join(' · ')}</p>
+      <p class="course-meta">{copy.areas}: {data.area.join(' · ')}</p>
     </div>
   </header>
   <article class="container narrow prose project-detail">
     <Content />
     <section aria-labelledby="team-heading">
-      <h2 id="team-heading">Equipe</h2>
+      <h2 id="team-heading">{copy.team}</h2>
       <ul class="project-team">
         {
           data.equipe.map((member) => (
@@ -64,7 +74,7 @@ const { Content } = await render(project);
       </ul>
     </section>
     <section aria-labelledby="keywords-heading">
-      <h2 id="keywords-heading">Palavras-chave</h2>
+      <h2 id="keywords-heading">{copy.keywords}</h2>
       <ul class="project-keywords">
         {data.palavras_chave.map((keyword) => <li>{keyword}</li>)}
       </ul>
@@ -72,10 +82,10 @@ const { Content } = await render(project);
     {
       data.status === 'inscricoes-abertas' && data.link_inscricao && (
         <section class="notice" aria-labelledby="registration-heading">
-          <h2 id="registration-heading">Participe do projeto</h2>
+          <h2 id="registration-heading">{copy.participate}</h2>
           {data.data_encerramento_inscricoes && (
             <p>
-              Inscrições até{' '}
+              {copy.deadline}{' '}
               <time datetime={data.data_encerramento_inscricoes}>
                 {formatDate(data.data_encerramento_inscricoes)}
               </time>
@@ -83,15 +93,13 @@ const { Content } = await render(project);
             </p>
           )}
           <a class="button" href={data.link_inscricao}>
-            Quero participar
+            {copy.registration}
           </a>
         </section>
       )
     }
     <div class="project-back">
-      <a href={`${route('pt', 'outreach')}#todos-os-projetos`}
-        >← Voltar aos projetos</a
-      >
+      <a href={`${route('pt', 'outreach')}#todos-os-projetos`}>← {copy.back}</a>
     </div>
   </article>
 </BaseLayout>
