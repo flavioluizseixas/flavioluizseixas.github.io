@@ -77,6 +77,25 @@ A validação percorre títulos, resumos, ementas, avisos, tópicos, materiais e
 
 As rotas em português não têm prefixo (`/ensino/`, `/pesquisa/`). As equivalentes em inglês usam `/en/` e nomes traduzidos (`/en/teaching/`, `/en/research/`). O seletor no cabeçalho grava `site-locale` no `localStorage`; essa escolha sempre prevalece. Apenas na primeira visita, o site consulta `api.country.is` para distinguir Brasil dos demais países e usa o idioma do navegador como fallback.
 
+## Publicar projetos da Fábrica de Software
+
+O catálogo `/extensao/` usa a coleção Astro `extensionProjects`, separada dos projetos institucionais de pesquisa/extensão em `src/content/projects/`. Cada oportunidade tem um arquivo Markdown em `src/content/extension-projects/`; o front matter alimenta cards, filtros, equipe, metadados e a URL `/extensao/projetos/{slug}/`. O corpo contém a descrição completa.
+
+Para adicionar um projeto:
+
+1. Copie `src/content/extension-projects/_template.md.example` para um arquivo `.md` na mesma pasta.
+2. Preencha todos os campos, usando `id` e `slug` únicos, sem acentos ou espaços. Atualize a data de publicação (`AAAA-MM-DD`) e o semestre (`01-AAAA` ou `02-AAAA`).
+3. Escreva o conteúdo acadêmico nas seções do Markdown. Equipe e palavras-chave são exibidas a partir do front matter.
+4. Execute `npm run validate:content`, `npm test`, `npm run check` e `npm run build`; revise e faça commit.
+
+Status aceitos: `inscricoes-abertas`, `em-andamento` e `concluido`. Modalidades e áreas são listas livres; as opções dos filtros são geradas automaticamente. Um `link_inscricao` HTTP/HTTPS real é opcional; o botão de participação só aparece com esse campo preenchido e inscrições abertas. Sem formulário, o catálogo mantém o acesso à página institucional de contato.
+
+O badge **Novo** vale por 60 dias corridos, incluindo o dia 60, a partir de `data_publicacao`, com referência ao dia em São Paulo. Ajuste `NEW_PROJECT_DAYS` em `src/lib/extension-projects.ts` para alterar o período. A seleção inicial de até três destaques é feita no build; o navegador também remove badges e destaques vencidos ao abrir a página. `destaque: true` mantém uma oportunidade aberta elegível ao destaque, mas não prolonga o badge Novo. Mudanças de status, conteúdo e seleção de destaques exigem novo build.
+
+A busca ignora caixa e acentos e combina título, resumo, áreas, palavras-chave e equipe. Filtros podem ser compartilhados pela URL, por exemplo `/extensao/?status=inscricoes-abertas&area=saude-digital`. Sem JavaScript, todos os projetos e suas páginas continuam acessíveis.
+
+Os três projetos de 2026.2 foram incorporados de `prompts/projetos_iniciacao_extensao_2026-2.md`, conforme `prompts/PRD_catalogo_projetos_extensao.md`. Ainda não há versões inglesas fornecidas: `/en/outreach/` mantém a apresentação institucional em inglês e aponta para o catálogo em português. As páginas individuais são publicadas apenas em português, sem anunciar traduções inexistentes; as demais rotas mantêm o seletor PT/EN. Esta coleção não exige entradas em `englishContent` até haver traduções revisadas.
+
 ## Editar uma disciplina
 
 Cada disciplina por semestre é um único arquivo em `src/content/offerings/`. Para adicionar uma aula, inclua no `calendar`, mantendo ordem cronológica:

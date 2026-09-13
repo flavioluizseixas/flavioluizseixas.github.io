@@ -1,0 +1,52 @@
+---
+import type { ExtensionProject } from '../lib/extension-project-schema';
+import { withBase } from '../lib/site';
+import { filterValue, projectSearchText } from '../lib/extension-projects';
+import ExtensionProjectBadges from './ExtensionProjectBadges.astro';
+interface Props {
+  project: ExtensionProject;
+  featured?: boolean;
+}
+const { project, featured = false } = Astro.props;
+---
+
+<article
+  class:list={['card', 'project-card', { 'project-featured': featured }]}
+  data-project={featured ? undefined : project.slug}
+  data-search={featured ? undefined : projectSearchText(project)}
+  data-status={project.status}
+  data-area={JSON.stringify(project.area.map(filterValue))}
+  data-modalidade={JSON.stringify(project.modalidade.map(filterValue))}
+  data-published={project.data_publicacao}
+  data-featured={project.destaque ? 'true' : 'false'}
+>
+  <ExtensionProjectBadges {project} />
+  <h3>{project.titulo}</h3>
+  <p class="project-summary">{project.resumo_curto}</p>
+  <p class="project-modality">{project.modalidade.join(' · ')}</p>
+  <p class="project-areas">
+    {project.area.slice(0, featured ? 1 : 2).join(' · ')}
+    {
+      !featured && project.area.length > 2 && (
+        <span title={project.area.slice(2).join(' · ')}>
+          {' '}
+          · +{project.area.length - 2} áreas
+        </span>
+      )
+    }
+  </p>
+  <p class="project-meta">
+    <span>{project.carga_horaria.replace(' horas semanais', ' h/semana')}</span
+    ><span aria-label={`Semestre de divulgação: ${project.semestre_divulgacao}`}
+      >{project.semestre_divulgacao}</span
+    >
+  </p>
+  <a
+    class="project-link"
+    href={withBase(`extensao/projetos/${project.slug}/`)}
+    aria-label={`${featured ? 'Conhecer projeto' : 'Ver detalhes'}: ${project.titulo}`}
+  >
+    {featured ? 'Conhecer projeto' : 'Ver detalhes'}
+    <span aria-hidden="true">→</span>
+  </a>
+</article>

@@ -1,5 +1,6 @@
 import { englishContent } from '../src/i18n/content.js';
 import { loadCollection, loadOfferings, type Offering } from './content.js';
+import { extensionProjectSchema } from '../src/lib/extension-project-schema.js';
 const allowed = new Set([
   'aula',
   'laboratorio',
@@ -12,6 +13,23 @@ const allowed = new Set([
 ]);
 const statuses = new Set(['planned', 'changed', 'cancelled', 'completed']);
 const errors: string[] = [];
+const extensionIds = new Set<string>();
+const extensionSlugs = new Set<string>();
+const extensionProjects =
+  loadCollection<Record<string, unknown>>('extension-projects');
+for (const entry of extensionProjects) {
+  const result = extensionProjectSchema.safeParse(entry);
+  if (!result.success) {
+    errors.push(`Projeto ${entry.id || '(sem id)'}: ${result.error.message}`);
+    continue;
+  }
+  const { id, slug } = result.data;
+  if (extensionIds.has(id)) errors.push(`Projeto: id duplicado “${id}”`);
+  if (extensionSlugs.has(slug))
+    errors.push(`Projeto: slug duplicado “${slug}”`);
+  extensionIds.add(id);
+  extensionSlugs.add(slug);
+}
 const currents = new Map<string, number>();
 const offerings = loadOfferings();
 const translatable = new Set<string>();
@@ -81,5 +99,5 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(
-  `Conteúdo válido: ${offerings.length} disciplinas e ${translatable.size} traduções verificadas.`
+  `Conteúdo válido: ${offerings.length} disciplinas, ${extensionProjects.length} projetos de extensão e ${translatable.size} traduções verificadas.`
 );

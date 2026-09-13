@@ -1,0 +1,153 @@
+---
+import { getCollection } from 'astro:content';
+import ExtensionProjectCard from './ExtensionProjectCard.astro';
+import {
+  featuredProjects,
+  filterValue,
+  resultCount,
+  sortProjects
+} from '../lib/extension-projects';
+import { route } from '../i18n';
+
+const projects = sortProjects(await getCollection('extensionProjects'));
+const featured = featuredProjects(projects);
+const options = (key: 'modalidade' | 'area') =>
+  [...new Set(projects.flatMap(({ data }) => data[key]))].sort((a, b) =>
+    a.localeCompare(b, 'pt-BR')
+  );
+---
+
+<div class="container extension-catalog">
+  <section
+    id="novas-oportunidades"
+    aria-labelledby="new-projects-heading"
+    hidden={featured.length === 0}
+  >
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Iniciação Científica e Extensão</span><h2
+          id="new-projects-heading"
+        >
+          Novas oportunidades
+        </h2><p>
+          Projetos recentemente divulgados com oportunidades de participação
+          para estudantes.
+        </p>
+      </div>
+    </div>
+    <div class="project-grid">
+      {
+        featured.map(({ data }) => (
+          <ExtensionProjectCard project={data} featured />
+        ))
+      }
+    </div>
+  </section>
+
+  <section
+    class="project-explore"
+    aria-labelledby="explore-heading"
+    data-project-catalog
+  >
+    <h2 id="explore-heading">Explore os projetos</h2>
+    <form
+      class="project-controls"
+      role="search"
+      aria-label="Buscar e filtrar projetos"
+      hidden
+    >
+      <label class="project-search"
+        >Buscar projetos
+        <input
+          type="search"
+          name="q"
+          placeholder="Buscar projetos..."
+          autocomplete="off"
+          aria-controls="project-results"
+        />
+      </label>
+      <div class="project-field">
+        <label for="project-status">Status</label>
+        <select
+          id="project-status"
+          name="status"
+          aria-controls="project-results"
+        >
+          <option value="">Todos</option>
+          <option value="inscricoes-abertas">Inscrições abertas</option>
+          <option value="em-andamento">Em andamento</option>
+          <option value="concluido">Concluídos</option>
+        </select>
+      </div>
+      <div class="project-field">
+        <label for="project-modalidade">Modalidade</label>
+        <select
+          id="project-modalidade"
+          name="modalidade"
+          aria-controls="project-results"
+        >
+          <option value="">Todas</option>
+          {
+            options('modalidade').map((value) => (
+              <option value={filterValue(value)}>{value}</option>
+            ))
+          }
+        </select>
+      </div>
+      <div class="project-field">
+        <label for="project-area">Área</label>
+        <select id="project-area" name="area" aria-controls="project-results">
+          <option value="">Todas</option>
+          {
+            options('area').map((value) => (
+              <option value={filterValue(value)}>{value}</option>
+            ))
+          }
+        </select>
+      </div>
+      <button type="reset" class="button secondary">Limpar filtros</button>
+    </form>
+    <noscript
+      ><p>
+        A lista completa está disponível abaixo. Ative o JavaScript para usar a
+        busca e os filtros.
+      </p></noscript
+    >
+    <div class="section-head project-results-heading">
+      <h2 id="todos-os-projetos">Todos os projetos</h2>
+      <p data-result-count role="status" aria-live="polite" aria-atomic="true">
+        {resultCount(projects.length)}
+      </p>
+    </div>
+    <div
+      id="project-results"
+      class="project-grid"
+      aria-labelledby="todos-os-projetos"
+    >
+      {projects.map(({ data }) => <ExtensionProjectCard project={data} />)}
+    </div>
+    <div class="empty" data-project-empty hidden>
+      <p>Nenhum projeto encontrado com esses filtros.</p>
+      <button type="button" class="button secondary" data-clear-projects
+        >Limpar filtros</button
+      >
+    </div>
+  </section>
+
+  <section
+    class="notice project-participate"
+    aria-labelledby="participate-heading"
+  >
+    <div>
+      <h2 id="participate-heading">Participe</h2><p>
+        Conheça o perfil e as possibilidades de atuação em cada projeto. Para
+        conversar sobre participação e colaboração, entre em contato.
+      </p>
+    </div>
+    <a class="button" href={route('pt', 'contact')}>Entrar em contato</a>
+  </section>
+</div>
+
+<script>
+  import '../scripts/extension-catalog';
+</script>

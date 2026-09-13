@@ -1,0 +1,28 @@
+---
+import type { ExtensionProject } from '../lib/extension-project-schema';
+import { isNewProject, PROJECT_STATUS_LABELS } from '../lib/extension-projects';
+interface Props {
+  project: ExtensionProject;
+}
+const { project } = Astro.props;
+---
+
+<div class="project-badges">
+  <span class:list={['tag', 'project-status', project.status]}
+    >{PROJECT_STATUS_LABELS[project.status]}</span
+  >
+  <span
+    class="tag project-new"
+    data-new-project={project.data_publicacao}
+    hidden={!isNewProject(project.data_publicacao)}>Novo</span
+  >
+</div>
+
+<script>
+  import { isNewProject } from '../lib/extension-projects';
+  document
+    .querySelectorAll<HTMLElement>('[data-new-project]')
+    .forEach((badge) => {
+      badge.hidden = !isNewProject(badge.dataset.newProject!);
+    });
+</script>

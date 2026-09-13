@@ -1,0 +1,44 @@
+---
+id: identificador-do-projeto
+slug: identificador-do-projeto
+titulo: Título do projeto
+resumo_curto: Descreva brevemente o problema e a proposta do projeto.
+modalidade:
+  - Iniciação Científica
+  - Extensão
+area:
+  - Saúde Digital
+status: inscricoes-abertas
+semestre_divulgacao: '02-2026'
+data_publicacao: '2026-09-12'
+carga_horaria: 4 horas semanais
+destaque: false
+equipe:
+  - nome: Nome do integrante
+    vinculo: Vínculo institucional
+palavras_chave:
+  - Saúde Digital
+# Descomente apenas quando houver um endereço real de inscrição:
+# link_inscricao: https://endereco-institucional/formulario
+# data_encerramento_inscricoes: '2026-10-12'
+---
+
+## Sobre o projeto
+
+Descreva o problema, os objetivos e a solução proposta.
+
+## Impactos potenciais na sociedade
+
+- Descreva os impactos esperados.
+
+## O que o aluno poderá desenvolver
+
+- Descreva as possibilidades de atuação.
+
+## Perfil desejado
+
+Descreva os interesses e conhecimentos desejáveis.
+
+## Tecnologias e competências envolvidas
+
+- Liste as tecnologias e competências pertinentes.

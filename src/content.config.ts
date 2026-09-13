@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { extensionProjectSchema } from './lib/extension-project-schema';
 
 const material = z.object({
   title: z.string(),
@@ -111,4 +112,19 @@ const publications = defineCollection({
   })
 });
 
-export const collections = { offerings, courses, projects, publications };
+const extensionProjects = defineCollection({
+  loader: glob({
+    pattern: '**/*.md',
+    base: './src/content/extension-projects',
+    generateId: ({ data }) => String(data.id)
+  }),
+  schema: extensionProjectSchema
+});
+
+export const collections = {
+  offerings,
+  courses,
+  projects,
+  publications,
+  extensionProjects
+};

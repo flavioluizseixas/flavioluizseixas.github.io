@@ -1,0 +1,97 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ExtensionProjectBadges from '../../../components/ExtensionProjectBadges.astro';
+import { PROJECT_STATUS_LABELS } from '../../../lib/extension-projects';
+import { formatDate } from '../../../lib/site';
+import { route } from '../../../i18n';
+import '../../../styles/extension-projects.css';
+
+export async function getStaticPaths() {
+  return (await getCollection('extensionProjects')).map((project) => ({
+    params: { slug: project.data.slug },
+    props: { project }
+  }));
+}
+interface Props {
+  project: CollectionEntry<'extensionProjects'>;
+}
+const { project } = Astro.props;
+const data = project.data;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={data.titulo} description={data.resumo_curto}>
+  <header class="page-hero project-detail-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Caminho de navegação">
+        <a href={route('pt', 'outreach')}>Extensão</a><span aria-hidden="true">
+          /
+        </span>
+        <a href={`${route('pt', 'outreach')}#todos-os-projetos`}>Projetos</a
+        ><span aria-hidden="true"> / </span>
+        <span aria-current="page">{data.titulo}</span>
+      </nav>
+      <ExtensionProjectBadges project={data} />
+      <h1>{data.titulo}</h1>
+      <p class="hero-lead">{data.resumo_curto}</p>
+      <dl class="facts project-facts">
+        <div><dt>Status</dt><dd>{PROJECT_STATUS_LABELS[data.status]}</dd></div>
+        <div><dt>Modalidade</dt><dd>{data.modalidade.join(' / ')}</dd></div>
+        <div><dt>Dedicação</dt><dd>{data.carga_horaria}</dd></div>
+        <div>
+          <dt>Semestre de divulgação</dt><dd>{data.semestre_divulgacao}</dd>
+        </div>
+      </dl>
+      <p class="course-meta">Áreas: {data.area.join(' · ')}</p>
+    </div>
+  </header>
+  <article class="container narrow prose project-detail">
+    <Content />
+    <section aria-labelledby="team-heading">
+      <h2 id="team-heading">Equipe</h2>
+      <ul class="project-team">
+        {
+          data.equipe.map((member) => (
+            <li>
+              <>
+                <strong>{member.nome}</strong>
+                <span>{member.vinculo}</span>
+              </>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+    <section aria-labelledby="keywords-heading">
+      <h2 id="keywords-heading">Palavras-chave</h2>
+      <ul class="project-keywords">
+        {data.palavras_chave.map((keyword) => <li>{keyword}</li>)}
+      </ul>
+    </section>
+    {
+      data.status === 'inscricoes-abertas' && data.link_inscricao && (
+        <section class="notice" aria-labelledby="registration-heading">
+          <h2 id="registration-heading">Participe do projeto</h2>
+          {data.data_encerramento_inscricoes && (
+            <p>
+              Inscrições até{' '}
+              <time datetime={data.data_encerramento_inscricoes}>
+                {formatDate(data.data_encerramento_inscricoes)}
+              </time>
+              .
+            </p>
+          )}
+          <a class="button" href={data.link_inscricao}>
+            Quero participar
+          </a>
+        </section>
+      )
+    }
+    <div class="project-back">
+      <a href={`${route('pt', 'outreach')}#todos-os-projetos`}
+        >← Voltar aos projetos</a
+      >
+    </div>
+  </article>
+</BaseLayout>
