@@ -1,62 +1,53 @@
 import { test, expect } from '@playwright/test';
 
-test('catálogo combina busca, filtros, contagem e limpeza por teclado', async ({
+test('oportunidades abertas aparecem uma única vez e não integram a busca', async ({
   page
 }) => {
   await page.goto('/extensao/');
   await expect(page.locator('#novas-oportunidades .project-card')).toHaveCount(
     3
   );
-  await expect(page.locator('#project-results .project-card')).toHaveCount(3);
-  const search = page.getByRole('searchbox', { name: 'Buscar projetos' });
-  await search.fill('AUDITORIA');
-  await expect(page.getByRole('status')).toHaveText('2 projetos encontrados');
-  await page
-    .getByLabel('Status', { exact: true })
-    .selectOption('inscricoes-abertas');
-  await page.getByLabel('Modalidade', { exact: true }).selectOption('extensao');
-  await page
-    .getByLabel('Área', { exact: true })
-    .selectOption('business-intelligence');
-  await expect(page.locator('[data-project]:visible')).toHaveCount(1);
-  await expect(page.locator('[data-project]:visible')).toContainText('ACEnf');
-  await expect(page).toHaveURL(/area=business-intelligence/);
-  await expect(page.getByRole('status')).toHaveText('1 projeto encontrado');
-  await search.fill('patricia');
+  await expect(page.locator('#project-results .project-card')).toHaveCount(0);
+  const slugs = await page
+    .locator('[data-project]')
+    .evaluateAll((cards) =>
+      cards.map((card) => card.getAttribute('data-project'))
+    );
+  expect(new Set(slugs).size).toBe(3);
   await expect(
-    page.getByText('Nenhum projeto encontrado com esses filtros.')
+    page.getByRole('heading', {
+      name: 'Em andamento e concluídos',
+      exact: true
+    })
   ).toBeVisible();
-  await page.locator('[data-clear-projects]').focus();
-  await page.keyboard.press('Enter');
-  await expect(search).toBeFocused();
-  await expect(page.getByRole('status')).toHaveText('3 projetos encontrados');
-  await expect(page).toHaveURL(/\/extensao\/$/);
-  await search.fill('PATRICIA');
-  await expect(page.locator('[data-project]:visible')).toHaveCount(1);
-  await expect(page.locator('[data-project]:visible')).toContainText(
-    'Denúncias'
-  );
-  await page.getByLabel('Status', { exact: true }).selectOption('concluido');
-  await expect(page.getByRole('status')).toHaveText('0 projetos encontrados');
+  await expect(
+    page.getByText(
+      'Ainda não há projetos em andamento ou concluídos no catálogo.'
+    )
+  ).toBeVisible();
+  await expect(page.getByRole('searchbox')).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Limpar filtros' })
+  ).toHaveCount(0);
 });
 
-test('URL filtrada sobrevive à navegação para os detalhes e ao retorno', async ({
+test('filtros na URL não ocultam nem duplicam oportunidades abertas', async ({
   page
 }) => {
-  await page.goto(
-    '/extensao/?q=gisele&status=inscricoes-abertas&area=saude-digital'
-  );
-  await expect(page.locator('[data-project]:visible')).toHaveCount(1);
-  await page.locator('[data-project]:visible .project-link').click();
-  await expect(page).toHaveURL(/\/extensao\/projetos\/acenf\/$/);
+  await page.goto('/extensao/?q=gisele&status=em-andamento&area=saude-digital');
   await expect(
-    page.getByRole('heading', { name: 'Equipe', exact: true })
-  ).toBeVisible();
+    page.locator('#novas-oportunidades .project-card:visible')
+  ).toHaveCount(3);
+  await expect(page.locator('#project-results .project-card')).toHaveCount(0);
+  await page.locator('[data-project="acenf"] .project-link').click();
+  await expect(page).toHaveURL(/\/extensao\/projetos\/acenf\/$/);
   await page.goBack();
-  await expect(page.getByRole('searchbox')).toHaveValue('gisele');
-  await expect(page.getByRole('status')).toHaveText('1 projeto encontrado');
+  await expect(page).toHaveURL(/status=em-andamento/);
   await page.reload();
-  await expect(page.locator('[data-project]:visible')).toHaveCount(1);
+  await expect(
+    page.locator('#novas-oportunidades .project-card:visible')
+  ).toHaveCount(3);
+  await expect(page.locator('#project-results .project-card')).toHaveCount(0);
 });
 
 test('páginas individuais contêm descrição, equipe, metadados e links de retorno', async ({
@@ -177,7 +168,7 @@ test('catálogo e detalhes cabem em 360, 768, 1024 e 1440 px nos dois temas', as
         ).toBeLessThanOrEqual(sizes.viewport);
         if (path === '/extensao/') {
           const columns = await page
-            .locator('#project-results')
+            .locator('#novas-oportunidades .project-grid')
             .evaluate(
               (grid) =>
                 getComputedStyle(grid).gridTemplateColumns.split(' ').length

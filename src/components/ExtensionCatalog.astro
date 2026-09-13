@@ -2,42 +2,42 @@
 import { getCollection } from 'astro:content';
 import ExtensionProjectCard from './ExtensionProjectCard.astro';
 import {
-  featuredProjects,
+  groupProjects,
   filterValue,
-  resultCount,
-  sortProjects
+  resultCount
 } from '../lib/extension-projects';
 import { route } from '../i18n';
 
-const projects = sortProjects(await getCollection('extensionProjects'));
-const featured = featuredProjects(projects);
+const { opportunities, searchable: projects } = groupProjects(
+  await getCollection('extensionProjects')
+);
 const options = (key: 'modalidade' | 'area') =>
   [...new Set(projects.flatMap(({ data }) => data[key]))].sort((a, b) =>
     a.localeCompare(b, 'pt-BR')
   );
 ---
 
-<div class="container extension-catalog">
+<div class="container extension-catalog" id="todos-os-projetos">
   <section
     id="novas-oportunidades"
     aria-labelledby="new-projects-heading"
-    hidden={featured.length === 0}
+    hidden={opportunities.length === 0}
   >
     <div class="section-head">
       <div>
         <span class="eyebrow">Iniciação Científica e Extensão</span><h2
           id="new-projects-heading"
         >
-          Novas oportunidades
+          Oportunidades com inscrições abertas
         </h2><p>
-          Projetos recentemente divulgados com oportunidades de participação
-          para estudantes.
+          Conheça os projetos que estão recebendo estudantes e encontre uma
+          oportunidade de participação.
         </p>
       </div>
     </div>
     <div class="project-grid">
       {
-        featured.map(({ data }) => (
+        opportunities.map(({ data }) => (
           <ExtensionProjectCard project={data} featured />
         ))
       }
@@ -49,11 +49,22 @@ const options = (key: 'modalidade' | 'area') =>
     aria-labelledby="explore-heading"
     data-project-catalog
   >
-    <h2 id="explore-heading">Explore os projetos</h2>
+    <div class="section-head project-results-heading">
+      <h2 id="explore-heading">Em andamento e concluídos</h2>
+      <p
+        data-result-count
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        hidden={projects.length === 0}
+      >
+        {resultCount(projects.length)}
+      </p>
+    </div>
     <form
       class="project-controls"
       role="search"
-      aria-label="Buscar e filtrar projetos"
+      aria-label="Buscar e filtrar projetos em andamento e concluídos"
       hidden
     >
       <label class="project-search"
@@ -74,7 +85,6 @@ const options = (key: 'modalidade' | 'area') =>
           aria-controls="project-results"
         >
           <option value="">Todos</option>
-          <option value="inscricoes-abertas">Inscrições abertas</option>
           <option value="em-andamento">Em andamento</option>
           <option value="concluido">Concluídos</option>
         </select>
@@ -107,29 +117,36 @@ const options = (key: 'modalidade' | 'area') =>
       </div>
       <button type="reset" class="button secondary">Limpar filtros</button>
     </form>
-    <noscript
-      ><p>
-        A lista completa está disponível abaixo. Ative o JavaScript para usar a
-        busca e os filtros.
-      </p></noscript
-    >
-    <div class="section-head project-results-heading">
-      <h2 id="todos-os-projetos">Todos os projetos</h2>
-      <p data-result-count role="status" aria-live="polite" aria-atomic="true">
-        {resultCount(projects.length)}
-      </p>
-    </div>
+    {
+      projects.length > 0 && (
+        <noscript>
+          <p>
+            Os projetos em andamento e concluídos estão listados abaixo. Ative o
+            JavaScript para usar a busca e os filtros.
+          </p>
+        </noscript>
+      )
+    }
     <div
       id="project-results"
       class="project-grid"
-      aria-labelledby="todos-os-projetos"
+      aria-labelledby="explore-heading"
     >
       {projects.map(({ data }) => <ExtensionProjectCard project={data} />)}
     </div>
-    <div class="empty" data-project-empty hidden>
-      <p>Nenhum projeto encontrado com esses filtros.</p>
-      <button type="button" class="button secondary" data-clear-projects
-        >Limpar filtros</button
+    <div class="empty" data-project-empty hidden={projects.length > 0}>
+      <p>
+        {
+          projects.length
+            ? 'Nenhum projeto encontrado com esses filtros.'
+            : 'Ainda não há projetos em andamento ou concluídos no catálogo.'
+        }
+      </p>
+      <button
+        type="button"
+        class="button secondary"
+        data-clear-projects
+        hidden={projects.length === 0}>Limpar filtros</button
       >
     </div>
   </section>

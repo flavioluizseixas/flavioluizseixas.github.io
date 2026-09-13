@@ -147,6 +147,9 @@
 .project-results-heading p {
   font-size: 0.9rem;
 }
+.project-controls:not([hidden]) {
+  margin-bottom: 1.5rem;
+}
 .project-participate {
   display: flex;
   flex-wrap: wrap;

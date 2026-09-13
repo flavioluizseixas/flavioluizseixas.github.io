@@ -30,22 +30,40 @@ export function sortProjects<T extends { data: ExtensionProject }>(
   );
 }
 
-export function featuredProjects<T extends { data: ExtensionProject }>(
+export function groupProjects<T extends { data: ExtensionProject }>(
   projects: T[],
   today = todayInSaoPaulo()
 ) {
-  return projects
-    .filter(
-      ({ data }) =>
-        data.status === 'inscricoes-abertas' &&
-        (data.destaque || isNewProject(data.data_publicacao, today))
+  const sorted = sortProjects(projects, today);
+  return {
+    opportunities: sorted.filter(
+      ({ data }) => data.status === 'inscricoes-abertas'
+    ),
+    searchable: sorted.filter(
+      ({ data }) => data.status !== 'inscricoes-abertas'
     )
-    .sort(
-      (a, b) =>
-        b.data.data_publicacao.localeCompare(a.data.data_publicacao) ||
-        a.data.titulo.localeCompare(b.data.titulo, 'pt-BR')
-    )
-    .slice(0, 3);
+  };
+}
+
+export type ProjectSearchEntry = {
+  search: string;
+  status: string;
+  area: string[];
+  modalidade: string[];
+};
+
+export function matchesProject(
+  entry: ProjectSearchEntry,
+  filters: { query: string; status: string; modalidade: string; area: string }
+) {
+  const terms = normalizeSearch(filters.query).split(/\s+/).filter(Boolean);
+  return (
+    (entry.status === 'em-andamento' || entry.status === 'concluido') &&
+    terms.every((term) => entry.search.includes(term)) &&
+    (!filters.status || entry.status === filters.status) &&
+    (!filters.modalidade || entry.modalidade.includes(filters.modalidade)) &&
+    (!filters.area || entry.area.includes(filters.area))
+  );
 }
 
 export const normalizeSearch = (value: string) =>

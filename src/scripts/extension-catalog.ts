@@ -1,8 +1,4 @@
-import {
-  isNewProject,
-  normalizeSearch,
-  resultCount
-} from '../lib/extension-projects';
+import { matchesProject, resultCount } from '../lib/extension-projects';
 
 const catalog = document.querySelector<HTMLElement>('[data-project-catalog]');
 if (catalog) {
@@ -27,14 +23,9 @@ if (catalog) {
     const [query, status, modalidade, area] = fields.map(
       (field) => field.value
     );
-    const terms = normalizeSearch(query).split(/\s+/).filter(Boolean);
     let matches = 0;
     for (const card of cards) {
-      const visible =
-        terms.every((term) => card.search.includes(term)) &&
-        (!status || card.status === status) &&
-        (!modalidade || card.modalidade.includes(modalidade)) &&
-        (!area || card.area.includes(area));
+      const visible = matchesProject(card, { query, status, modalidade, area });
       card.element.hidden = !visible;
       if (visible) matches++;
     }
@@ -81,21 +72,5 @@ if (catalog) {
     .addEventListener('click', clear);
   window.addEventListener('popstate', readUrl);
   readUrl();
-  form.hidden = false;
-}
-
-// Expire recent opportunities even when GitHub Pages is serving an older build.
-const opportunities = document.querySelector<HTMLElement>(
-  '#novas-oportunidades'
-);
-if (opportunities) {
-  const cards = [
-    ...opportunities.querySelectorAll<HTMLElement>('.project-card')
-  ];
-  cards.forEach((card) => {
-    card.hidden =
-      card.dataset.featured !== 'true' &&
-      !isNewProject(card.dataset.published!);
-  });
-  opportunities.hidden = cards.every((card) => card.hidden);
+  form.hidden = cards.length === 0;
 }

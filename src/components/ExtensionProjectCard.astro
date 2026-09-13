@@ -12,13 +12,11 @@ const { project, featured = false } = Astro.props;
 
 <article
   class:list={['card', 'project-card', { 'project-featured': featured }]}
-  data-project={featured ? undefined : project.slug}
+  data-project={project.slug}
   data-search={featured ? undefined : projectSearchText(project)}
   data-status={project.status}
   data-area={JSON.stringify(project.area.map(filterValue))}
   data-modalidade={JSON.stringify(project.modalidade.map(filterValue))}
-  data-published={project.data_publicacao}
-  data-featured={project.destaque ? 'true' : 'false'}
 >
   <ExtensionProjectBadges {project} />
   <h3>{project.titulo}</h3>

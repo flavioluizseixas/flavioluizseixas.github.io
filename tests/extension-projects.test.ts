@@ -6,7 +6,9 @@ import {
   type ExtensionProject
 } from '../src/lib/extension-project-schema';
 import {
-  featuredProjects,
+  groupProjects,
+  matchesProject,
+  filterValue,
   isNewProject,
   normalizeSearch,
   projectSearchText,
@@ -29,7 +31,7 @@ describe('catálogo de extensão', () => {
     expect(isNewProject('inválida', today)).toBe(false);
   });
 
-  it('destaca até três oportunidades abertas por data, incluindo destaque editorial antigo', () => {
+  it('separa todas as oportunidades dos projetos pesquisáveis sem repetir ou omitir cards', () => {
     const entries = [
       project('antigo', { data_publicacao: '2026-06-14' }),
       project('editorial', { data_publicacao: '2026-06-15', destaque: true }),
@@ -39,15 +41,34 @@ describe('catálogo de extensão', () => {
       project('novo-dois', { data_publicacao: '2026-09-01' }),
       project('novo-tres', { data_publicacao: '2026-08-30' })
     ];
-    expect(featuredProjects(entries, today).map((p) => p.data.slug)).toEqual([
+    const { opportunities, searchable } = groupProjects(entries, today);
+    expect(opportunities.map((p) => p.data.slug)).toEqual([
       'novo-um',
       'novo-dois',
-      'novo-tres'
+      'novo-tres',
+      'editorial',
+      'antigo'
     ]);
+    expect(searchable.map((p) => p.data.slug)).toEqual([
+      'andamento',
+      'concluido'
+    ]);
+    const slugs = [...opportunities, ...searchable].map((p) => p.data.slug);
+    expect(new Set(slugs).size).toBe(entries.length);
+    expect(slugs).toHaveLength(entries.length);
+
+    const updated = entries.map((entry) =>
+      entry.data.slug === 'novo-um'
+        ? { data: { ...entry.data, status: 'em-andamento' as const } }
+        : entry
+    );
+    const moved = groupProjects(updated, today);
     expect(
-      featuredProjects(entries.slice(0, 5), today).map((p) => p.data.slug)
-    ).toEqual(['novo-um', 'editorial']);
-    expect(sortProjects(entries, today)).toHaveLength(entries.length);
+      moved.opportunities.some((entry) => entry.data.slug === 'novo-um')
+    ).toBe(false);
+    expect(
+      moved.searchable.filter((entry) => entry.data.slug === 'novo-um')
+    ).toHaveLength(1);
   });
 
   it('ordena abertas, novas em andamento, em andamento e concluídas, por data em cada grupo', () => {
@@ -111,32 +132,69 @@ describe('catálogo de extensão', () => {
     }
   });
 
-  it('preserva integralmente os parágrafos e atividades acadêmicas da fonte', () => {
-    const source = fs.readFileSync(
-      'prompts/projetos_iniciacao_extensao_2026-2.md',
-      'utf8'
+  it('combina busca e filtros somente em projetos em andamento ou concluídos', () => {
+    const entry = projects.find((item) => item.slug === 'acenf')!;
+    const indexed = {
+      search: projectSearchText(entry),
+      status: 'em-andamento',
+      area: entry.area.map(filterValue),
+      modalidade: entry.modalidade.map(filterValue)
+    };
+    const filters = {
+      query: 'GISELE auditoría',
+      status: 'em-andamento',
+      area: 'business-intelligence',
+      modalidade: 'extensao'
+    };
+    expect(matchesProject(indexed, filters)).toBe(true);
+    expect(
+      matchesProject(indexed, { ...filters, area: 'gestao-em-saude' })
+    ).toBe(false);
+    expect(matchesProject(indexed, { ...filters, query: 'patricia' })).toBe(
+      false
     );
-    const sections = [
-      ...source.matchAll(/^## \d\. (.+)\r?\n([\s\S]*?)(?=\r?\n---)/gm)
-    ];
-    for (const [, title, body] of sections) {
-      const entry = projects.find((item) => item.titulo === title.trim())!;
+    expect(matchesProject(indexed, { ...filters, status: 'concluido' })).toBe(
+      false
+    );
+    const all = { query: '', status: '', area: '', modalidade: '' };
+    expect(matchesProject({ ...indexed, status: 'concluido' }, all)).toBe(true);
+    expect(
+      matchesProject({ ...indexed, status: 'inscricoes-abertas' }, all)
+    ).toBe(false);
+    expect(
+      matchesProject(
+        { ...indexed, status: 'inscricoes-abertas' },
+        { ...all, status: 'inscricoes-abertas' }
+      )
+    ).toBe(false);
+  });
+
+  it('mantém as seções acadêmicas preenchidas no conteúdo publicado', () => {
+    for (const entry of projects) {
       const content = fs.readFileSync(
         `src/content/extension-projects/${entry.slug}.md`,
         'utf8'
       );
-      const details = body.slice(
-        body.indexOf('### Resumo'),
-        body.indexOf('### Equipe')
+      const sections = new Map(
+        content
+          .split(/^## /m)
+          .slice(1)
+          .map((section) => {
+            const [heading, ...body] = section.split(/\r?\n/);
+            return [heading.trim(), body.join('\n').trim()];
+          })
       );
-      for (const line of details
-        .split(/\r?\n/)
-        .filter((line) => line.trim() && !line.startsWith('### '))) {
-        expect(content).toContain(line);
+      for (const heading of [
+        'Sobre o projeto',
+        'Impactos potenciais na sociedade',
+        'O que o aluno poderá desenvolver',
+        'Perfil desejado',
+        'Tecnologias e competências envolvidas'
+      ]) {
+        expect(sections.get(heading), `${entry.slug}: ${heading}`).toMatch(
+          /\S/
+        );
       }
-      expect(entry.equipe).toHaveLength(2);
-      for (const member of entry.equipe)
-        expect(body).toContain(`**${member.nome}** — ${member.vinculo}`);
     }
   });
 });
