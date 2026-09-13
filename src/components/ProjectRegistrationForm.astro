@@ -1,0 +1,138 @@
+---
+import settings from '../../data/registration.json';
+import copy from '../../data/registration-copy.json';
+import site from '../../data/site.json';
+import { registrationConfigSchema } from '../lib/registration-config';
+import '../styles/registration.css';
+
+interface Props {
+  project: string;
+  term: string;
+}
+const { project, term } = Astro.props;
+// A URL é pública. A variável serve também para testar a integração antes de ativá-la em data/.
+const endpoint =
+  import.meta.env.PUBLIC_REGISTRATION_WEB_APP_URL || settings.webAppUrl;
+const config = registrationConfigSchema.parse({
+  ...settings,
+  webAppUrl: endpoint,
+  enabled: settings.enabled || !!import.meta.env.PUBLIC_REGISTRATION_WEB_APP_URL
+});
+const active = config.enabled && !!config.webAppUrl;
+const clientConfig = {
+  endpoint: config.webAppUrl,
+  maxPdfBytes: config.maxPdfBytes,
+  privacyVersion: config.privacyVersion,
+  project,
+  term,
+  copy
+};
+---
+
+<section
+  id="inscricao"
+  class="project-registration"
+  aria-labelledby="registration-heading"
+>
+  <h2 id="registration-heading">{copy.heading}</h2>
+  {
+    active ? (
+      <>
+        <p>{copy.intro}</p>
+        <form
+          method="post"
+          data-registration-form
+          data-config={JSON.stringify(clientConfig)}
+        >
+          <fieldset disabled>
+            <div class="registration-field">
+              <label for="registration-name">{copy.name}</label>
+              <input
+                id="registration-name"
+                name="name"
+                autocomplete="name"
+                required
+                maxlength="150"
+              />
+            </div>
+            <div class="registration-field">
+              <label for="registration-email">{copy.email}</label>
+              <input
+                id="registration-email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                autocapitalize="none"
+                spellcheck="false"
+                required
+                maxlength="254"
+                aria-describedby="registration-email-help"
+              />
+              <small id="registration-email-help">{copy.emailHelp}</small>
+            </div>
+            <div class="registration-field">
+              <label for="registration-pdf">{copy.transcript}</label>
+              <input
+                id="registration-pdf"
+                name="transcript"
+                type="file"
+                accept="application/pdf,.pdf"
+                required
+                aria-describedby="registration-pdf-help"
+              />
+              <small id="registration-pdf-help">
+                {copy.pdfHelp.replace(
+                  '{maxMiB}',
+                  String(config.maxPdfBytes / 1024 / 1024)
+                )}
+              </small>
+            </div>
+            <div class="registration-field">
+              <label for="registration-interest">{copy.interest}</label>
+              <textarea
+                id="registration-interest"
+                name="interest"
+                rows="6"
+                required
+                minlength="20"
+                maxlength="3000"
+                aria-describedby="registration-interest-help"
+              />
+              <small id="registration-interest-help">{copy.interestHelp}</small>
+            </div>
+            <p>{copy.privacy}</p>
+            <label class="registration-acknowledgment">
+              <input name="acknowledgment" type="checkbox" required />
+              <span>{copy.acknowledgment}</span>
+            </label>
+            <div hidden aria-hidden="true">
+              <input
+                name="website"
+                tabindex="-1"
+                autocomplete="off"
+                aria-label="Website"
+              />
+            </div>
+            <button class="button" type="submit">
+              {copy.submit}
+            </button>
+          </fieldset>
+          <p
+            data-registration-status
+            role="status"
+            aria-live="polite"
+            tabindex="-1"
+          />
+          <p data-registration-offline>{copy.noScript}</p>
+        </form>
+      </>
+    ) : (
+      <p>{copy.unavailable}</p>
+    )
+  }
+  <a href={`mailto:${site.email.user}@${site.email.domain}`}>{copy.contact}</a>
+</section>
+
+<script>
+  import '../scripts/project-registration';
+</script>

@@ -14,7 +14,7 @@ Este diretório é a fonte de todo o conteúdo editorial e das imagens. Para mud
      alt: Logo da Enfermagem
    ```
 
-4. Execute `npm run validate:content` e `npm run build`.
+4. Execute `npm run prepare:registrations`, `npm run validate:content` e `npm run build`. Com inscrições ativas, atualize também a configuração no Google conforme o [guia de autorização](../docs/inscricoes-google-drive.md).
 
 A coleção Astro percorre todos os `.md` de `extension-projects/`, inclusive subpastas, e gera o catálogo `/extensao/` e as páginas `/extensao/projetos/{slug}/`. O nome da pasta não muda a URL. Os arquivos `.example` não são publicados. Não existe uma lista manual de projetos a atualizar.
 
@@ -22,21 +22,23 @@ Os projetos da Enfermagem usam `images/enfermagem.png`; a pesquisa sobre ventila
 
 ## Onde editar
 
-| Conteúdo                                          | Fonte                                                    |
-| ------------------------------------------------- | -------------------------------------------------------- |
-| Biografia, pesquisa, contato e outras páginas     | `pages/`, com português e inglês lado a lado             |
-| Apresentação institucional da extensão            | `pages/extensao.ts`                                      |
-| Textos do catálogo e duração do badge Novo        | `extension-catalog.ts`                                   |
-| Nome, domínio, e-mail, ORCID e imagens principais | `site.json`                                              |
-| Perfis acadêmicos e ordem das disciplinas atuais  | `profile.ts`                                             |
-| Textos compartilhados e traduções acadêmicas      | `i18n/`                                                  |
-| Disciplinas e agendas por semestre                | `courses/` e `offerings/`                                |
-| Projetos institucionais                           | `projects/`                                              |
-| Publicações                                       | `publications.json`, atualizado por `npm run sync:orcid` |
-| Planilhas de planejamento e semestre a importar   | `planning/` e `planning/calendars.json`                  |
-| Logos e retrato                                   | `images/`                                                |
-| Materiais publicados em `/files/`                 | `static/files/`                                          |
-| Política de indexação por buscadores              | `static/robots.txt`                                      |
+| Conteúdo                                                | Fonte                                                    |
+| ------------------------------------------------------- | -------------------------------------------------------- |
+| Biografia, pesquisa, contato e outras páginas           | `pages/`, com português e inglês lado a lado             |
+| Apresentação institucional da extensão                  | `pages/extensao.ts`                                      |
+| Textos do catálogo e duração do badge Novo              | `extension-catalog.ts`                                   |
+| Ativação, URL e limites do formulário de inscrição      | `registration.json`                                      |
+| Campos, mensagens e aviso de uso dos dados de inscrição | `registration-copy.json`                                 |
+| Nome, domínio, e-mail, ORCID e imagens principais       | `site.json`                                              |
+| Perfis acadêmicos e ordem das disciplinas atuais        | `profile.ts`                                             |
+| Textos compartilhados e traduções acadêmicas            | `i18n/`                                                  |
+| Disciplinas e agendas por semestre                      | `courses/` e `offerings/`                                |
+| Projetos institucionais                                 | `projects/`                                              |
+| Publicações                                             | `publications.json`, atualizado por `npm run sync:orcid` |
+| Planilhas de planejamento e semestre a importar         | `planning/` e `planning/calendars.json`                  |
+| Logos e retrato                                         | `images/`                                                |
+| Materiais publicados em `/files/`                       | `static/files/`                                          |
+| Política de indexação por buscadores                    | `static/robots.txt`                                      |
 
 Os módulos `.ts` desta pasta contêm apenas dados; os componentes e algoritmos ficam em `src/` e `scripts/`. A importação das imagens é automática, inclusive para novos arquivos, e respeita o caminho base do GitHub Pages.
 

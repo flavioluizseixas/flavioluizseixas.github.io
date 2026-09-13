@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "webAppUrl": "https://script.google.com/macros/s/AKfycbyq37bav5j831IW1r60zCrnRXuVB9e-r5KvkwWSUtRw4ztDzDlp-HzZwdYztRoJ0AyU/exec",
+  "emailDomain": "id.uff.br",
+  "maxPdfBytes": 5242880,
+  "maxSubmissionsPerDay": 50,
+  "maxSubmissionsPerEmailPerDay": 3,
+  "additionalAllowedOrigins": [],
+  "privacyVersion": "2026-09-13"
+}

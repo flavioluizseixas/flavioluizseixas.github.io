@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <div
+      id="config"
+      data-origin="<?= siteOrigin ?>"
+      data-channel="<?= channel ?>"
+    ></div>
+    <script>
+      (() => {
+        const { origin, channel } = document.getElementById('config').dataset;
+        const send = (message) =>
+          window.top.postMessage({ ...message, channel }, origin);
+        window.addEventListener('message', (event) => {
+          const message = event.data;
+          if (
+            event.source !== window.top ||
+            event.origin !== origin ||
+            !message ||
+            message.channel !== channel ||
+            message.type !== 'registration:submit' ||
+            typeof message.id !== 'string'
+          )
+            return;
+          google.script.run
+            .withSuccessHandler((result) =>
+              send({ type: 'registration:result', id: message.id, result })
+            )
+            .withFailureHandler(() =>
+              send({
+                type: 'registration:result',
+                id: message.id,
+                result: { ok: false, code: 'retry' }
+              })
+            )
+            .submitRegistration(message.payload);
+        });
+        // HtmlService pode criar um iframe intermediário: o formulário é window.top.
+        send({ type: 'registration:ready' });
+      })();
+    </script>
+  </body>
+</html>

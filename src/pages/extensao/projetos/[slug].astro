@@ -1,6 +1,7 @@
 ---
 import { detailCopy as copy } from '../../../../data/extension-catalog';
 import ExtensionProjectLogo from '../../../components/ExtensionProjectLogo.astro';
+import ProjectRegistrationForm from '../../../components/ProjectRegistrationForm.astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ExtensionProjectBadges from '../../../components/ExtensionProjectBadges.astro';
@@ -96,6 +97,14 @@ const { Content } = await render(project);
             {copy.registration}
           </a>
         </section>
+      )
+    }
+    {
+      data.status === 'inscricoes-abertas' && !data.link_inscricao && (
+        <ProjectRegistrationForm
+          project={data.slug}
+          term={data.semestre_divulgacao}
+        />
       )
     }
     <div class="project-back">

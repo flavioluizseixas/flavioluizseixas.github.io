@@ -1,6 +1,6 @@
 # Site acadêmico — Flávio Luiz Seixas
 
-Site estático acadêmico construído com Astro, Markdown e CSS próprio. O projeto prioriza o acesso rápido aos calendários, funciona em GitHub Pages (domínio de usuário ou project page) e não depende de serviços no servidor.
+Site estático acadêmico construído com Astro, Markdown e CSS próprio. O projeto prioriza o acesso rápido aos calendários e funciona em GitHub Pages (domínio de usuário ou project page). A integração opcional de inscrições usa Google Apps Script para gravar respostas e PDFs no Drive institucional.
 
 ## Desenvolvimento
 
@@ -18,6 +18,8 @@ Comandos principais:
 - `npm run check`: verifica Astro e TypeScript.
 - `npm run build`: valida, compila, cria a busca Pagefind e gera calendários ICS.
 - `npm run test:e2e`: testa os fluxos principais em desktop e celular.
+- `npm run test:e2e:registrations`: testa o formulário em desktop e celular com o Google simulado.
+- `npm run prepare:registrations`: gera a configuração do Apps Script a partir dos projetos e textos em `data/`.
 - `npm run sync:orcid`: atualiza a cópia local das publicações usando os dados públicos do ORCID e do Crossref.
 - `npm run sync:calendar:mpn`: transfere a aba `2026.2` da planilha de planejamento para o calendário de Modelagem de Processos de Negócio.
 
@@ -88,9 +90,11 @@ Para adicionar um projeto:
 1. Copie `data/extension-projects/_template.md.example` para um arquivo `.md` na mesma pasta.
 2. Preencha todos os campos, usando `id` e `slug` únicos, sem acentos ou espaços. Atualize a data de publicação (`AAAA-MM-DD`) e o semestre (`01-AAAA` ou `02-AAAA`).
 3. Escreva o conteúdo acadêmico nas seções do Markdown. Equipe e palavras-chave são exibidas a partir do front matter. Para exibir uma logo, coloque a imagem em `data/images/` e informe `logo.src` e `logo.alt`.
-4. Execute `npm run validate:content`, `npm test`, `npm run check` e `npm run build`; revise e faça commit.
+4. Execute `npm run prepare:registrations`, `npm run validate:content`, `npm test`, `npm run check` e `npm run build`; revise e faça commit. Se as inscrições estiverem ativas, atualize também a implantação no Google conforme o guia abaixo.
 
-Status aceitos: `inscricoes-abertas`, `em-andamento` e `concluido`. Modalidades e áreas são listas livres; as opções dos filtros são geradas automaticamente. Um `link_inscricao` HTTP/HTTPS real é opcional; o botão de participação só aparece com esse campo preenchido e inscrições abertas. Sem formulário, o catálogo mantém o acesso à página institucional de contato.
+Status aceitos: `inscricoes-abertas`, `em-andamento` e `concluido`. Modalidades e áreas são listas livres; as opções dos filtros são geradas automaticamente. Um `link_inscricao` HTTP/HTTPS real é opcional e tem precedência sobre o formulário nativo. Nos demais projetos abertos, a ativação em `data/registration.json` exibe o formulário na própria página. Enquanto ele não estiver configurado, é exibido um contato.
+
+O [guia de inscrições no Google Drive](docs/inscricoes-google-drive.md) explica como autorizar a conta `@id.uff.br`, criar as pastas, implantar o Apps Script e ativar o envio. O aluno informa nome, e-mail institucional, histórico em PDF e interesse pelo projeto, sem código de confirmação. Textos ficam em `data/registration-copy.json`; a rotina do Google fica em `integrations/google-apps-script/`. Respostas reais nunca devem ser versionadas neste repositório público.
 
 O badge **Novo** vale por 60 dias corridos, incluindo o dia 60, a partir de `data_publicacao`, com referência ao dia em São Paulo. Ajuste `NEW_PROJECT_DAYS` em `data/extension-catalog.ts` para alterar o período; esse arquivo também reúne os textos do catálogo e das páginas individuais. O navegador também remove badges vencidos ao abrir a página. Todas as oportunidades com inscrições abertas aparecem na primeira seção, independentemente da idade ou do campo opcional `destaque`, sem limite de três e sem repetir cards na busca. Mudanças de status e conteúdo exigem novo build.
 
@@ -166,23 +170,25 @@ Antes do lançamento, ajuste o domínio em `data/site.json`, `data/static/robots
 
 ## Estrutura
 
-| Diretório ou arquivo                                 | Responsabilidade                                                                 |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `data/extension-projects/`                           | Um Markdown por projeto divulgado, incluindo a referência à logo                 |
-| `data/courses/`, `data/offerings/`, `data/projects/` | Disciplinas, ofertas semestrais e projetos institucionais                        |
-| `data/pages/`, `data/i18n/`                          | Textos das páginas, interface e traduções                                        |
-| `data/site.json`, `data/profile.ts`                  | Identidade, contato, imagens do site, perfis e ordem das disciplinas             |
-| `data/extension-catalog.ts`                          | Textos e configuração editorial do catálogo                                      |
-| `data/publications.json`                             | Cópia versionada das publicações                                                 |
-| `data/images/`                                       | Logos, retrato e imagens; processadas pelo Astro/Vite                            |
-| `data/planning/`                                     | Planilhas e configuração de importação em `calendars.json`                       |
-| `data/static/`                                       | Arquivos copiados sem processamento, como `robots.txt` e materiais para download |
-| `data/sources/`                                      | Histórico editorial; não alimenta as páginas                                     |
-| `src/`                                               | Rotas, componentes, layouts, estilos, carregadores e lógica                      |
-| `scripts/`                                           | Validação, sincronização de dados e geração de ICS                               |
-| `docs/`                                              | Inventário de conteúdo e revisão da migração                                     |
-| `tests/`                                             | Testes unitários e de navegação                                                  |
-| `prompts/`                                           | Instruções de trabalho locais; não armazena imagens nem conteúdo a publicar      |
+| Diretório ou arquivo                                    | Responsabilidade                                                                 |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `data/extension-projects/`                              | Um Markdown por projeto divulgado, incluindo a referência à logo                 |
+| `data/courses/`, `data/offerings/`, `data/projects/`    | Disciplinas, ofertas semestrais e projetos institucionais                        |
+| `data/pages/`, `data/i18n/`                             | Textos das páginas, interface e traduções                                        |
+| `data/site.json`, `data/profile.ts`                     | Identidade, contato, imagens do site, perfis e ordem das disciplinas             |
+| `data/extension-catalog.ts`                             | Textos e configuração editorial do catálogo                                      |
+| `data/registration.json`, `data/registration-copy.json` | Configuração e textos dos formulários de inscrição                               |
+| `data/publications.json`                                | Cópia versionada das publicações                                                 |
+| `data/images/`                                          | Logos, retrato e imagens; processadas pelo Astro/Vite                            |
+| `data/planning/`                                        | Planilhas e configuração de importação em `calendars.json`                       |
+| `data/static/`                                          | Arquivos copiados sem processamento, como `robots.txt` e materiais para download |
+| `data/sources/`                                         | Histórico editorial; não alimenta as páginas                                     |
+| `src/`                                                  | Rotas, componentes, layouts, estilos, carregadores e lógica                      |
+| `scripts/`                                              | Validação, sincronização de dados e geração de ICS                               |
+| `integrations/google-apps-script/`                      | Rotina de gravação de inscrições para implantar na conta Google institucional    |
+| `docs/`                                                 | Inventário de conteúdo e revisão da migração                                     |
+| `tests/`                                                | Testes unitários e de navegação                                                  |
+| `prompts/`                                              | Instruções de trabalho locais; não armazena imagens nem conteúdo a publicar      |
 
 Consulte [data/README.md](data/README.md) para escolher o arquivo de edição. Somente `data/static/` é copiado integralmente para o site; planilhas, fontes históricas e arquivos editoriais não são expostos como downloads automaticamente.
 

@@ -4,6 +4,8 @@ import path from 'node:path';
 import site from '../data/site.json';
 import { loadCollection, loadOfferings, type Offering } from './content.js';
 import { extensionProjectSchema } from '../src/lib/extension-project-schema.js';
+import registrationConfig from '../data/registration.json';
+import { registrationConfigSchema } from '../src/lib/registration-config.js';
 const allowed = new Set([
   'aula',
   'laboratorio',
@@ -16,6 +18,10 @@ const allowed = new Set([
 ]);
 const statuses = new Set(['planned', 'changed', 'cancelled', 'completed']);
 const errors: string[] = [];
+const registrationValidation =
+  registrationConfigSchema.safeParse(registrationConfig);
+if (!registrationValidation.success)
+  errors.push(registrationValidation.error.message);
 const extensionIds = new Set<string>();
 const extensionSlugs = new Set<string>();
 const extensionProjects =

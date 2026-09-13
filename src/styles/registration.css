@@ -1,0 +1,60 @@
+.project-registration {
+  border-top: 1px solid var(--line);
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+}
+.project-registration fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.registration-field {
+  display: grid;
+  gap: 0.4rem;
+  margin: 1.25rem 0;
+}
+.registration-field label {
+  font-weight: 600;
+}
+.registration-field input,
+.registration-field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--muted);
+  border-radius: 0.4rem;
+  padding: 0.75rem;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+}
+.registration-field textarea {
+  resize: vertical;
+}
+.registration-field small {
+  color: var(--muted);
+}
+.registration-acknowledgment {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 1.25rem 0;
+}
+.registration-acknowledgment input {
+  margin-top: 0.4rem;
+  flex-shrink: 0;
+}
+.project-registration fieldset:disabled {
+  opacity: 0.65;
+}
+[data-registration-status] {
+  overflow-wrap: anywhere;
+}
+[data-registration-status][data-state='error'] {
+  border-left: 3px solid var(--accent);
+  padding-left: 0.8rem;
+}
+[data-registration-status][data-state='success'] {
+  font-weight: 600;
+}
