@@ -161,19 +161,49 @@ function harness() {
 }
 
 describe('configuração e validação do formulário', () => {
+  const settings = {
+    ...config,
+    enabled: false,
+    webAppUrl: '',
+    additionalAllowedOrigins: []
+  };
+  const deploymentUrl =
+    'https://script.google.com/macros/s/registration-test/exec';
+
   it('exige implantação /exec antes de ativar', () => {
     expect(
-      registrationConfigSchema.safeParse({ ...config, enabled: true }).success
+      registrationConfigSchema.safeParse({ ...settings, enabled: true }).success
     ).toBe(false);
     expect(
       registrationConfigSchema.safeParse({
-        ...config,
-        webAppUrl: 'https://evil.example/exec'
+        ...settings,
+        enabled: true,
+        webAppUrl: deploymentUrl.replace('/exec', '/dev')
       }).success
     ).toBe(false);
     expect(
       registrationConfigSchema.safeParse({
-        ...config,
+        ...settings,
+        webAppUrl: 'https://evil.example/exec'
+      }).success
+    ).toBe(false);
+  });
+  it('permite configurar e ativar uma implantação /exec válida', () => {
+    expect(registrationConfigSchema.safeParse(settings).success).toBe(true);
+    for (const enabled of [false, true]) {
+      expect(
+        registrationConfigSchema.safeParse({
+          ...settings,
+          enabled,
+          webAppUrl: deploymentUrl
+        }).success
+      ).toBe(true);
+    }
+  });
+  it('rejeita origem permitida com caminho', () => {
+    expect(
+      registrationConfigSchema.safeParse({
+        ...settings,
         additionalAllowedOrigins: ['https://site.example/path']
       }).success
     ).toBe(false);
@@ -272,7 +302,7 @@ describe('gravação no Apps Script (serviços Google simulados)', () => {
       },
       'pdf'
     ]
-  ])('rejeita entrada inválida sem gravar (%s)', (changes, code) => {
+  ])('rejeita entrada inválida sem gravar (caso %#)', (changes, code) => {
     const app = harness();
     expect(app.submit({ ...validPayload(), ...changes })).toEqual({
       ok: false,
