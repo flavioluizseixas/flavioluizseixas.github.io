@@ -38,6 +38,7 @@ palavras_chave:
   - Inteligência Artificial Explicável
   - Fiocruz
 ---
+
 ## Sobre o projeto
 
 Em parceria com a **Fiocruz**, o projeto investiga o uso de **Machine Learning e análise de sequências** para identificar trajetórias de liberação da ventilação mecânica invasiva e avaliar se elas podem ser previstas a partir das informações clínicas disponíveis nas **primeiras 24 horas de internação na UTI**.
