@@ -11,7 +11,7 @@ export const pageCopy = {
     projectText2:
       'O trabalho favorece experiências interdisciplinares, aprendizagem baseada em projetos e transferência de conhecimento.',
     context:
-      'O catálogo reúne projetos da Enfermagem vinculados ao Mestrado Profissional em Enfermagem Assistencial (PEA/UFF) e uma pesquisa em parceria com a Fiocruz sobre ventilação mecânica e Machine Learning, com participação interdisciplinar de estudantes de Computação e Saúde Digital.',
+      'O catálogo reúne projetos da Enfermagem vinculados ao Mestrado Profissional em Enfermagem Assistencial (PEA/UFF), uma pesquisa em parceria com a Fiocruz sobre ventilação mecânica e Machine Learning e um projeto de extensão do HUAP sobre assinaturas biológicas em doenças orais e risco cardiovascular, com participação interdisciplinar de estudantes de Computação e Saúde Digital.',
     results: 'Projetos de Iniciação Científica e Extensão',
     resultsText: 'Conheça as oportunidades de participação para estudantes.',
     catalogLink: 'Explorar os projetos'
@@ -27,7 +27,7 @@ export const pageCopy = {
     projectText2:
       'The work fosters interdisciplinary experiences, project-based learning, and knowledge transfer.',
     context:
-      'The catalog includes Nursing projects linked to UFF’s Professional Master’s Program in Nursing Care (PEA/UFF) and a research project with Fiocruz on mechanical ventilation and Machine Learning, with interdisciplinary participation from Computing and Digital Health students.',
+      'The catalog includes Nursing projects linked to UFF’s Professional Master’s Program in Nursing Care (PEA/UFF), a research project with Fiocruz on mechanical ventilation and Machine Learning, and a HUAP outreach project on biological signatures in oral diseases and cardiovascular risk, with interdisciplinary participation from Computing and Digital Health students.',
     results: 'Undergraduate research and outreach projects',
     resultsText:
       'Project descriptions and participation opportunities are currently available in Portuguese.',

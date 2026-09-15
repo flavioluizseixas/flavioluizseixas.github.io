@@ -15,6 +15,14 @@ const REGISTRATION_CONFIG = {
       deadline: null
     },
     {
+      slug: 'assinaturas-biologicas-orais-risco-cardiovascular',
+      title:
+        'Assinaturas biológicas em doenças orais: predição do risco cardiovascular',
+      term: '02-2026',
+      status: 'inscricoes-abertas',
+      deadline: null
+    },
+    {
       slug: 'auditoria-saude-suplementar',
       title: 'Tecnologia Digital de Apoio à Auditoria em Saúde Suplementar',
       term: '02-2026',
