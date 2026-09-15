@@ -9,6 +9,7 @@ resumo_curto: Projeto de extensão do HUAP que integra dados clínicos,
   biomarcadores laboratoriais e multiômicos com aprendizado de máquina para
   investigar assinaturas biológicas e aprimorar a predição do risco cardiovascular.
 modalidade:
+  - Iniciação Científica
   - Extensão
 area:
   - Inteligência Artificial em Saúde
@@ -19,7 +20,7 @@ status: inscricoes-abertas
 ordem: 2
 semestre_divulgacao: 02-2026
 data_publicacao: '2026-09-14'
-carga_horaria: A definir
+carga_horaria: 4 h/semana
 destaque: true
 equipe:
   - nome: Flávio Luiz Seixas
