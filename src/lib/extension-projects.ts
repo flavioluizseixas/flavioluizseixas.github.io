@@ -21,12 +21,21 @@ export function sortProjects<T extends { data: ExtensionProject }>(
     if (project.status === 'concluido') return 3;
     return isNewProject(project.data_publicacao, today) ? 1 : 2;
   };
-  return [...projects].sort(
-    (a, b) =>
-      priority(a.data) - priority(b.data) ||
+  return [...projects].sort((a, b) => {
+    const statusOrder = priority(a.data) - priority(b.data);
+    if (statusOrder) return statusOrder;
+
+    if (a.data.status === 'inscricoes-abertas') {
+      const orderA = a.data.ordem ?? Infinity;
+      const orderB = b.data.ordem ?? Infinity;
+      if (orderA !== orderB) return orderA - orderB;
+    }
+
+    return (
       b.data.data_publicacao.localeCompare(a.data.data_publicacao) ||
       a.data.titulo.localeCompare(b.data.titulo, 'pt-BR')
-  );
+    );
+  });
 }
 
 export function groupProjects<T extends { data: ExtensionProject }>(

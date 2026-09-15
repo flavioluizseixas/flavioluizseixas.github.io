@@ -16,6 +16,7 @@ area:
   - Gestão em Saúde
   - Sistemas de Apoio à Decisão
 status: inscricoes-abertas
+ordem: 5
 semestre_divulgacao: 02-2026
 data_publicacao: '2026-09-12'
 carga_horaria: 4 horas semanais

@@ -30,6 +30,7 @@ export const extensionProjectSchema = z.object({
   modalidade: z.array(text).min(1),
   area: z.array(text).min(1),
   status: z.enum(['inscricoes-abertas', 'em-andamento', 'concluido']),
+  ordem: z.number().int().positive().optional(),
   semestre_divulgacao: text.regex(/^0[12]-\d{4}$/),
   data_publicacao: date,
   carga_horaria: text,

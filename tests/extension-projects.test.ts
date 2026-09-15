@@ -18,7 +18,14 @@ import {
 const projects = loadCollection<ExtensionProject>('extension-projects');
 const today = '2026-09-12';
 const project = (slug: string, overrides: Partial<ExtensionProject> = {}) => ({
-  data: { ...projects[0], id: slug, slug, destaque: false, ...overrides }
+  data: {
+    ...projects[0],
+    id: slug,
+    slug,
+    destaque: false,
+    ordem: undefined,
+    ...overrides
+  }
 });
 
 describe('catálogo de extensão', () => {
@@ -71,18 +78,25 @@ describe('catálogo de extensão', () => {
     ).toHaveLength(1);
   });
 
-  it('ordena abertas, novas em andamento, em andamento e concluídas, por data em cada grupo', () => {
+  it('ordena abertas sem ordem definida por data e ignora ordem nos demais estados', () => {
     const entries = [
       project('concluido-antigo', {
         status: 'concluido',
+        ordem: 1,
         data_publicacao: '2026-01-01'
       }),
-      project('concluido-recente', { status: 'concluido' }),
+      project('concluido-recente', { status: 'concluido', ordem: 10 }),
       project('andamento', {
         status: 'em-andamento',
+        ordem: 1,
         data_publicacao: '2026-01-01'
       }),
-      project('novo', { status: 'em-andamento' }),
+      project('outro-novo', {
+        status: 'em-andamento',
+        ordem: 1,
+        data_publicacao: '2026-09-01'
+      }),
+      project('novo', { status: 'em-andamento', ordem: 10 }),
       project('aberto-antigo', { data_publicacao: '2026-01-01' }),
       project('aberto-recente')
     ];
@@ -90,11 +104,62 @@ describe('catálogo de extensão', () => {
       'aberto-recente',
       'aberto-antigo',
       'novo',
+      'outro-novo',
       'andamento',
       'concluido-recente',
       'concluido-antigo'
     ]);
     expect(entries[0].data.slug).toBe('concluido-antigo');
+  });
+
+  it('prioriza a ordem numérica das abertas e coloca as sem ordem por último', () => {
+    const entries = [
+      project('sem-ordem', { data_publicacao: '2026-09-12' }),
+      project('terceiro', { ordem: 10, data_publicacao: '2026-09-11' }),
+      project('segundo', { ordem: 2, data_publicacao: '2026-09-10' }),
+      project('primeiro', { ordem: 1, data_publicacao: '2026-01-01' })
+    ];
+    const original = [...entries];
+    const { opportunities } = groupProjects(entries, today);
+    expect(opportunities.map((p) => p.data.slug)).toEqual([
+      'primeiro',
+      'segundo',
+      'terceiro',
+      'sem-ordem'
+    ]);
+    expect(entries).toEqual(original);
+  });
+
+  it.each([undefined, 2])(
+    'desempata abertas por data e título quando ordem é %s',
+    (ordem) => {
+      const entries = [
+        project('antigo', {
+          ordem,
+          titulo: 'Aplicativo',
+          data_publicacao: '2026-01-01'
+        }),
+        project('tecnologia', { ordem, titulo: 'Tecnologia' }),
+        project('auditoria', { ordem, titulo: 'Auditoria' })
+      ];
+      expect(sortProjects(entries, today).map((p) => p.data.slug)).toEqual([
+        'auditoria',
+        'tecnologia',
+        'antigo'
+      ]);
+    }
+  );
+
+  it('aceita ordem opcional como inteiro positivo e rejeita valores inválidos', () => {
+    for (const ordem of [undefined, 1, 10]) {
+      const parsed = extensionProjectSchema.parse({ ...projects[0], ordem });
+      expect(parsed.ordem).toBe(ordem);
+    }
+    for (const ordem of [0, -1, 1.5, '1', null]) {
+      expect(
+        extensionProjectSchema.safeParse({ ...projects[0], ordem }).success
+      ).toBe(false);
+    }
   });
 
   it('busca nomes, áreas e palavras-chave sem distinguir acentos ou caixa', () => {

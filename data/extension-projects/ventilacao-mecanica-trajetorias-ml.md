@@ -17,6 +17,7 @@ area:
   - Ciência de Dados em Saúde
   - Medicina Intensiva
 status: inscricoes-abertas
+ordem: 1
 semestre_divulgacao: 02-2026
 data_publicacao: '2026-09-13'
 carga_horaria: 4 horas semanais
@@ -37,7 +38,6 @@ palavras_chave:
   - Inteligência Artificial Explicável
   - Fiocruz
 ---
-
 ## Sobre o projeto
 
 Em parceria com a **Fiocruz**, o projeto investiga o uso de **Machine Learning e análise de sequências** para identificar trajetórias de liberação da ventilação mecânica invasiva e avaliar se elas podem ser previstas a partir das informações clínicas disponíveis nas **primeiras 24 horas de internação na UTI**.

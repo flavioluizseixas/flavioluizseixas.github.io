@@ -13,6 +13,9 @@ modalidade:
 area:
   - Saúde Digital
 status: inscricoes-abertas
+# Opcional: inteiro positivo; menores aparecem primeiro nas inscrições abertas.
+# Sem ordem, o projeto aparece depois dos que têm ordem definida.
+# ordem: 1
 semestre_divulgacao: '02-2026'
 data_publicacao: '2026-09-12'
 carga_horaria: 4 horas semanais
