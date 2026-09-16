@@ -18,7 +18,7 @@ area:
   - Gestão da Informação
   - Desenvolvimento de Sistemas
 status: inscricoes-abertas
-ordem: 4
+ordem: 5
 semestre_divulgacao: 02-2026
 data_publicacao: '2026-09-12'
 carga_horaria: 4 horas semanais

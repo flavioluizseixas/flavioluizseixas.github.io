@@ -25,7 +25,7 @@ test('oportunidades abertas aparecem uma única vez e não integram a busca', as
     projects.map((project) => project.slug).sort()
   );
   await expect(page.locator('.extension-intro')).toContainText(
-    'pesquisa em parceria com a Fiocruz'
+    'pesquisas em parceria com a Fiocruz'
   );
   const logos = page.locator('.project-card .project-logo img');
   await expect(logos).toHaveCount(

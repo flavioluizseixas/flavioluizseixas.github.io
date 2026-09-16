@@ -17,7 +17,7 @@ area:
   - Business Intelligence
   - Desenvolvimento de Sistemas
 status: inscricoes-abertas
-ordem: 3
+ordem: 4
 semestre_divulgacao: 02-2026
 data_publicacao: '2026-09-12'
 carga_horaria: 4 horas semanais

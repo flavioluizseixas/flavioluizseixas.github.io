@@ -17,7 +17,7 @@ area:
   - Odontologia
   - Medicina de Precisão
 status: inscricoes-abertas
-ordem: 2
+ordem: 3
 semestre_divulgacao: 02-2026
 data_publicacao: '2026-09-14'
 carga_horaria: 4 h/semana

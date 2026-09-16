@@ -38,6 +38,14 @@ const REGISTRATION_CONFIG = {
       deadline: null
     },
     {
+      slug: 'trajetorias-funcionais-deambulacao-uti',
+      title:
+        'Trajetórias funcionais e predição da capacidade de deambulação na alta da UTI',
+      term: '02-2026',
+      status: 'inscricoes-abertas',
+      deadline: null
+    },
+    {
       slug: 'ventilacao-mecanica-trajetorias-ml',
       title:
         'Liberação da Ventilação Mecânica: trajetórias com Machine Learning',

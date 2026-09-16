@@ -27,7 +27,7 @@ ordem: 1
 
 Use inteiros positivos: `1` aparece antes de `2`, e assim por diante. Os números não precisam ser consecutivos. Projetos sem `ordem` ficam depois dos que têm ordem definida. Em caso de empate ou ausência do campo, vale a data de publicação mais recente e, depois, o título em ordem alfabética. O campo só afeta projetos com `status: inscricoes-abertas`; projetos em andamento e concluídos mantêm a ordenação por status e data. Execute `npm run build` para aplicar as alterações ao site gerado.
 
-Os projetos da Enfermagem usam `images/enfermagem.png`; a pesquisa sobre ventilação mecânica em parceria com a Fiocruz usa `images/fiocruz.jpg`. Novos projetos podem indicar outras logos ou omitir o campo. O arquivo referenciado precisa existir e ter texto alternativo. PNG, JPEG, WebP, AVIF, GIF e SVG são aceitos.
+Os projetos da Enfermagem usam `images/enfermagem.png`; os projetos sobre ventilação mecânica e recuperação funcional na UTI em parceria com a Fiocruz usam `images/fiocruz.jpg`. Novos projetos podem indicar outras logos ou omitir o campo. O arquivo referenciado precisa existir e ter texto alternativo. PNG, JPEG, WebP, AVIF, GIF e SVG são aceitos.
 
 ## Onde editar
 

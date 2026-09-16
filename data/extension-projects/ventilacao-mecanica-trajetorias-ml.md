@@ -26,7 +26,7 @@ equipe:
   - nome: Flávio Luiz Seixas
     vinculo: Instituto de Computação / UFF
   - nome: Tatiane Martins S. de Morais
-    vinculo: Pesquisadora/aluna responsável pelo projeto
+    vinculo: Pesquisadora / aluna responsável pelo projeto
 palavras_chave:
   - Machine Learning
   - Saúde Digital
