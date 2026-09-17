@@ -2,6 +2,8 @@
 
 Pacote preparado para criar um formulário por projeto em **Meu Drive → extension-projects → google-forms**, na mesma ordem do catálogo. Os arquivos locais ainda não representam formulários criados na conta Google.
 
+No repositório, o pacote fica em `data/extension-projects/google-forms/`. Essa pasta auxiliar é excluída da coleção de projetos pelo Astro e pelos scripts de conteúdo.
+
 O cabeçalho de cada formulário recebe o nome completo do projeto. A descrição inclui o resumo, a dedicação semanal e um link para a página do projeto.
 
 | Ordem | Projeto                                                                           |

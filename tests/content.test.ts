@@ -36,6 +36,40 @@ describe('carregamento editorial', () => {
       fs.rmdirSync(root);
     }
   });
+
+  it('exclui a pasta auxiliar google-forms sem ocultar projetos inválidos', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'site-content-'));
+    const collection = path.join(root, 'extension-projects');
+    const forms = path.join(collection, 'google-forms');
+    const nested = path.join(forms, 'docs');
+    fs.mkdirSync(nested, { recursive: true });
+    const project = path.join(collection, 'projeto.md');
+    const readme = path.join(forms, 'README.md');
+    const auxiliary = path.join(nested, 'exemplo.md');
+    try {
+      fs.writeFileSync(project, '---\nid: projeto\n---\nDescrição.');
+      fs.writeFileSync(
+        readme,
+        '# Instruções dos formulários, sem frontmatter.'
+      );
+      fs.writeFileSync(auxiliary, '---\nid: auxiliar\n---\nNão é um projeto.');
+      expect(loadCollection('extension-projects', root)).toEqual([
+        { id: 'projeto' }
+      ]);
+      fs.writeFileSync(project, 'Projeto sem os metadados obrigatórios.');
+      expect(() => loadCollection('extension-projects', root)).toThrow(
+        'frontmatter ausente'
+      );
+    } finally {
+      for (const file of [project, readme, auxiliary]) {
+        if (fs.existsSync(file)) fs.unlinkSync(file);
+      }
+      fs.rmdirSync(nested);
+      fs.rmdirSync(forms);
+      fs.rmdirSync(collection);
+      fs.rmdirSync(root);
+    }
+  });
 });
 
 describe('conteúdo acadêmico', () => {

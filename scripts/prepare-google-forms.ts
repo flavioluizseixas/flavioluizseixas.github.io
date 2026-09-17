@@ -37,7 +37,7 @@ const config = {
   projects
 };
 
-const target = 'extension-projects/google-forms/Config.gs';
+const target = 'data/extension-projects/google-forms/Config.gs';
 const content = await format(
   '// Gerado por npm run prepare:google-forms a partir de data/extension-projects/.\n' +
     `const GOOGLE_FORMS_CONFIG = ${JSON.stringify(config, null, 2)};\n`,
@@ -54,7 +54,7 @@ if (process.argv.includes('--check')) {
     );
   }
 } else {
-  fs.mkdirSync('extension-projects/google-forms', { recursive: true });
+  fs.mkdirSync('data/extension-projects/google-forms', { recursive: true });
   fs.writeFileSync(target, content, 'utf8');
   console.log(
     `${projects.length} formulários preparados em ${target}. Execute Code.gs no Google Apps Script para criá-los no Drive.`

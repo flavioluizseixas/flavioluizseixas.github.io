@@ -83,7 +83,7 @@ As rotas em português não têm prefixo (`/ensino/`, `/pesquisa/`). As equivale
 
 O catálogo `/extensao/` usa a coleção Astro `extensionProjects`, separada dos projetos institucionais de pesquisa/extensão em `data/projects/`. Cada oportunidade tem um arquivo Markdown em `data/extension-projects/`; o front matter alimenta cards, filtros, equipe, metadados e a URL `/extensao/projetos/{slug}/`. O corpo contém a descrição completa.
 
-O carregador percorre automaticamente o diretório e suas subpastas durante o build. Adicionar um `.md` válido basta para gerar o cartão e a página individual: não é preciso cadastrar o projeto em uma lista ou editar os componentes. O catálogo reúne projetos da Enfermagem ligados ao PEA/UFF e uma pesquisa sobre ventilação mecânica em parceria com a Fiocruz; novas áreas e modalidades são aceitas sem alterações no código.
+O carregador percorre automaticamente o diretório e suas subpastas de projetos durante o build, excluindo a pasta auxiliar `data/extension-projects/google-forms/`. Adicionar um `.md` válido basta para gerar o cartão e a página individual: não é preciso cadastrar o projeto em uma lista ou editar os componentes. O catálogo reúne projetos da Enfermagem ligados ao PEA/UFF e uma pesquisa sobre ventilação mecânica em parceria com a Fiocruz; novas áreas e modalidades são aceitas sem alterações no código.
 
 Para adicionar um projeto:
 

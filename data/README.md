@@ -16,7 +16,7 @@ Este diretório é a fonte de todo o conteúdo editorial e das imagens. Para mud
 
 4. Execute `npm run prepare:registrations`, `npm run validate:content` e `npm run build`. Com inscrições ativas, atualize também a configuração no Google conforme o [guia de autorização](../docs/inscricoes-google-drive.md).
 
-A coleção Astro percorre todos os `.md` de `extension-projects/`, inclusive subpastas, e gera o catálogo `/extensao/` e as páginas `/extensao/projetos/{slug}/`. O nome da pasta não muda a URL. Os arquivos `.example` não são publicados. Não existe uma lista manual de projetos a atualizar.
+A coleção Astro percorre os `.md` de `extension-projects/`, inclusive subpastas de projetos, e gera o catálogo `/extensao/` e as páginas `/extensao/projetos/{slug}/`. A pasta auxiliar `extension-projects/google-forms/` é excluída tanto pelo Astro quanto pelos scripts de conteúdo: seus arquivos de automação e documentação não são projetos. O nome das subpastas de projetos não muda a URL. Os arquivos `.example` não são publicados. Não existe uma lista manual de projetos a atualizar.
 
 Para definir a sequência das oportunidades com inscrições abertas, edite o campo opcional `ordem` no front matter de cada projeto:
 

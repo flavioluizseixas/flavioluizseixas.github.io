@@ -38,6 +38,11 @@ export function loadCollectionEntries<T>(name: string, dataRoot = 'data') {
     .readdirSync(dir, { recursive: true, withFileTypes: true })
     .filter((entry) => entry.isFile() && pattern.test(entry.name))
     .map((entry) => path.join(entry.parentPath, entry.name))
+    .filter(
+      (file) =>
+        name !== 'extension-projects' ||
+        path.relative(dir, file).split(path.sep)[0] !== 'google-forms'
+    )
     .sort()
     .map((file) => {
       const raw = fs.readFileSync(file, 'utf8');

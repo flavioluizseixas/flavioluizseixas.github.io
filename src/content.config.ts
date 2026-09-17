@@ -104,7 +104,8 @@ const projects = defineCollection({
 
 const extensionProjects = defineCollection({
   loader: glob({
-    pattern: '**/*.md',
+    // Inclui projetos em subpastas, mas exclui a automação em google-forms/.
+    pattern: '{*.md,!(google-forms)/**/*.md}',
     base: './data/extension-projects',
     generateId: ({ data }) => String(data.id)
   }),

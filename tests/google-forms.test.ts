@@ -5,11 +5,11 @@ import { loadCollection } from '../scripts/content';
 import type { ExtensionProject } from '../src/lib/extension-project-schema';
 
 const configSource = fs.readFileSync(
-  'extension-projects/google-forms/Config.gs',
+  'data/extension-projects/google-forms/Config.gs',
   'utf8'
 );
 const codeSource = fs.readFileSync(
-  'extension-projects/google-forms/Code.gs',
+  'data/extension-projects/google-forms/Code.gs',
   'utf8'
 );
 
