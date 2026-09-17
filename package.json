@@ -15,6 +15,7 @@
     "sync:calendar:mpn": "node --import tsx scripts/sync-mpn-calendar.ts",
     "sync:calendar:ams": "node --import tsx scripts/sync-mpn-calendar.ts --calendar ams",
     "prepare:registrations": "node --import tsx scripts/prepare-registrations.ts",
+    "prepare:google-forms": "node --import tsx scripts/prepare-google-forms.ts",
     "validate:content": "node --import tsx scripts/validate-content.ts && node --import tsx scripts/prepare-registrations.ts --check",
     "format": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.{astro,ts,md,css}\" \"data/**/*.{ts,json,md}\" \"docs/**/*.md\" \"scripts/**/*.ts\" \"tests/**/*.ts\" \"integrations/**/*.{gs,html,json}\" \"*.{ts,mjs,json,md}\" \".github/**/*.yml\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.{astro,ts,md,css}\" \"data/**/*.{ts,json,md}\" \"docs/**/*.md\" \"scripts/**/*.ts\" \"tests/**/*.ts\" \"integrations/**/*.{gs,html,json}\" \"*.{ts,mjs,json,md}\" \".github/**/*.yml\""

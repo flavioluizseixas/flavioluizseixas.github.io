@@ -38,6 +38,13 @@ const REGISTRATION_CONFIG = {
       deadline: null
     },
     {
+      slug: 'sistema-acompanhamento-egressos',
+      title: 'Sistema de Acompanhamento de Egressos',
+      term: '02-2026',
+      status: 'inscricoes-abertas',
+      deadline: null
+    },
+    {
       slug: 'trajetorias-funcionais-deambulacao-uti',
       title:
         'Trajetórias funcionais e predição da capacidade de deambulação na alta da UTI',
