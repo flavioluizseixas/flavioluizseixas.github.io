@@ -1,0 +1,35 @@
+Assunto: Inscrições abertas para projetos de Iniciação Científica e Extensão
+
+Olá, estudantes!
+
+Estão abertas as inscrições para os projetos de Iniciação Científica e Extensão da Fábrica de Software e Tecnologia para a Saúde:
+
+- Liberação da Ventilação Mecânica: trajetórias com Machine Learning
+🔗 https://flavioluizseixas.github.io/extensao/projetos/ventilacao-mecanica-trajetorias-ml/
+
+- Trajetórias funcionais e predição da capacidade de deambulação na alta da UTI
+🔗 https://flavioluizseixas.github.io/extensao/projetos/trajetorias-funcionais-deambulacao-uti/
+
+- Assinaturas biológicas em doenças orais: predição do risco cardiovascular
+🔗 https://flavioluizseixas.github.io/extensao/projetos/assinaturas-biologicas-orais-risco-cardiovascular/
+
+- ACEnf — Aplicativo para Auditoria Clínica de Enfermagem
+🔗 https://flavioluizseixas.github.io/extensao/projetos/acenf/
+
+- Sistema para Qualificação de Denúncias na Fiscalização Profissional de Enfermagem
+🔗 https://flavioluizseixas.github.io/extensao/projetos/qualificacao-denuncias-enfermagem/
+
+- Tecnologia Digital de Apoio à Auditoria em Saúde Suplementar
+🔗 https://flavioluizseixas.github.io/extensao/projetos/auditoria-saude-suplementar/
+
+- Sistema de Acompanhamento de Egressos
+🔗 https://flavioluizseixas.github.io/extensao/projetos/sistema-acompanhamento-egressos/
+
+Para saber mais e se inscrever, acesse o link do projeto de seu interesse. O formulário de inscrição está disponível na página de cada projeto.
+
+Catálogo completo:
+https://flavioluizseixas.github.io/extensao/
+
+Atenciosamente,
+Prof. Flávio Luiz Seixas
+Instituto de Computação - Universidade Federal Fluminense
