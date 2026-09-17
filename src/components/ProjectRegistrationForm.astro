@@ -1,6 +1,7 @@
 ---
 import settings from '../../data/registration.json';
 import copy from '../../data/registration-copy.json';
+import googleForms from '../../data/extension-projects/google-forms/links-formularios.json';
 import site from '../../data/site.json';
 import { registrationConfigSchema } from '../lib/registration-config';
 import '../styles/registration.css';
@@ -10,6 +11,9 @@ interface Props {
   term: string;
 }
 const { project, term } = Astro.props;
+const googleFormUrl = googleForms.find(
+  (form) => form.slug === project
+)?.responseUrl;
 // A URL é pública. A variável serve também para testar a integração antes de ativá-la em data/.
 const endpoint =
   import.meta.env.PUBLIC_REGISTRATION_WEB_APP_URL || settings.webAppUrl;
@@ -117,6 +121,14 @@ const clientConfig = {
               {copy.submit}
             </button>
           </fieldset>
+          {googleFormUrl && (
+            <p>
+              {copy.fallbackIntro}{' '}
+              <a href={googleFormUrl} target="_blank" rel="noopener noreferrer">
+                {copy.fallbackLink}.
+              </a>
+            </p>
+          )}
           <p
             data-registration-status
             role="status"

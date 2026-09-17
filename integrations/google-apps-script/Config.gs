@@ -82,6 +82,8 @@ const REGISTRATION_CONFIG = {
     acknowledgment:
       'Declaro que os dados são meus, que o histórico foi gerado pelo IdUFF e que estou ciente do uso dessas informações na seleção.',
     submit: 'Enviar inscrição',
+    fallbackIntro: 'Em caso de problema, inscreva-se pelo',
+    fallbackLink: 'Google Forms',
     sending: 'Enviando sua inscrição… Aguarde a confirmação.',
     success: 'Inscrição recebida. Guarde seu protocolo: {protocol}.',
     noScript:

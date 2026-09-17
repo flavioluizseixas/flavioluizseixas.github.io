@@ -1,0 +1,51 @@
+[
+  {
+    "slug": "ventilacao-mecanica-trajetorias-ml",
+    "title": "Liberação da Ventilação Mecânica: trajetórias com Machine Learning",
+    "editUrl": "https://docs.google.com/forms/d/1O4_cHguQJsVrjQfvW3CC43938psaTHz0pvqkparnKv0/edit",
+    "responseUrl": "https://docs.google.com/forms/d/e/1FAIpQLSfvQaJ-I-7c_Bwvde-xZHgyYNJzuBEcVwKOCelzXNhOS2Jmmw/viewform",
+    "published": false
+  },
+  {
+    "slug": "trajetorias-funcionais-deambulacao-uti",
+    "title": "Trajetórias funcionais e predição da capacidade de deambulação na alta da UTI",
+    "editUrl": "https://docs.google.com/forms/d/17XOX5wSMW7r-NX1Yj2CcQ8yFJEqi3Me1-xB308RagGw/edit",
+    "responseUrl": "https://docs.google.com/forms/d/e/1FAIpQLSdvfDXPc6ymMiWgPqFWii7zqYENb5CavgKca7tN5wSWiM1d8A/viewform",
+    "published": false
+  },
+  {
+    "slug": "assinaturas-biologicas-orais-risco-cardiovascular",
+    "title": "Assinaturas biológicas em doenças orais: predição do risco cardiovascular",
+    "editUrl": "https://docs.google.com/forms/d/1yMYx7l0jkGVKZEDT4WtYsljkE9wxC_XH7qh5ozYHyoo/edit",
+    "responseUrl": "https://docs.google.com/forms/d/e/1FAIpQLSflzE_QTcBu0JyM4-3TFzi-A_AhuHQAQkI-raaugkSWySQVMw/viewform",
+    "published": false
+  },
+  {
+    "slug": "acenf",
+    "title": "ACEnf — Aplicativo para Auditoria Clínica de Enfermagem",
+    "editUrl": "https://docs.google.com/forms/d/1UEhdXiqwsBMccBW3DfBfNZlxgCUoBNOpvzcqg4-Io9Q/edit",
+    "responseUrl": "https://docs.google.com/forms/d/e/1FAIpQLSfFp64vDmstNDi2DVakMw7cdvkk9IGsrKsagVYkE-IlX6W_Cg/viewform",
+    "published": false
+  },
+  {
+    "slug": "qualificacao-denuncias-enfermagem",
+    "title": "Sistema para Qualificação de Denúncias na Fiscalização Profissional de Enfermagem",
+    "editUrl": "https://docs.google.com/forms/d/1hT00Oi96AO-nY11le_F-eeoWxbVBxIBViprlnENh5bM/edit",
+    "responseUrl": "https://docs.google.com/forms/d/e/1FAIpQLScjx-_MshRJtdbMefIa6EptXWyltX2Fplualbf53mwpaJpa4g/viewform",
+    "published": false
+  },
+  {
+    "slug": "auditoria-saude-suplementar",
+    "title": "Tecnologia Digital de Apoio à Auditoria em Saúde Suplementar",
+    "editUrl": "https://docs.google.com/forms/d/1Z6B74hAj9KAfrRCn8aFqZImL4NwS0QfIcX4rOoAEWk8/edit",
+    "responseUrl": "https://docs.google.com/forms/d/e/1FAIpQLSedjfPuwOrTNx3DgBzifFqsivDUj1ZtsnI7hTwfxSVB2h07sQ/viewform",
+    "published": false
+  },
+  {
+    "slug": "sistema-acompanhamento-egressos",
+    "title": "Sistema de Acompanhamento de Egressos",
+    "editUrl": "https://docs.google.com/forms/d/1MfDgwbz3lxsjYrTUsdfWbZSN5RSA7UFBX_Rn1K58aCA/edit",
+    "responseUrl": "https://docs.google.com/forms/d/e/1FAIpQLSdy8k8aalEb7CIS5RXWXiWr7ovJXxAjB_HORPdhvTBDz1tFUA/viewform",
+    "published": false
+  }
+]
