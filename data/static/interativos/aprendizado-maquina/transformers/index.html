@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Transformers, do zero à atenção</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F4F8; --surface:#FFFFFF; --ink:#172033; --muted:#566076; --line:#D5DBE5; --soft:#E7ECF3;
+  --c0:#4C6FA5; --c1:#B0306A; --acc:#B96F0C; --acc-soft:#F6E7CF;
+  --display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141C; --surface:#171D28; --ink:#E6EAF2; --muted:#98A2B6; --line:#2A3242; --soft:#1F2735;
+    --c0:#86A8DB; --c1:#E46CA3; --acc:#E9A640; --acc-soft:#3A2E1A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141C; --surface:#171D28; --ink:#E6EAF2; --muted:#98A2B6; --line:#2A3242; --soft:#1F2735;
+  --c0:#86A8DB; --c1:#E46CA3; --acc:#E9A640; --acc-soft:#3A2E1A;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding:2.8rem 1.25rem 4rem}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0}
+h1{font-size:clamp(2.3rem,6vw,4.2rem);font-weight:800;letter-spacing:-.025em;max-width:18ch}
+h2{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;letter-spacing:-.015em;display:flex;gap:.7rem;align-items:baseline}
+h2 .n{font-size:.95em;color:var(--acc);font-variant-numeric:tabular-nums}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
+p{margin:.45rem 0}
+.lede{font-size:1.15rem;max-width:66ch;color:var(--muted);margin-top:1rem}
+section.block{margin-top:4rem}
+.sub{color:var(--muted);max-width:70ch;margin:.6rem 0 1.2rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:1.1rem;align-items:start}
+.grid2.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.grid2.mx{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}
+@media (max-width:880px){.grid2,.grid2.even,.grid2.mx{grid-template-columns:minmax(0,1fr)}}
+canvas.cv{width:100%;display:block;touch-action:none}
+.r1{aspect-ratio:1/1} .r53{aspect-ratio:5/3} .r52{aspect-ratio:5/2} .r43{aspect-ratio:4/3}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;font-size:.9rem;color:var(--muted);margin-top:.6rem}
+.legend span{display:inline-flex;align-items:center;gap:.4rem}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;flex:none}
+.dot.c0{background:var(--c0)} .dot.c1{background:var(--c1)} .dot.acc{background:var(--acc)}
+.dot.r0{border:2px solid var(--c0)} .dot.r1{border:2px solid var(--c1)}
+.hint{font-size:.87rem;color:var(--muted);margin:.35rem 0 0}
+.group>.lbl{font-weight:700;font-size:.93rem;margin-bottom:.3rem;display:flex;justify-content:space-between;gap:.5rem;align-items:baseline}
+.group>.lbl output{font-family:var(--display);font-weight:800;color:var(--acc);font-size:1.1rem;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.seg{display:flex;flex-wrap:wrap;gap:.35rem}
+.seg button,.btn{font:inherit;font-size:.9rem;border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:.35rem .8rem;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#10141C}}
+:root[data-theme="dark"] .btn.primary{color:#10141C}
+.btns{display:flex;flex-wrap:wrap;gap:.45rem}
+button:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.scen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem;margin-top:1.6rem}
+@media (max-width:880px){.scen{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--soft);border-radius:10px;padding:.55rem .7rem}
+.stat b{font-family:var(--display);font-size:1.35rem;display:block;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat span{font-size:.82rem;color:var(--muted);display:block;line-height:1.3}
+.readout{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.stat.wide{grid-column:1/-1}
+svg.fig{width:100%;height:auto;display:block}
+svg text{font-family:var(--body)}
+.why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2rem;margin-top:1.6rem;border-top:2px solid var(--ink);padding-top:.9rem}
+.why b{display:block;font-family:var(--display);font-size:1.05rem}
+.why p{color:var(--muted);font-size:.95rem;margin:.2rem 0 0}
+@media (max-width:760px){.why{grid-template-columns:minmax(0,1fr)}}
+.steps{list-style:none;padding:0;margin:1rem 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;border-top:2px solid var(--ink)}
+.steps li{padding-top:.7rem;font-size:.93rem;color:var(--muted)}
+.steps li b{display:block;color:var(--ink);font-family:var(--display);font-size:1rem}
+@media (max-width:760px){.steps{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.formula{font-family:var(--display);font-weight:500;font-size:1.1rem;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.6rem 1rem;display:inline-block;margin:1rem 0 0;max-width:100%;overflow-x:auto}
+.formula b{color:var(--acc)}
+.bar-row{display:grid;grid-template-columns:6.8rem minmax(0,1fr) 3.4rem;gap:.6rem;align-items:center;font-size:.88rem;margin:.22rem 0}
+.bar-row .tr{height:14px;background:var(--soft);border-radius:999px;position:relative;overflow:hidden}
+.bar-row .tr i{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--acc);transition:width .3s}
+.bar-row b{font-variant-numeric:tabular-nums;text-align:right;font-family:var(--display)}
+.tbl-wrap{overflow-x:auto}
+table.calc{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
+table.calc th{font-weight:600;color:var(--muted);text-align:right;padding:.3rem .45rem;border-bottom:1.5px solid var(--ink);font-size:.8rem;white-space:nowrap}
+table.calc th:first-child,table.calc td:first-child{text-align:left}
+table.calc td{padding:.32rem .45rem;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.calc td .mini{display:inline-block;width:70px;height:10px;background:var(--soft);border-radius:999px;vertical-align:middle;margin-left:.4rem;overflow:hidden}
+table.calc td .mini i{display:block;height:100%;background:var(--acc)}
+.strip{display:inline-grid;grid-auto-flow:column;gap:2px;vertical-align:middle}
+.strip i{width:14px;height:14px;border-radius:3px;display:block}
+.heat{display:grid;justify-content:start;gap:3px;font-size:.8rem;overflow-x:auto}
+.heat .hc{border-radius:5px;aspect-ratio:1/1;min-width:26px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;font-size:.7rem;cursor:pointer;border:2px solid transparent}
+.heat .hc.sel{border-color:var(--ink)}
+.heat .lab{color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:.3rem;white-space:nowrap;font-size:.78rem}
+.heat .lab.top{justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);padding:0 0 .2rem;align-items:center;min-height:4.5rem}
+.meaning{display:grid;grid-template-columns:7.5rem repeat(3,minmax(0,1fr));gap:.3rem .6rem;font-size:.85rem;align-items:center}
+.meaning .hd{color:var(--muted);font-size:.78rem;font-weight:600}
+.meaning .tr{height:12px;background:var(--soft);border-radius:999px;overflow:hidden}
+.meaning .tr i{display:block;height:100%;border-radius:999px;transition:width .3s}
+.tokcards{display:flex;flex-wrap:wrap;gap:.6rem}
+.tok{background:var(--soft);border-radius:10px;padding:.5rem .6rem;border:2px solid transparent;font-size:.85rem}
+.tok.hl{border-color:var(--acc)}
+.tok b{display:block;font-family:var(--display);font-size:1rem;margin-bottom:.3rem}
+.tok .rw{display:flex;align-items:center;gap:.4rem;margin-top:.2rem;color:var(--muted);font-size:.72rem}
+.fam{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin-top:1rem}
+@media (max-width:760px){.fam{grid-template-columns:minmax(0,1fr)}}
+.fam button{font:inherit;text-align:left;background:var(--soft);border:2px solid transparent;border-radius:12px;padding:.7rem .8rem;color:var(--ink);cursor:pointer}
+.fam button[aria-pressed="true"]{border-color:var(--acc);background:var(--surface)}
+.fam button b{display:block;font-family:var(--display)}
+.fam button span{font-size:.86rem;color:var(--muted);display:block;margin-top:.2rem}
+.blk{cursor:pointer}
+.blk rect{transition:opacity .25s, stroke .2s}
+.blk:hover rect,.blk:focus rect{stroke:var(--acc);stroke-width:2.5}
+.blk:focus{outline:none}
+.infocard{border-top:2px solid var(--ink);padding-top:.8rem;margin-top:.4rem}
+.mask{display:inline-grid;gap:3px;font-size:.75rem}
+.mask .mc{width:30px;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.mask .ml{color:var(--muted);font-size:.72rem;display:flex;align-items:center;justify-content:flex-end;padding-right:.3rem;white-space:nowrap}
+.mask .mt{color:var(--muted);font-size:.72rem;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:flex-start;height:4.2rem}
+.gen{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;font-family:var(--display);font-size:1.25rem;min-height:2.4rem}
+.gen span{background:var(--soft);border-radius:8px;padding:.15rem .55rem}
+.gen span.new{background:var(--acc);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gen span.new{color:#10141C}}
+:root[data-theme="dark"] .gen span.new{color:#10141C}
+.gen span.sp{background:transparent;color:var(--muted);font-family:var(--body);font-size:.95rem}
+.scrollfig{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.scrollfig>svg.fig{min-width:var(--mw,0)}
+#arcSvg{display:block;height:auto}
+</style><style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head>
+<body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../">Todas as atividades</a><a href="../../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+<div class="wrap">
+  <header>
+    <h1>Transformers, da palavra à atenção</h1>
+    <p class="lede">O transformer é a arquitetura por trás dos grandes modelos de linguagem, dos tradutores automáticos e de modelos que leem notas clínicas. A ideia central cabe numa frase: cada palavra olha para todas as outras e decide em quais prestar atenção. Aqui você acompanha isso com frases curtas e números que dá para conferir.</p>
+    <div class="why">
+      <div><b>Olha tudo de uma vez</b><p>Redes recorrentes liam palavra por palavra. O transformer processa a frase inteira em paralelo, o que permite treinar com volumes enormes de texto.</p></div>
+      <div><b>Liga palavras distantes</b><p>O pronome no fim da frase encontra o substantivo do começo em um único passo, sem depender de uma memória que se desgasta.</p></div>
+      <div><b>Uma peça, muitos usos</b><p>Os mesmos blocos servem para entender texto (BERT), gerar texto (GPT, Claude) e transformar um texto em outro (tradução, resumo).</p></div>
+    </div>
+    <div class="panel" style="margin-top:1.4rem">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem;align-items:center">
+        <h3 style="margin:0">Recorrente × transformer</h3>
+        <div class="seg" id="rnnSeg"><button data-v="rnn">Rede recorrente</button><button data-v="tf">Transformer</button></div>
+      </div>
+      <div class="scrollfig" style="--mw:600px"><svg class="fig" id="rnnSvg" viewBox="0 0 760 170" role="img" aria-label="Comparação entre leitura sequencial e leitura em paralelo"></svg></div>
+      <p class="hint" id="rnnTxt"></p>
+    </div>
+  </header>
+
+  <section class="block" id="s1">
+    <h2><span class="n">1</span>Palavras viram vetores, e a posição entra na conta</h2>
+    <p class="sub">Primeiro, cada palavra vira uma lista de números, o <b>embedding</b>. Aqui usamos seis traços legíveis (pessoa, finanças, lugar, saúde, ação, função gramatical); num modelo real são centenas ou milhares de números aprendidos. A atenção, sozinha, não sabe a ordem das palavras. Por isso somamos um <b>vetor de posição</b>.</p>
+    <div class="panel">
+      <label class="check" style="display:flex;gap:.5rem;align-items:center;font-weight:700;cursor:pointer"><input type="checkbox" id="posOn" style="width:18px;height:18px;accent-color:var(--acc)">Somar o vetor de posição</label>
+      <div style="margin-top:1rem" id="embA"></div>
+      <div style="margin-top:.9rem" id="embB"></div>
+      <div class="legend"><span><i class="dot c1"></i>valor positivo</span><span><i class="dot c0"></i>valor negativo</span><span>quanto mais forte a cor, maior o valor</span></div>
+      <p class="note" id="embNote"></p>
+    </div>
+  </section>
+
+  <section class="block" id="s2">
+    <h2><span class="n">2</span>Atenção: cada palavra consulta as outras</h2>
+    <p class="sub">Cada palavra gera três vetores. A <b>consulta</b> (Q) diz o que ela procura; a <b>chave</b> (K), o que ela oferece; o <b>valor</b> (V), a informação que ela passa adiante. A semelhança entre a consulta de uma palavra e as chaves das outras vira um peso, e a palavra recebe a mistura dos valores, ponderada por esses pesos.</p>
+    <ol class="steps">
+      <li><b>1. Comparar</b>Produto escalar entre a consulta da palavra e a chave de cada palavra: q · k.</li>
+      <li><b>2. Escalar</b>Dividir por √d (d = tamanho do vetor) para os números não explodirem.</li>
+      <li><b>3. Normalizar</b>Softmax: os pesos ficam positivos e somam 100%.</li>
+      <li><b>4. Misturar</b>Somar os valores, cada um multiplicado pelo seu peso.</li>
+    </ol>
+    <div class="formula">Atenção(Q, K, V) = softmax( <b>Q·Kᵀ</b> / √d ) · <b>V</b></div>
+    <div class="panel" style="margin-top:1.2rem">
+      <div style="display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center">
+        <div class="seg" id="sentSeg"></div>
+        <div class="seg" id="headSeg"><button data-h="0">Cabeça 1: significado</button><button data-h="1">Cabeça 2: vizinhança</button></div>
+        <label style="display:flex;gap:.45rem;align-items:center;font-size:.92rem;cursor:pointer"><input type="checkbox" id="scaleOn" checked style="width:18px;height:18px;accent-color:var(--acc)">Dividir por √d</label>
+      </div>
+      <div class="scrollfig" id="arcWrap" style="margin-top:.6rem"><svg id="arcSvg" role="img" aria-label="Pesos de atenção da palavra selecionada. Clique numa palavra para selecioná-la."></svg></div>
+      <p class="hint">Clique numa palavra para ver para onde ela olha. A espessura de cada arco é o peso de atenção.</p>
+      <p class="note" id="attNote"></p>
+    </div>
+    <div class="grid2" style="margin-top:1.1rem">
+      <div class="panel">
+        <h3 id="calcTitle">O cálculo, passo a passo</h3>
+        <div class="tbl-wrap"><table class="calc" id="calcTbl"></table></div>
+        <p class="hint" id="calcHint"></p>
+      </div>
+      <div class="panel">
+        <h3 id="meanTitle">O que a palavra carrega depois da atenção</h3>
+        <div class="meaning" id="meaning"></div>
+        <p class="hint">Resultado = vetor original + mistura dos valores (conexão residual). É assim que "banco" puxa o sentido de "dinheiro" ou de "praça".</p>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:1.1rem">
+      <h3>Todos os pesos de uma vez</h3>
+      <p class="hint" style="margin-top:0">Cada linha é uma palavra consultando as demais; cada linha soma 100%. Todas as linhas são calculadas ao mesmo tempo, como multiplicações de matrizes. Por isso o transformer é tão rápido em GPU. Clique numa linha para selecioná-la.</p>
+      <div class="heat" id="heat" style="margin-top:.8rem"></div>
+      <p class="hint">Um modelo real roda várias cabeças como estas em paralelo (multi-head attention), cada uma aprendendo a olhar para um tipo de relação, e junta os resultados.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s3">
+    <h2><span class="n">3</span>Codificador e decodificador</h2>
+    <p class="sub">A atenção é empilhada em blocos. O <b>codificador</b> lê a frase de entrada inteira e produz um vetor com contexto para cada palavra. O <b>decodificador</b> gera a saída uma palavra por vez: olha para o que já escreveu e, pela atenção cruzada, consulta o que o codificador entendeu. Clique em qualquer bloco.</p>
+    <div class="grid2">
+      <div class="panel">
+        <div class="scrollfig" style="--mw:560px"><svg class="fig" id="archSvg" viewBox="0 0 760 600" role="img" aria-label="Arquitetura do transformer com codificador e decodificador. Os blocos são clicáveis."></svg></div>
+        <div class="btns" style="margin-top:.6rem"><button class="btn primary" id="flowBtn">Ver o caminho da informação</button></div>
+      </div>
+      <div class="panel">
+        <div class="infocard" id="info" style="border-top:0;padding-top:0;margin:0"></div>
+        <h3 style="margin-top:1.3rem">Três famílias de modelos</h3>
+        <p class="hint" style="margin-top:0">Escolha uma família para ver quais blocos ela usa.</p>
+        <div class="fam" id="fam" style="grid-template-columns:minmax(0,1fr)">
+          <button data-f="both"><b>Codificador + decodificador</b><span>Transforma um texto em outro: tradução, resumo. Ex.: o transformer original, T5.</span></button>
+          <button data-f="enc"><b>Só codificador</b><span>Entende e classifica: identificar diagnósticos em notas clínicas, extrair medicamentos. Ex.: BERT, BioBERT.</span></button>
+          <button data-f="dec"><b>Só decodificador</b><span>Gera texto prevendo a próxima palavra: assistentes e chatbots. Ex.: GPT, Claude, Llama.</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="s4">
+    <h2><span class="n">4</span>O decodificador em ação: uma tradução, palavra por palavra</h2>
+    <p class="sub">O codificador lê "O paciente tem febre alta" de uma vez. O decodificador começa com um marcador de início e, a cada passo, calcula a probabilidade de cada palavra do vocabulário ser a próxima. A escolhida volta como entrada, e o ciclo se repete até o marcador de fim.</p>
+    <div class="panel">
+      <div class="btns"><button class="btn primary" id="genNext">Gerar a próxima palavra</button><button class="btn" id="genBack">Voltar um passo</button><button class="btn" id="genReset">Recomeçar</button></div>
+      <div class="gen" id="genOut" style="margin-top:.9rem"></div>
+    </div>
+    <div class="grid2" style="margin-top:1.1rem">
+      <div class="panel">
+        <h3>Atenção cruzada: onde o decodificador olha na frase original</h3>
+        <div class="scrollfig" style="--mw:520px"><svg class="fig" id="crossSvg" viewBox="0 0 700 236" role="img" aria-label="Atenção cruzada do decodificador sobre as palavras em português"></svg></div>
+        <p class="hint" id="crossTxt"></p>
+        <h3 style="margin-top:1.2rem">Máscara: ninguém espia o futuro</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:1.2rem;align-items:flex-start">
+          <div class="mask" id="mask"></div>
+          <p class="hint" style="flex:1;min-width:200px;margin:0">Na autoatenção do decodificador, cada posição só enxerga as anteriores (quadrados coloridos). As posições futuras (×) são bloqueadas; no treino, elas contêm a resposta.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Probabilidade da próxima palavra</h3>
+        <div id="cands"></div>
+        <div class="group" style="margin-top:1rem"><div class="lbl">Temperatura<output id="tempOut"></output></div><input type="range" id="temp" min="0.2" max="2.5" step="0.05" value="1"></div>
+        <p class="hint" id="tempTxt"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Para experimentar em aula</h2>
+    <ol class="try" style="columns:2 320px;column-gap:2rem;padding-left:1.1rem">
+      <li style="margin-bottom:.65rem">Na seção 1, compare "médico" nas duas frases com e sem o vetor de posição. Sem ele, o modelo não saberia quem examinou quem.</li>
+      <li style="margin-bottom:.65rem">Na seção 2, selecione "banco" nas duas frases. As mesmas letras terminam com sentidos diferentes, conforme a vizinhança.</li>
+      <li style="margin-bottom:.65rem">Na frase do paciente, clique em "ele". Para onde vai a maior parte da atenção?</li>
+      <li style="margin-bottom:.65rem">Desligue a divisão por √d. Os pesos ficam mais concentrados. Em vetores com milhares de números, sem essa divisão o softmax ficaria quase todo em uma palavra.</li>
+      <li style="margin-bottom:.65rem">Troque para a cabeça 2. Ela ignora o significado e olha para os vizinhos. Por que valeria a pena ter as duas?</li>
+      <li style="margin-bottom:.65rem">Na seção 4, observe a atenção cruzada ao gerar "high" e "fever". A ordem em inglês é invertida em relação a "febre alta".</li>
+      <li style="margin-bottom:.65rem">Suba a temperatura para 2. As alternativas ganham probabilidade: é assim que um assistente pode variar as respostas.</li>
+    </ol>
+  </section>
+
+  <footer>Material didático. Os vetores e as probabilidades foram escolhidos à mão para ilustrar o mecanismo; num modelo real, eles são aprendidos a partir de muito texto e têm centenas de dimensões. A arquitetura segue o transformer original, proposto por Vaswani e colaboradores em 2017 ("Attention Is All You Need").</footer>
+</div>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const fmt=(v,d=2)=>Number.isFinite(v)?v.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d}):"–";
+const pct=(v,d=0)=>fmt(100*v,d)+"%";
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function cssv(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function hexRGB(h){ h=h.replace("#",""); if(h.length===3) h=h.split("").map(c=>c+c).join(""); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+function rgba(hex,a){ const [r,g,b]=hexRGB(hex); return `rgba(${r},${g},${b},${a})`; }
+function softmax(a){ const m=Math.max(...a), e=a.map(v=>Math.exp(v-m)), s=e.reduce((x,y)=>x+y,0); return e.map(v=>v/s); }
+const dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0);
+const FEAT=["pessoa","finanças","lugar","saúde","ação","função"];
+
+/* ---------- 0 · recorrente × transformer ---------- */
+const RT=["O","paciente","tomou","o","remédio","porque","ele","sentia","dor"];
+let rnnMode="rnn", rnnTimer=0, rnnStep=RT.length;
+function drawRnn(){
+  const acc=cssv("--acc"), ink=cssv("--ink"), muted=cssv("--muted"), soft=cssv("--soft"), line=cssv("--line");
+  const n=RT.length, gap=760/n, cx=i=>gap*(i+.5); let s="";
+  if(rnnMode==="rnn"){
+    for(let i=0;i<n-1;i++){ const on=i+1<=rnnStep-1; s+=`<line x1="${cx(i)+22}" y1="120" x2="${cx(i+1)-22}" y2="120" stroke="${on?acc:line}" stroke-width="${on?3:2}" marker-end="url(#ah${on?"a":"l"})"/>`; }
+    for(let i=0;i<n;i++){ const on=i<rnnStep; s+=`<circle cx="${cx(i)}" cy="120" r="18" fill="${on?acc:soft}" stroke="${on?acc:line}" stroke-width="2"/><line x1="${cx(i)}" y1="68" x2="${cx(i)}" y2="100" stroke="${line}" stroke-width="2"/>`; }
+    s+=`<text x="${cx(0)}" y="158" font-size="12" fill="${muted}" text-anchor="middle">memória</text>`;
+  } else {
+    const pairs=[]; for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) pairs.push([i,j]);
+    pairs.forEach(([i,j])=>{ const hl=(i===1&&j===6); const x1=cx(i),x2=cx(j),h=Math.min(95,18+(x2-x1)*.22);
+      s+=`<path d="M${x1},62 Q${(x1+x2)/2},${62-h*2+40} ${x2},62" fill="none" stroke="${hl?acc:rgba(muted,.28)}" stroke-width="${hl?3.5:1}"/>`; });
+  }
+  for(let i=0;i<n;i++){ const on=rnnMode==="tf"||i<rnnStep, hl=rnnMode==="tf"&&(i===1||i===6);
+    s+=`<rect x="${cx(i)-38}" y="${rnnMode==="tf"?62:34}" width="76" height="30" rx="7" fill="${hl?acc:on?soft:"none"}" stroke="${on?ink:line}" stroke-width="1.2"/>
+    <text x="${cx(i)}" y="${rnnMode==="tf"?82:54}" font-size="14" text-anchor="middle" fill="${hl?"#fff":on?ink:muted}" font-weight="${hl?700:400}">${RT[i]}</text>`; }
+  if(rnnMode==="tf") s+=`<text x="380" y="130" font-size="13" text-anchor="middle" fill="${muted}">todas as ligações calculadas ao mesmo tempo</text>`;
+  $("rnnSvg").innerHTML=`<defs><marker id="aha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="${acc}"/></marker><marker id="ahl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="${line}"/></marker></defs>`+s;
+  $("rnnTxt").textContent = rnnMode==="rnn"
+    ? `A rede recorrente lê uma palavra por passo e guarda um resumo numa memória. Passo ${Math.min(rnnStep,n)} de ${n}. Para "ele" encontrar "paciente", a informação precisa atravessar 5 passos, e os passos não podem ser feitos em paralelo.`
+    : `O transformer compara todas as palavras entre si de uma só vez. "ele" chega a "paciente" por uma ligação direta (em destaque), e o cálculo inteiro roda em paralelo.`;
+  document.querySelectorAll("#rnnSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===rnnMode));
+}
+function playRnn(){ clearInterval(rnnTimer); if(reduce){ rnnStep=RT.length; drawRnn(); return; } rnnStep=0; drawRnn();
+  rnnTimer=setInterval(()=>{ rnnStep++; drawRnn(); if(rnnStep>=RT.length) clearInterval(rnnTimer); },520); }
+$("rnnSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; rnnMode=b.dataset.v; clearInterval(rnnTimer); if(rnnMode==="rnn") playRnn(); else drawRnn(); });
+
+/* ---------- 1 · embeddings e posição ---------- */
+const EMB={ "O":[0,0,0,0,0,1], "o":[0,0,0,0,0,1], "médico":[1,0,0,.8,0,0], "examinou":[0,0,0,.4,1,0], "paciente":[1,0,0,.5,0,0] };
+const SA=["O","médico","examinou","o","paciente"], SB=["O","paciente","examinou","o","médico"];
+const PE=pos=>FEAT.map((_,i)=>{ const f=1/Math.pow(2.2,Math.floor(i/2)); return .8*(i%2===0?Math.sin(pos*f):Math.cos(pos*f)); });
+function strip(v){ const c1=cssv("--c1"), c0=cssv("--c0");
+  return `<span class="strip">${v.map((x,i)=>`<i title="${FEAT[i]}: ${fmt(x,2)}" style="background:${x>=0?rgba(c1,Math.min(1,Math.abs(x)/1.4)):rgba(c0,Math.min(1,Math.abs(x)/1.4))};outline:1px solid ${rgba(cssv("--muted"),.25)}"></i>`).join("")}</span>`; }
+function renderEmb(){
+  const on=$("posOn").checked;
+  const card=(w,i)=>{ const e=EMB[w], p=PE(i), t=on?e.map((v,k)=>v+p[k]):e;
+    return `<div class="tok${w==="médico"?" hl":""}"><b>${w}</b><div class="rw">palavra ${strip(e)}</div>${on?`<div class="rw">posição ${i+1} ${strip(p)}</div>`:""}<div class="rw" style="color:var(--ink)">entrada ${strip(t)}</div></div>`; };
+  $("embA").innerHTML=`<p class="hint" style="margin:0 0 .4rem">"O médico examinou o paciente"</p><div class="tokcards">${SA.map(card).join("")}</div>`;
+  $("embB").innerHTML=`<p class="hint" style="margin:0 0 .4rem">"O paciente examinou o médico"</p><div class="tokcards">${SB.map(card).join("")}</div>`;
+  const a=EMB["médico"].map((v,k)=>v+(on?PE(1)[k]:0)), b=EMB["médico"].map((v,k)=>v+(on?PE(4)[k]:0));
+  const dist=Math.sqrt(a.reduce((s,v,k)=>s+(v-b[k])**2,0));
+  $("embNote").textContent = on
+    ? `Com a posição somada, "médico" tem vetores diferentes nas duas frases (distância ${fmt(dist,2)}): na primeira ele está na posição 2, perto do começo; na segunda, na posição 5. Agora o modelo pode distinguir quem examina de quem é examinado.`
+    : `Sem a posição, "médico" tem exatamente o mesmo vetor nas duas frases (distância ${fmt(dist,2)}), e as duas frases viram o mesmo conjunto de vetores, só que embaralhado. Para a atenção, "quem examinou quem" seria indistinguível.`;
+}
+$("posOn").addEventListener("change",renderEmb);
+
+/* ---------- 2 · atenção ---------- */
+const F=()=>[0,0,0,0,0,1];
+const T=(w,x,q,k)=>({w,x,q:q||[0,0,0,0,0,0],k:k||x});
+const SENTS=[
+  {lab:"Depositei o dinheiro no banco", focus:4, toks:[
+    T("Depositei",[0,.6,0,0,1,0],[0,2,.5,0,0,0]), T("o",F()), T("dinheiro",[0,1,0,0,0,0],[0,0,0,0,2,0]), T("no",[0,0,.3,0,0,1]),
+    T("banco",[0,.5,.5,0,0,0],[0,4,4,0,0,0],[0,.25,.25,0,0,0])]},
+  {lab:"Sentei no banco da praça", focus:2, toks:[
+    T("Sentei",[0,0,.6,0,1,0],[0,0,2,0,0,0]), T("no",[0,0,.3,0,0,1]), T("banco",[0,.5,.5,0,0,0],[0,4,4,0,0,0],[0,.25,.25,0,0,0]),
+    T("da",F()), T("praça",[0,0,1,0,0,0],[0,0,0,0,1.5,0])]},
+  {lab:"O paciente tomou o remédio porque ele sentia dor", focus:6, toks:[
+    T("O",F()), T("paciente",[1,0,0,.5,0,0],[0,0,0,0,2.5,0]), T("tomou",[0,0,0,.3,1,0],[2,0,0,1.5,0,0]), T("o",F()),
+    T("remédio",[0,0,0,1,0,0],[0,0,0,0,2.5,0]), T("porque",F()), T("ele",[.6,0,0,0,0,0],[6,0,0,0,0,0],[.3,0,0,0,0,0]),
+    T("sentia",[0,0,0,.5,1,0],[2.5,0,0,1.5,0,0]), T("dor",[0,0,0,1,0,0],[0,0,0,0,2.5,0])]}
+];
+const A={s:0, sel:4, head:0, scale:true};
+const SQ=Math.sqrt(6);
+function scores(sent,i){
+  const tk=sent.toks;
+  if(A.head===0) return tk.map(t=>dot(tk[i].q,t.k));
+  return tk.map((_,j)=>3-1.5*Math.abs(i-j));
+}
+function weights(sent,i){ const s=scores(sent,i).map(v=>A.scale?v/SQ:v); return softmax(s); }
+$("sentSeg").innerHTML=SENTS.map((s,i)=>`<button data-i="${i}">${s.lab}</button>`).join("");
+function drawArcs(){
+  const sent=SENTS[A.s], tk=sent.toks, n=tk.length, cw=$("arcWrap").clientWidth||760, W=Math.max(cw,n*70), H=Math.min(205,120+W*.12), gap=W/n, cx=i=>gap*(i+.5), yT=H-45;
+  const acc=cssv("--acc"), ink=cssv("--ink"), muted=cssv("--muted"), soft=cssv("--soft"), surf=cssv("--surface");
+  const w=weights(sent,A.sel), svg=$("arcSvg"); svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.setAttribute("width",W); svg.setAttribute("height",H);
+  let s="";
+  tk.forEach((t,j)=>{
+    const a=w[j], x1=cx(A.sel), x2=cx(j);
+    if(j===A.sel){ s+=`<path d="M${x1-14},${yT-18} C${x1-34},${yT-78} ${x1+34},${yT-78} ${x1+14},${yT-18}" fill="none" stroke="${rgba(acc,.35+.65*a)}" stroke-width="${1+18*a}" stroke-linecap="round"/>`; }
+    else { const h=Math.min((yT-30)/1.6,26+Math.abs(x2-x1)*.4); s+=`<path d="M${x1},${yT-18} Q${(x1+x2)/2},${yT-18-h*1.6} ${x2},${yT-18}" fill="none" stroke="${rgba(acc,.3+.7*a)}" stroke-width="${1+18*a}" stroke-linecap="round"/>`; }
+  });
+  tk.forEach((t,j)=>{ const sel=j===A.sel, bw=Math.min(gap-8,Math.max(46,t.w.length*9.5+18));
+    s+=`<g class="blk tokb" data-j="${j}" tabindex="0" role="button" aria-label="${t.w}"><rect x="${cx(j)-bw/2}" y="${yT-18}" width="${bw}" height="34" rx="8" fill="${sel?ink:soft}" stroke="${sel?ink:rgba(muted,.4)}"/>
+    <text x="${cx(j)}" y="${yT+4}" font-size="${gap<90?13:15}" text-anchor="middle" fill="${sel?surf:ink}" font-weight="${sel?700:400}">${t.w}</text></g>
+    <text x="${cx(j)}" y="${yT+36}" font-size="13" text-anchor="middle" fill="${w[j]>=.15?acc:muted}" font-weight="${w[j]>=.15?700:400}">${pct(w[j])}</text>`; });
+  svg.innerHTML=s;
+  svg.querySelectorAll(".tokb").forEach(g=>{ const f=()=>{ A.sel=+g.dataset.j; renderAtt(); }; g.addEventListener("click",f); g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); f(); } }); });
+}
+function attNote(){
+  const sent=SENTS[A.s], tk=sent.toks, w=weights(sent,A.sel), t=tk[A.sel];
+  const order=w.map((v,j)=>[v,j]).filter(([,j])=>j!==A.sel).sort((a,b)=>b[0]-a[0]);
+  const [v1,j1]=order[0];
+  if(A.head===1) return `A cabeça 2 não olha o significado: dá mais peso às palavras vizinhas. "${t.w}" olha sobretudo para "${tk[j1].w}" (${pct(v1)}) e para si mesma (${pct(w[A.sel])}). Serve para captar a ordem local, como adjetivo e substantivo lado a lado.`;
+  if(t.w==="banco"&&A.s===0) return `"banco" é ambíguo. A consulta dele procura pistas de finanças ou de lugar; a chave de "dinheiro" responde forte a finanças, e ele recebe ${pct(w[2])} da atenção. Resultado: o vetor de "banco" puxa para o sentido de instituição financeira.`;
+  if(t.w==="banco"&&A.s===1) return `As mesmas letras, outra vizinhança. Aqui é "praça" que responde à consulta de "banco" (${pct(w[4])}), e o vetor final puxa para o sentido de lugar para sentar. É isso que se chama representação contextual.`;
+  if(t.w==="ele") return `"ele" procura uma pessoa. A chave de "paciente" é a que mais combina, e recebe ${pct(w[1])} da atenção; "remédio", só ${pct(w[4])}. Sem regra gramatical escrita à mão, o pronome encontra o seu referente.`;
+  if(t.q.every(v=>v===0)) return `"${t.w}" é uma palavra funcional e, nesta cabeça, a consulta dela não procura nada em especial: os pesos ficam espalhados por igual. Outras cabeças cuidam desse tipo de palavra.`;
+  return `"${t.w}" presta mais atenção a "${tk[j1].w}" (${pct(v1)}). A consulta de "${t.w}" procura ${FEAT.filter((_,k)=>t.q[k]>0).join(" e ")}, e essa é a chave que mais combina.`;
+}
+function renderCalc(){
+  const sent=SENTS[A.s], tk=sent.toks, sc=scores(sent,A.sel), ss=sc.map(v=>A.scale?v/SQ:v), m=Math.max(...ss), ex=ss.map(v=>Math.exp(v)), sum=ex.reduce((a,b)=>a+b,0), w=ex.map(v=>v/sum);
+  const t=tk[A.sel];
+  $("calcTitle").textContent=`O cálculo para "${t.w}"`;
+  const bar=v=>`<span class="mini"><i style="width:${100*v}%"></i></span>`;
+  if(A.head===0){
+    $("calcTbl").innerHTML=`<tr><th>palavra</th><th>chave k</th><th>q · k</th><th>${A.scale?"÷ √6":"sem divisão"}</th><th>e<sup>x</sup></th><th>peso</th></tr>`+
+      tk.map((k,j)=>`<tr${j===A.sel?' style="font-weight:700"':""}><td>${esc(k.w)}</td><td>${strip(k.k)}</td><td>${fmt(sc[j],2)}</td><td>${fmt(ss[j],2)}</td><td>${fmt(ex[j],2)}</td><td>${pct(w[j])}${bar(w[j])}</td></tr>`).join("")+
+      `<tr><td colspan="4" style="text-align:right;color:var(--muted)">soma</td><td>${fmt(sum,2)}</td><td>100%</td></tr>`;
+    $("calcHint").innerHTML=`Consulta de "${esc(t.w)}": ${strip(t.q)} (traços: ${FEAT.join(", ")}). Cada peso é e<sup>x</sup> dividido pela soma.`;
+  } else {
+    $("calcTbl").innerHTML=`<tr><th>palavra</th><th>distância</th><th>pontuação</th><th>${A.scale?"÷ √6":"sem divisão"}</th><th>e<sup>x</sup></th><th>peso</th></tr>`+
+      tk.map((k,j)=>`<tr${j===A.sel?' style="font-weight:700"':""}><td>${esc(k.w)}</td><td>${Math.abs(A.sel-j)}</td><td>${fmt(sc[j],2)}</td><td>${fmt(ss[j],2)}</td><td>${fmt(ex[j],2)}</td><td>${pct(w[j])}${bar(w[j])}</td></tr>`).join("")+
+      `<tr><td colspan="4" style="text-align:right;color:var(--muted)">soma</td><td>${fmt(sum,2)}</td><td>100%</td></tr>`;
+    $("calcHint").textContent="Nesta cabeça, a pontuação é 3 − 1,5 × distância entre as posições. Uma cabeça real aprende sozinha a olhar para os vizinhos, usando o vetor de posição.";
+  }
+  // significado
+  const ctx=FEAT.map((_,f)=>tk.reduce((s,k,j)=>s+w[j]*k.x[f],0)), res=t.x.map((v,f)=>v+ctx[f]);
+  const mx=Math.max(1.6,...res);
+  $("meanTitle").textContent=`O que "${t.w}" carrega depois da atenção`;
+  const cb=(v,col)=>`<div class="tr"><i style="width:${100*v/mx}%;background:${col}"></i></div>`;
+  $("meaning").innerHTML=`<span></span><span class="hd">original</span><span class="hd">+ contexto (Σ peso × valor)</span><span class="hd">= resultado</span>`+
+    FEAT.map((f,k)=>`<span>${f}</span>${cb(t.x[k],"var(--muted)")}${cb(ctx[k],"var(--acc)")}${cb(res[k],"var(--ink)")}`).join("");
+}
+function renderHeat(){
+  const sent=SENTS[A.s], tk=sent.toks, n=tk.length, acc=cssv("--acc"), ink=cssv("--ink");
+  let h=`<span></span>`+tk.map(t=>`<span class="lab top">${esc(t.w)}</span>`).join("");
+  tk.forEach((t,i)=>{ const w=weights(sent,i);
+    h+=`<span class="lab">${esc(t.w)} →</span>`+w.map((v,j)=>`<span class="hc${i===A.sel?" sel":""}" data-i="${i}" style="background:${rgba(acc,Math.pow(v,.75))};color:${v>.35?"#fff":ink}" title="${esc(t.w)} → ${esc(tk[j].w)}: ${pct(v,1)}">${fmt(100*v,0)}</span>`).join(""); });
+  const el=$("heat"); el.style.gridTemplateColumns=`auto repeat(${n},minmax(26px,46px))`; el.innerHTML=h;
+}
+$("heat").addEventListener("click",e=>{ const c=e.target.closest(".hc"); if(!c) return; A.sel=+c.dataset.i; renderAtt(); });
+function renderAtt(){
+  document.querySelectorAll("#sentSeg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.i===A.s));
+  document.querySelectorAll("#headSeg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.h===A.head));
+  drawArcs(); $("attNote").textContent=attNote(); renderCalc(); renderHeat();
+}
+$("sentSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; A.s=+b.dataset.i; A.sel=SENTS[A.s].focus; renderAtt(); });
+$("headSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; A.head=+b.dataset.h; renderAtt(); });
+$("scaleOn").addEventListener("change",e=>{ A.scale=e.target.checked; renderAtt(); });
+
+/* ---------- 3 · arquitetura ---------- */
+const ADD="Soma a entrada do bloco à sua saída (conexão residual) e normaliza os números. A informação original não se perde no caminho, e redes com muitas camadas conseguem ser treinadas.";
+const FF="Uma pequena rede neural aplicada a cada palavra separadamente. A atenção mistura informação entre as palavras; a feed-forward processa o que cada uma recebeu.";
+const BL=[
+  {id:"enc_in",g:"enc",x:40,y:540,w:290,h:40,t:"O paciente tem febre alta",k:"io",info:["Entrada do codificador","A frase em português é quebrada em tokens (palavras ou pedaços de palavras). Cada token tem um número de identificação no vocabulário."]},
+  {id:"enc_emb",g:"enc",x:40,y:478,w:290,h:36,t:"Embedding + posição",k:"emb",info:["Embedding + posição","Cada token vira um vetor, e soma-se o vetor da sua posição (seção 1)."]},
+  {id:"enc_att",g:"enc",x:60,y:400,w:250,h:46,t:"Autoatenção multi-cabeça",k:"att",info:["Autoatenção multi-cabeça","Cada palavra da entrada olha para todas as outras (seção 2). No codificador não há máscara: \"febre\" vê \"alta\" e \"paciente\", à esquerda e à direita."]},
+  {id:"enc_add1",g:"enc",x:60,y:354,w:250,h:28,t:"Soma e normalização",k:"add",info:["Soma e normalização",ADD]},
+  {id:"enc_ff",g:"enc",x:60,y:290,w:250,h:44,t:"Rede feed-forward",k:"ff",info:["Rede feed-forward",FF]},
+  {id:"enc_add2",g:"enc",x:60,y:244,w:250,h:28,t:"Soma e normalização",k:"add",info:["Soma e normalização",ADD]},
+  {id:"enc_out",g:"enc",x:40,y:140,w:290,h:44,t:"Vetores com contexto",k:"io",info:["Saída do codificador","Um vetor por palavra, agora carregado de contexto. É o que o decodificador consulta na atenção cruzada, e o que um modelo só-codificador, como o BERT, usa para classificar um texto ou marcar entidades."]},
+  {id:"dec_in",g:"dec",x:420,y:540,w:300,h:40,t:"<início> The patient …",k:"io",info:["Entrada do decodificador","O que já foi gerado até agora, começando por um marcador de início. A cada passo, a palavra nova é acrescentada aqui."]},
+  {id:"dec_emb",g:"dec",x:420,y:478,w:300,h:36,t:"Embedding + posição",k:"emb",info:["Embedding + posição","Mesmo processo do codificador, aplicado às palavras já geradas."]},
+  {id:"dec_mask",g:"dec",x:440,y:410,w:260,h:44,t:"Autoatenção com máscara",k:"att",info:["Autoatenção com máscara","Cada posição olha apenas para as anteriores, nunca para as futuras (seção 4). No treino, a frase certa inteira está disponível, e a máscara impede que o modelo cole a resposta."]},
+  {id:"dec_add1",g:"dec",x:440,y:364,w:260,h:28,t:"Soma e normalização",k:"add",info:["Soma e normalização",ADD]},
+  {id:"dec_cross",g:"cross",x:440,y:300,w:260,h:46,t:"Atenção cruzada",k:"att",info:["Atenção cruzada","As consultas vêm do decodificador; as chaves e os valores vêm da saída do codificador. É a ponte entre as duas frases: ao gerar \"fever\", o decodificador olha para \"febre\". Modelos só-decodificador não têm este bloco."]},
+  {id:"dec_add2",g:"cross",x:440,y:254,w:260,h:28,t:"Soma e normalização",k:"add",info:["Soma e normalização",ADD]},
+  {id:"dec_ff",g:"dec",x:440,y:194,w:260,h:42,t:"Rede feed-forward",k:"ff",info:["Rede feed-forward",FF]},
+  {id:"dec_add3",g:"dec",x:440,y:148,w:260,h:28,t:"Soma e normalização",k:"add",info:["Soma e normalização",ADD]},
+  {id:"dec_lin",g:"dec",x:420,y:72,w:300,h:36,t:"Linear + softmax",k:"emb",info:["Linear + softmax","Transforma o vetor da última posição numa pontuação para cada palavra do vocabulário (dezenas de milhares) e, com o softmax, em probabilidades."]},
+  {id:"dec_out",g:"dec",x:420,y:16,w:300,h:36,t:"Próxima palavra",k:"io",info:["Próxima palavra","Escolhida a partir das probabilidades e devolvida à entrada do decodificador. O ciclo se repete até sair o marcador de fim."]}
+];
+const NX={enc:{x:48,y:230,w:274,h:228,info:["× N camadas","O bloco de atenção e feed-forward se repete várias vezes: 6 no transformer original, dezenas nos modelos grandes. Cada camada refina os vetores da anterior."]},dec:{x:430,y:138,w:280,h:328}};
+let fam="both", flowIdx=-1, flowTimer=0, infoId="enc_att";
+function drawArch(){
+  const C={ink:cssv("--ink"),muted:cssv("--muted"),line:cssv("--line"),soft:cssv("--soft"),surf:cssv("--surface"),acc:cssv("--acc"),c0:cssv("--c0"),c1:cssv("--c1")};
+  const fill={io:C.surf, emb:rgba(C.c1,.16), att:rgba(C.acc,.25), add:C.soft, ff:rgba(C.c0,.18)};
+  const dim=g=> (fam==="enc"&&g!=="enc") || (fam==="dec"&&(g==="enc"||g==="cross"));
+  const flowOn=flowIdx>=0?FLOW[flowIdx]:null;
+  let s=`<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="${C.muted}"/></marker><marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="${C.acc}"/></marker></defs>`;
+  // quadros N
+  [["enc",NX.enc],["dec",NX.dec]].forEach(([g,f])=>{ const o=dim(g)?.18:1;
+    s+=`<rect x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" rx="14" fill="none" stroke="${C.muted}" stroke-dasharray="5 5" opacity="${o}"/>
+    <text x="${g==="enc"?f.x-6:f.x+f.w+6}" y="${f.y+f.h/2}" font-size="15" font-weight="700" fill="${C.muted}" text-anchor="${g==="enc"?"end":"start"}" opacity="${o}">×N</text>`; });
+  s+=`<text x="185" y="112" font-size="18" font-weight="800" fill="${C.ink}" text-anchor="middle" opacity="${dim("enc")?.18:1}">CODIFICADOR</text>`;
+  s+=`<text x="570" y="600" font-size="18" font-weight="800" fill="${C.ink}" text-anchor="middle" opacity="${dim("dec")?.18:1}" dy="-2">DECODIFICADOR</text>`;
+  // setas verticais
+  const order={enc:["enc_in","enc_emb","enc_att","enc_add1","enc_ff","enc_add2","enc_out"],dec:["dec_in","dec_emb","dec_mask","dec_add1","dec_cross","dec_add2","dec_ff","dec_add3","dec_lin","dec_out"]};
+  const B=Object.fromEntries(BL.map(b=>[b.id,b]));
+  Object.values(order).forEach(seq=>{ for(let i=0;i<seq.length-1;i++){ const a=B[seq[i]], b=B[seq[i+1]]; const x=a.x+a.w/2, o=(dim(a.g)||dim(b.g))&&!(fam==="dec"&&a.g!=="enc"&&b.g!=="enc")?.18:1;
+    const oo=(fam==="dec"&&(a.id==="dec_add1"||a.id==="dec_add2"))?1:o;
+    s+=`<line x1="${x}" y1="${a.y}" x2="${x}" y2="${b.y+b.h+3}" stroke="${C.muted}" stroke-width="1.6" marker-end="url(#arr)" opacity="${oo}"/>`; } });
+  // atenção cruzada
+  const eo=B.enc_out, dc=B.dec_cross, cOn=flowOn==="dec_cross"||flowOn==="enc_out";
+  s+=`<path d="M${eo.x+eo.w},${eo.y+eo.h/2} C${eo.x+eo.w+60},${eo.y+eo.h/2} ${dc.x-70},${dc.y+dc.h/2} ${dc.x},${dc.y+dc.h/2}" fill="none" stroke="${cOn?C.acc:C.muted}" stroke-width="${cOn?3.5:2}" marker-end="url(#${cOn?"arrA":"arr"})" opacity="${fam==="both"?1:.18}"/>`;
+  s+=`<text x="372" y="214" font-size="14" fill="${C.muted}" text-anchor="middle" opacity="${fam==="both"?1:.18}">chaves e valores</text>`;
+  BL.forEach(b=>{ const on=flowOn===b.id||infoId===b.id&&flowIdx<0, o=dim(b.g)?.18:1;
+    s+=`<g class="blk" data-id="${b.id}" tabindex="0" role="button" aria-label="${esc(b.t)}" opacity="${o}"><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="9" fill="${fill[b.k]}" stroke="${on?C.acc:C.line}" stroke-width="${on?3:1.3}"/>
+    <text x="${b.x+b.w/2}" y="${b.y+b.h/2+5}" font-size="${b.k==="add"?15:b.k==="att"?16.5:18}" text-anchor="middle" fill="${C.ink}" font-weight="${b.k==="att"?700:400}">${esc(b.t)}</text></g>`; });
+  const svg=$("archSvg"); svg.innerHTML=s;
+  svg.querySelectorAll(".blk").forEach(g=>{ const f=()=>{ stopFlow(); infoId=g.dataset.id; drawArch(); renderInfo(); }; g.addEventListener("click",f); g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); f(); } }); });
+}
+function renderInfo(){ const b=BL.find(x=>x.id===infoId); $("info").innerHTML=`<h3>${esc(b.info[0])}</h3><p>${esc(b.info[1])}</p>`; }
+const FLOW=["enc_in","enc_emb","enc_att","enc_add1","enc_ff","enc_add2","enc_out","dec_in","dec_emb","dec_mask","dec_add1","dec_cross","dec_add2","dec_ff","dec_add3","dec_lin","dec_out"];
+function stopFlow(){ clearInterval(flowTimer); flowIdx=-1; $("flowBtn").textContent="Ver o caminho da informação"; }
+$("flowBtn").addEventListener("click",()=>{
+  if(flowIdx>=0){ stopFlow(); drawArch(); return; }
+  fam="both"; syncFam(); flowIdx=0; $("flowBtn").textContent="Parar";
+  const tick=()=>{ infoId=FLOW[flowIdx]; drawArch(); renderInfo(); };
+  tick(); flowTimer=setInterval(()=>{ flowIdx++; if(flowIdx>=FLOW.length){ stopFlow(); drawArch(); return; } tick(); }, reduce?1800:1100);
+});
+function syncFam(){ document.querySelectorAll("#fam button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.f===fam)); }
+$("fam").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; stopFlow(); fam=b.dataset.f; syncFam(); drawArch(); });
+
+/* ---------- 4 · geração ---------- */
+const SRC=["O","paciente","tem","febre","alta"];
+const OUT=["The","patient","has","a","high","fever","<fim>"];
+const CROSS=[[.62,.26,.05,.04,.03],[.08,.84,.04,.02,.02],[.04,.08,.8,.05,.03],[.03,.05,.27,.42,.23],[.02,.03,.04,.16,.75],[.02,.04,.03,.8,.11],[.12,.18,.2,.25,.25]];
+const CAND=[
+  [["The",4.0],["A",1.8],["This",1.2],["Patient",1.0],["It",.3]],
+  [["patient",4.2],["man",1.4],["sick",1.2],["doctor",.9],["fever",.5]],
+  [["has",3.8],["had",2.3],["is",1.6],["shows",1.3],["feels",.8]],
+  [["a",3.2],["high",2.6],["fever",1.9],["very",.8],["the",.6]],
+  [["high",3.6],["severe",2.5],["strong",1.2],["mild",.9],["low",.4]],
+  [["fever",4.4],["temperature",2.7],["pain",.8],["cough",.6],["pressure",.3]],
+  [["<fim>",4.0],["and",1.6],["today",1.2],["since",.9],["again",.5]]
+];
+const G={s:0, T:1};
+function renderGen(){
+  const s=G.s, done=s>=OUT.length;
+  $("genNext").disabled=done; $("genBack").disabled=s===0;
+  $("genOut").innerHTML=`<span class="sp">O paciente tem febre alta →</span><span>&lt;início&gt;</span>`+OUT.slice(0,s).map((w,i)=>`<span class="${i===s-1?"new":""}">${esc(w)}</span>`).join("")+(done?"":`<span class="sp">…</span>`);
+  // atenção cruzada
+  const acc=cssv("--acc"), ink=cssv("--ink"), muted=cssv("--muted"), soft=cssv("--soft"), surf=cssv("--surface");
+  const dec=["<início>",...OUT.slice(0,Math.min(s,OUT.length-1))], step=Math.min(s,OUT.length-1), w=CROSS[step];
+  const sx=i=>90+i*130, dN=dec.length, dgap=Math.min(100,640/Math.max(dN,1)), dx=i=>350-(dN-1)*dgap/2+i*dgap;
+  let v=`<text x="4" y="14" font-size="14" fill="${muted}">codificador</text><text x="4" y="228" font-size="14" fill="${muted}">decodificador (última posição em destaque)</text>`;
+  const qx=dx(dN-1);
+  SRC.forEach((t,i)=>{ v+=`<path d="M${qx},164 C${qx},116 ${sx(i)},96 ${sx(i)},62" fill="none" stroke="${rgba(acc,.25+.75*w[i])}" stroke-width="${1+16*w[i]}" stroke-linecap="round"/>`; });
+  SRC.forEach((t,i)=>{ v+=`<rect x="${sx(i)-56}" y="24" width="112" height="38" rx="8" fill="${w[i]>.3?acc:soft}"/><text x="${sx(i)}" y="49" font-size="18" text-anchor="middle" fill="${w[i]>.3?"#fff":ink}" font-weight="${w[i]>.3?700:400}">${t}</text><text x="${sx(i)}" y="82" font-size="15" text-anchor="middle" fill="${muted}">${pct(w[i])}</text>`; });
+  dec.forEach((t,i)=>{ const last=i===dN-1, bw=Math.min(dgap-6,88); v+=`<rect x="${dx(i)-bw/2}" y="166" width="${bw}" height="36" rx="7" fill="${last?ink:soft}"/><text x="${dx(i)}" y="190" font-size="15.5" text-anchor="middle" fill="${last?surf:ink}">${esc(t)}</text>`; });
+  $("crossSvg").innerHTML=v;
+  const top=w.indexOf(Math.max(...w));
+  $("crossTxt").textContent = done ? `Tradução concluída. Repare como a atenção cruzada acompanhou a inversão de "febre alta" para "high fever".`
+    : `Para prever a palavra que vem depois de "${dec[dN-1]}", a última posição do decodificador consulta o codificador e olha sobretudo para "${SRC[top]}" (${pct(w[top])}).`;
+  // máscara
+  const n=Math.min(s+1,OUT.length); const toks=["<início>",...OUT].slice(0,n);
+  let m=`<span></span>`+toks.map(t=>`<span class="mt">${esc(t)}</span>`).join("");
+  toks.forEach((t,i)=>{ m+=`<span class="ml">${esc(t)}</span>`+toks.map((_,j)=>j<=i?`<span class="mc" style="background:${rgba(acc,i===n-1?.75:.3)}"></span>`:`<span class="mc" style="background:${soft}">×</span>`).join(""); });
+  const mk=$("mask"); mk.style.gridTemplateColumns=`auto repeat(${n},30px)`; mk.innerHTML=m;
+  renderCands();
+}
+function renderCands(){
+  const step=Math.min(G.s,OUT.length-1), c=CAND[step], p=softmax(c.map(([,l])=>l/G.T)), done=G.s>=OUT.length;
+  $("tempOut").textContent=fmt(G.T,2);
+  $("cands").innerHTML=(done?`<p class="hint" style="margin-top:0">Última decisão: o marcador de fim venceu, e a geração parou.</p>`:`<p class="hint" style="margin-top:0">Candidatas para depois de "${G.s===0?"<início>":OUT[G.s-1]}" (as 5 mais prováveis de um vocabulário com milhares de palavras):</p>`)+
+    c.map(([w],i)=>`<div class="bar-row"><span style="${i===0?"font-weight:700":""}">${esc(w)}</span><div class="tr"><i style="width:${100*p[i]}%;${i===0?"":"opacity:.45"}"></i></div><b>${pct(p[i])}</b></div>`).join("");
+  $("tempTxt").textContent = G.T<0.7 ? "Temperatura baixa: o softmax fica mais pontudo e o modelo quase sempre escolhe a mais provável. Bom para respostas previsíveis."
+    : G.T>1.4 ? "Temperatura alta: as probabilidades se achatam e palavras menos prováveis ganham chance de serem sorteadas. Mais variedade, mais risco de erro."
+    : "A temperatura divide as pontuações antes do softmax. Aqui o decodificador escolhe sempre a mais provável; na prática, pode sortear de acordo com as probabilidades.";
+}
+$("genNext").addEventListener("click",()=>{ if(G.s<OUT.length){ G.s++; renderGen(); } });
+$("genBack").addEventListener("click",()=>{ if(G.s>0){ G.s--; renderGen(); } });
+$("genReset").addEventListener("click",()=>{ G.s=0; renderGen(); });
+$("temp").addEventListener("input",e=>{ G.T=+e.target.value; renderCands(); });
+
+/* ---------- ciclo ---------- */
+function renderAll(){ drawRnn(); renderEmb(); renderAtt(); drawArch(); renderInfo(); renderGen(); }
+syncFam(); renderAll(); playRnn();
+let rz=0; window.addEventListener("resize",()=>{ clearTimeout(rz); rz=setTimeout(drawArcs,120); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",renderAll);
+new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+})();
+</script></body></html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aprendizado de máquina, na prática</title>
-<meta name="description" content="Explicações interativas de aprendizado de máquina: regressão logística, árvores de decisão, florestas aleatórias, medidas de desempenho, k-means, redes convolucionais e aprendizado por reforço.">
+<meta name="description" content="Explicações interativas de aprendizado de máquina: regressão logística, árvores de decisão, florestas aleatórias, medidas de desempenho, k-means, redes convolucionais, processamento de linguagem natural, transformers e aprendizado por reforço.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +47,7 @@ li a:hover h3{text-decoration:underline;text-decoration-thickness:2px;text-under
 li a:focus-visible{outline:3px solid var(--c);outline-offset:3px}
 h3{font-family:var(--display);font-weight:800;font-size:1.25rem;margin:0 0 .25rem;color:var(--ink)}
 li p{margin:0;color:var(--muted);max-width:40rem}
-.sup{--c:var(--teal)} .uns{--c:var(--amber)} .nn{--c:var(--plum)} .rl{--c:var(--teal)}
+.sup{--c:var(--teal)} .uns{--c:var(--amber)} .nn{--c:var(--plum)} .nlp{--c:var(--amber)} .rl{--c:var(--teal)}
 
 footer{border-top:1px solid var(--line);padding:1.5rem 0 3rem;color:var(--muted);font-size:.9rem}
 
@@ -63,7 +63,7 @@ footer{border-top:1px solid var(--line);padding:1.5rem 0 3rem;color:var(--muted)
   <header>
     <div>
       <h1>Aprendizado de máquina, na prática</h1>
-      <p class="intro">Explicações interativas de algoritmos clássicos. Cada página roda no navegador: mexa nos dados, avance passo a passo e veja o algoritmo decidir.</p>
+      <p class="intro">Explicações interativas de algoritmos e modelos de aprendizado de máquina. Cada página roda no navegador: mexa nos dados, avance passo a passo e veja o modelo em ação.</p>
     </div>
     <div class="hero" aria-hidden="true">
       <svg viewBox="0 0 320 240">
@@ -115,6 +115,14 @@ footer{border-top:1px solid var(--line);padding:1.5rem 0 3rem;color:var(--muted)
     <h2>Redes neurais<small>Camadas que aprendem representações</small></h2>
     <ul>
       <li><a href="cnn-playground/"><h3>CNN Playground</h3><p>Convolução, pooling e classificação: como uma rede convolucional transforma pixels em uma classe.</p></a></li>
+    </ul>
+  </section>
+
+  <section class="nlp">
+    <h2>Processamento de Linguagem Natural<small>Do texto aos modelos de linguagem</small></h2>
+    <ul>
+      <li><a href="pln/"><h3>PLN na prática: do texto ao sentimento</h3><p>Explore o pré-processamento, a representação bag of words e o treinamento de um modelo para analisar sentimentos em comentários.</p></a></li>
+      <li><a href="transformers/"><h3>Transformers, da palavra à atenção</h3><p>Explore embeddings, posição e atenção, conheça o codificador e o decodificador e acompanhe uma tradução palavra por palavra.</p></a></li>
     </ul>
   </section>
 

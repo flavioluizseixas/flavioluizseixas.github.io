@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PLN na prática: do texto ao sentimento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F4F8; --surface:#FFFFFF; --ink:#172033; --muted:#566076; --line:#D5DBE5; --soft:#E7ECF3;
+  --c0:#4C6FA5; --c1:#B0306A; --acc:#B96F0C; --acc-soft:#F6E7CF;
+  --display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141C; --surface:#171D28; --ink:#E6EAF2; --muted:#98A2B6; --line:#2A3242; --soft:#1F2735;
+    --c0:#86A8DB; --c1:#E46CA3; --acc:#E9A640; --acc-soft:#3A2E1A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141C; --surface:#171D28; --ink:#E6EAF2; --muted:#98A2B6; --line:#2A3242; --soft:#1F2735;
+  --c0:#86A8DB; --c1:#E46CA3; --acc:#E9A640; --acc-soft:#3A2E1A;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding:2.8rem 1.25rem 4rem}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0}
+h1{font-size:clamp(2.3rem,6vw,4.2rem);font-weight:800;letter-spacing:-.025em;max-width:18ch}
+h2{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;letter-spacing:-.015em;display:flex;gap:.7rem;align-items:baseline}
+h2 .n{font-size:.95em;color:var(--acc);font-variant-numeric:tabular-nums}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
+p{margin:.45rem 0}
+.lede{font-size:1.15rem;max-width:66ch;color:var(--muted);margin-top:1rem}
+section.block{margin-top:4rem}
+.sub{color:var(--muted);max-width:70ch;margin:.6rem 0 1.2rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:1.1rem;align-items:start}
+.grid2.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.grid2.mx{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}
+@media (max-width:880px){.grid2,.grid2.even,.grid2.mx{grid-template-columns:minmax(0,1fr)}}
+canvas.cv{width:100%;display:block;touch-action:none}
+.r1{aspect-ratio:1/1} .r53{aspect-ratio:5/3} .r52{aspect-ratio:5/2} .r43{aspect-ratio:4/3}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;font-size:.9rem;color:var(--muted);margin-top:.6rem}
+.legend span{display:inline-flex;align-items:center;gap:.4rem}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;flex:none}
+.dot.c0{background:var(--c0)} .dot.c1{background:var(--c1)} .dot.acc{background:var(--acc)}
+.dot.r0{border:2px solid var(--c0)} .dot.r1{border:2px solid var(--c1)}
+.hint{font-size:.87rem;color:var(--muted);margin:.35rem 0 0}
+.group>.lbl{font-weight:700;font-size:.93rem;margin-bottom:.3rem;display:flex;justify-content:space-between;gap:.5rem;align-items:baseline}
+.group>.lbl output{font-family:var(--display);font-weight:800;color:var(--acc);font-size:1.1rem;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.seg{display:flex;flex-wrap:wrap;gap:.35rem}
+.seg button,.btn{font:inherit;font-size:.9rem;border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:.35rem .8rem;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#10141C}}
+:root[data-theme="dark"] .btn.primary{color:#10141C}
+.btns{display:flex;flex-wrap:wrap;gap:.45rem}
+button:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.scen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem;margin-top:1.6rem}
+@media (max-width:880px){.scen{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--soft);border-radius:10px;padding:.55rem .7rem}
+.stat b{font-family:var(--display);font-size:1.35rem;display:block;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat span{font-size:.82rem;color:var(--muted);display:block;line-height:1.3}
+.readout{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.stat.wide{grid-column:1/-1}
+svg.fig{width:100%;height:auto;display:block}
+.pipe{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:1.5rem}
+.pipe button{font:inherit;font-size:.9rem;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);padding:.45rem .8rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.2}
+.pipe button span{display:block;font-size:.74rem;color:var(--muted)}
+.pipe .ar{color:var(--muted)}
+.pipe button:hover{border-color:var(--acc)}
+textarea,input[type=text]{font:inherit;font-size:1rem;width:100%;border:1.5px solid var(--line);border-radius:10px;padding:.6rem .75rem;background:var(--surface);color:var(--ink);resize:vertical}
+textarea:focus,input[type=text]:focus{outline:3px solid var(--acc);outline-offset:1px}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem 1.2rem;margin-top:1rem}
+@media (max-width:760px){.opts{grid-template-columns:minmax(0,1fr)}}
+.chk{display:flex;gap:.5rem;align-items:flex-start;font-size:.93rem;cursor:pointer;line-height:1.3}
+.chk input{accent-color:var(--acc);width:18px;height:18px;flex:none;margin-top:1px}
+.chk small{display:block;color:var(--muted);font-size:.8rem}
+.stage{display:grid;grid-template-columns:11rem minmax(0,1fr);gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--line);align-items:start}
+.stage:last-child{border-bottom:0}
+.stage .nm b{display:block;font-family:var(--display)}
+.stage .nm span{font-size:.8rem;color:var(--muted)}
+@media (max-width:640px){.stage{grid-template-columns:minmax(0,1fr);gap:.3rem}}
+.chips{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.chip{display:inline-block;background:var(--soft);border-radius:7px;padding:.12rem .45rem;font-size:.92rem;border:1.5px solid transparent;line-height:1.35}
+.chip.off{opacity:.38;text-decoration:line-through}
+.chip.ch{border-color:var(--acc)}
+.chip.sub{border-left:3px solid var(--acc)}
+.chip small{color:var(--muted);font-size:.72rem}
+.raw{font-size:1.02rem;background:var(--soft);border-radius:8px;padding:.3rem .55rem;word-break:break-word}
+.tbl-wrap{overflow-x:auto}
+table.t{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
+table.t th{font-weight:600;color:var(--muted);text-align:left;padding:.35rem .5rem;border-bottom:1.5px solid var(--ink);font-size:.8rem;white-space:nowrap}
+table.t td{padding:.32rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+table.t td.n,table.t th.n{text-align:center}
+table.bow th.v{writing-mode:vertical-rl;transform:rotate(180deg);text-align:left;padding:.4rem .15rem;font-weight:500;color:var(--ink)}
+table.bow td.c{text-align:center;padding:.3rem .2rem;min-width:30px;cursor:pointer}
+table.bow td.d{white-space:nowrap;font-weight:600}
+.hot{outline:2px solid var(--acc);outline-offset:-2px}
+.wbars{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem}
+@media (max-width:560px){.wbars{grid-template-columns:minmax(0,1fr)}}
+.wb{display:grid;grid-template-columns:7.5rem minmax(0,1fr) 3.2rem;gap:.5rem;align-items:center;font-size:.86rem;margin:.18rem 0}
+.wb .tr{height:12px;background:var(--soft);border-radius:999px;overflow:hidden}
+.wb .tr i{display:block;height:100%;border-radius:999px;transition:width .3s}
+.wb b{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--display);font-size:.9rem}
+.wb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pos{color:var(--c0)} .neg{color:var(--c1)}
+.gauge{height:18px;border-radius:999px;background:linear-gradient(90deg,var(--c1),var(--soft) 50%,var(--c0));position:relative;margin:.6rem 0 1.6rem}
+.gauge i{position:absolute;top:-6px;width:4px;height:30px;background:var(--ink);border-radius:2px;transform:translateX(-50%);transition:left .35s}
+.gauge span{position:absolute;top:24px;font-size:.78rem;color:var(--muted)}
+.big{font-family:var(--display);font-size:2rem;font-weight:800;line-height:1.1}
+.examples{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+.examples button{font:inherit;font-size:.85rem;border:1.5px dashed var(--line);background:transparent;color:var(--ink);padding:.3rem .7rem;border-radius:999px;cursor:pointer;text-align:left}
+details summary{cursor:pointer;font-weight:700;font-size:.93rem}
+.ds{columns:2 280px;column-gap:1.5rem;font-size:.86rem;margin-top:.6rem;padding-left:0;list-style:none}
+.ds li{break-inside:avoid;margin:.18rem 0;padding-left:.9rem;position:relative}
+.ds li::before{content:"";position:absolute;left:0;top:.5em;width:8px;height:8px;border-radius:50%}
+.ds li.p::before{background:var(--c0)} .ds li.n::before{background:var(--c1)}
+.ds li.new{font-weight:700}
+.flash{animation:fl 1.2s ease}
+@keyframes fl{0%{background:var(--acc-soft)}100%{background:transparent}}
+@media (prefers-reduced-motion: reduce){.flash{animation:none}.gauge i,.wb .tr i{transition:none}}
+.try{columns:2 320px;column-gap:2rem;padding-left:1.1rem;margin:.5rem 0 0}
+.try li{margin-bottom:.65rem;break-inside:avoid}
+footer{margin-top:3.5rem;font-size:.85rem;color:var(--muted);max-width:80ch}
+.note{background:var(--soft);border-radius:10px;padding:.7rem .9rem;margin-top:.9rem;font-size:.93rem}
+@media (max-width:560px){#trStats{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}}
+</style><style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head>
+<body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../">Todas as atividades</a><a href="../../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+<div class="wrap">
+  <header>
+    <h1>PLN na prática: do texto ao sentimento</h1>
+    <p class="lede">Um computador não lê palavras, lê números. O Processamento de Linguagem Natural (PLN) é o caminho que transforma um comentário como "a espera foi longa e cansativa" em algo que um modelo consegue usar. Siga as etapas com comentários fictícios de pacientes, mude as escolhas e veja o efeito até a última etapa.</p>
+    <div class="pipe" id="pipe">
+      <button data-go="s1"><b>Texto bruto</b><span>o comentário</span></button><span class="ar">→</span>
+      <button data-go="s1"><b>Limpeza e tokens</b><span>palavras separadas</span></button><span class="ar">→</span>
+      <button data-go="s1"><b>Stopwords</b><span>tirar o que pesa pouco</span></button><span class="ar">→</span>
+      <button data-go="s1"><b>Stem ou lema</b><span>reduzir variações</span></button><span class="ar">→</span>
+      <button data-go="s2"><b>Bag of words</b><span>texto vira vetor</span></button><span class="ar">→</span>
+      <button data-go="s3"><b>Treino</b><span>o modelo aprende pesos</span></button><span class="ar">→</span>
+      <button data-go="s4"><b>Sentimento</b><span>positivo ou negativo</span></button>
+    </div>
+  </header>
+
+  <section class="block" id="s1">
+    <h2><span class="n">1</span>Pré-processamento: limpar, separar, reduzir</h2>
+    <p class="sub">Escreva ou edite o comentário e ligue ou desligue cada etapa. As escolhas feitas aqui valem também para as seções seguintes: o bag of words, o treino e o analisador de sentimento usam o mesmo pré-processamento.</p>
+    <div class="panel">
+      <textarea id="labText" rows="2" aria-label="Texto para pré-processar"></textarea>
+      <div class="examples" id="labEx"></div>
+      <div class="opts">
+        <label class="chk"><input type="checkbox" id="oLower" checked><span>Minúsculas<small>"Ótimo" e "ótimo" viram a mesma palavra</small></span></label>
+        <label class="chk"><input type="checkbox" id="oAcc"><span>Remover acentos<small>"atenção" vira "atencao"</small></span></label>
+        <label class="chk"><input type="checkbox" id="oPunct" checked><span>Remover pontuação<small>vírgulas, pontos, exclamações</small></span></label>
+        <label class="chk"><input type="checkbox" id="oStop" checked><span>Remover stopwords<small>palavras muito frequentes: o, de, que, foi…</small></span></label>
+        <label class="chk"><input type="checkbox" id="oNeg" checked><span>Manter negações<small>tirar "não" e "sem" da lista de stopwords</small></span></label>
+        <div class="group"><div class="lbl" style="margin-bottom:.25rem">Reduzir as palavras</div>
+          <div class="seg" id="normSeg"><button data-v="none">Não reduzir</button><button data-v="stem">Stemização</button><button data-v="lemma">Lematização</button></div></div>
+      </div>
+      <div class="group" style="margin-top:1rem"><div class="lbl" style="margin-bottom:.25rem">Tokenização (só nesta demonstração)</div>
+        <div class="seg" id="tokSeg"><button data-v="space">Por espaço</button><button data-v="word">Palavras e pontuação</button><button data-v="sub">Subpalavras</button></div></div>
+    </div>
+    <div class="panel" style="margin-top:1.1rem" id="stages"></div>
+    <div class="grid2" style="margin-top:1.1rem">
+      <div class="panel">
+        <h3>Stemização × lematização, palavra por palavra</h3>
+        <div class="tbl-wrap"><table class="t" id="cmpTbl"></table></div>
+        <p class="hint">Passe o cursor sobre um radical para ver as regras aplicadas.</p>
+      </div>
+      <div class="panel">
+        <h3>Qual a diferença?</h3>
+        <p><b>Stemização</b> corta sufixos por regras, sem consultar dicionário. É rápida e agressiva: "atendimento", "atendido" e "atender" viram "atend", que não é uma palavra de verdade. Aqui usamos uma versão simplificada do RSLP, o stemmer para português disponível no NLTK.</p>
+        <p><b>Lematização</b> procura a forma de dicionário: "estavam" vira "estar", "cansativa" vira "cansativo". O resultado é legível, mas exige um léxico e, idealmente, saber a classe gramatical. "foi" pode ser do verbo ser ou do verbo ir, e só o contexto decide. Na prática, usam-se ferramentas como o spaCy.</p>
+        <p class="note" id="tokNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="s2">
+    <h2><span class="n">2</span>Bag of words: o texto vira uma tabela de contagens</h2>
+    <p class="sub">Cada palavra do vocabulário vira uma coluna, e cada documento, uma linha que conta quantas vezes cada palavra aparece. A ordem se perde: fica só o "saco" de palavras. O TF-IDF reduz o peso das palavras que aparecem em quase todos os documentos, e os bigramas recuperam um pouco da ordem, juntando pares vizinhos.</p>
+    <div class="panel">
+      <div style="display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center">
+        <div class="seg" id="wSeg"><button data-v="count">Contagem</button><button data-v="tfidf">TF-IDF</button></div>
+        <label class="chk" style="align-items:center"><input type="checkbox" id="oBi">Incluir bigramas (pares de palavras); vale também para o modelo</label>
+        <button class="btn" id="shuffleBtn">Embaralhar as palavras do documento 1</button>
+      </div>
+      <div class="tbl-wrap" style="margin-top:1rem"><table class="t bow" id="bowTbl"></table></div>
+      <p class="hint" id="bowHint">Clique numa célula para ver de onde vem o número.</p>
+    </div>
+    <div class="grid2" style="margin-top:1.1rem">
+      <div class="panel">
+        <h3>Semelhança entre os documentos (cosseno)</h3>
+        <div class="tbl-wrap"><table class="t" id="simTbl"></table></div>
+        <p class="hint">1 = mesmo conjunto de palavras nas mesmas proporções; 0 = nenhuma palavra em comum.</p>
+      </div>
+      <div class="panel">
+        <h3>O que a tabela mostra</h3>
+        <p class="note" id="bowNote" style="margin-top:0"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="s3">
+    <h2><span class="n">3</span>Treinamento: o modelo aprende um peso para cada palavra</h2>
+    <p class="sub">Temos 50 comentários rotulados: 40 para treinar e 10 guardados para teste, que o modelo nunca vê durante o treino. O modelo é uma regressão logística sobre o bag of words (presença ou ausência de cada termo). Cada termo ganha um peso: positivo puxa para "elogio", negativo para "reclamação". A cada época, o gradiente ajusta todos os pesos um pouco.</p>
+    <div class="grid2">
+      <div class="panel">
+        <div class="btns"><button class="btn" id="tr1">Treinar 1 época</button><button class="btn" id="tr10">+10 épocas</button><button class="btn primary" id="tr100">+100 épocas</button><button class="btn" id="trReset">Reiniciar</button></div>
+        <canvas id="lossCv" class="cv r53" style="margin-top:.9rem" aria-label="Perda no treino e no teste ao longo das épocas"></canvas>
+        <div class="legend"><span><i class="dot acc"></i>perda no treino</span><span><i class="dot c1"></i>perda no teste</span></div>
+        <div class="readout" style="margin-top:.8rem;grid-template-columns:repeat(4,minmax(0,1fr))" id="trStats"></div>
+      </div>
+      <div class="panel">
+        <h3>Os pesos aprendidos</h3>
+        <div class="wbars" id="wbars"></div>
+        <p class="hint" id="wHint"></p>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:1.1rem">
+      <div class="panel">
+        <h3>Os 10 comentários de teste</h3>
+        <div class="tbl-wrap"><table class="t" id="testTbl"></table></div>
+      </div>
+      <div class="panel">
+        <h3>Ensine o modelo</h3>
+        <p class="hint" style="margin-top:0">Escreva um comentário, diga se é elogio ou reclamação e acrescente ao treino. O modelo é treinado de novo, com o mesmo número de épocas.</p>
+        <input type="text" id="newTxt" placeholder="Ex.: a triagem foi ágil e respeitosa" aria-label="Novo comentário de treino">
+        <div class="btns" style="margin-top:.6rem"><button class="btn" id="addPos">Adicionar como elogio</button><button class="btn" id="addNeg">Adicionar como reclamação</button></div>
+        <details style="margin-top:1rem"><summary>Ver os comentários de treino</summary><ul class="ds" id="dsList"></ul></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="s4">
+    <h2><span class="n">4</span>Aplicação: análise de sentimento</h2>
+    <p class="sub">O modelo treinado na seção 3 lê um comentário novo: pré-processa, monta o vetor, soma o peso de cada termo presente e passa a soma pela curva sigmoide. Palavras que ele nunca viu no treino não contribuem com nada.</p>
+    <div class="grid2">
+      <div class="panel">
+        <textarea id="anaText" rows="3" aria-label="Comentário para analisar"></textarea>
+        <div class="examples" id="anaEx"></div>
+        <div style="margin-top:1.2rem"><span class="big" id="anaLabel">–</span></div>
+        <div class="gauge" aria-hidden="true"><i id="gaugeI" style="left:50%"></i><span style="left:0">reclamação</span><span style="left:50%;transform:translateX(-50%)">50%</span><span style="right:0">elogio</span></div>
+        <div class="chips" id="anaChips"></div>
+        <p class="hint">Azul puxa para elogio; ameixa, para reclamação; cinza, termo que o modelo não conhece.</p>
+        <div id="anaTrain"></div>
+      </div>
+      <div class="panel">
+        <h3>Como a decisão foi somada</h3>
+        <div id="anaSum"></div>
+        <p class="note" id="anaNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Para experimentar em aula</h2>
+    <ol class="try">
+      <li>Na seção 1, compare stemização e lematização em "estavam", "foi" e "atendimento". Qual resultado é mais legível? Qual agrupa mais variações?</li>
+      <li>Desmarque "Manter negações". Veja "não" sumir e, na seção 4, analise "Não recomendo". O que acontece com a previsão?</li>
+      <li>Na seção 2, embaralhe o documento 1. A linha da tabela não muda: para o bag of words, a ordem não existe.</li>
+      <li>Ligue os bigramas e procure, na tabela, o par que junta "não" e "ótimo". É um jeito simples de recuperar parte do contexto.</li>
+      <li>Na seção 3, treine 1 época por vez e acompanhe os pesos. Depois, +100. A perda no teste cai tanto quanto a do treino?</li>
+      <li>Treine 100 épocas com e sem stemização e compare a perda no teste (a acurácia, com só 10 frases, varia pouco). Com poucos dados, agrupar variações ajuda: "atendido" e "atendimento" passam a compartilhar o mesmo peso.</li>
+      <li>Na seção 4, teste o sarcasmo "Ótimo, esperei cinco horas na fila". Por que um bag of words erra aqui? Que tipo de modelo poderia acertar?</li>
+    </ol>
+  </section>
+
+  <footer>Material didático. Os 50 comentários são fictícios. O stemmer é uma versão simplificada do RSLP, e o lematizador usa um pequeno dicionário com regras de plural e gênero; ferramentas reais, como NLTK e spaCy, são mais completas. O classificador é uma regressão logística com regularização L2 leve, treinada por gradiente descendente em lote.</footer>
+</div>
+<script>
+(function(){"use strict";
+/* ---------- núcleo de PLN (sem DOM) ---------- */
+const stripAcc = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const STOP = new Set(("a à ao aos as às o os um uma uns umas de do da dos das dum duma em no na nos nas num numa por pelo pela pelos pelas para pra com sem e ou mas que se como quando porque eu me mim meu minha meus minhas tu te ele ela eles elas nós lhe lhes seu sua seus suas este esta estes estas isso isto esse essa esses essas aquele aquela foi fui foram era eram é são ser sou estava estavam estou está estão estar ter tem têm tinha há muito muita muitos mais já também só não nem até sobre entre depois antes cada todo toda todos todas tudo").split(" "));
+const NEG = new Set(["não","sem","nem","nunca"]);
+const EXC_S = new Set(["aliás","pires","lápis","cais","mais","mas","menos","férias","fezes","pêsames","gás","atrás","através","país","após","ambas","ambos","depois","ônibus","vírus","simples","lúpus","tênis"]);
+const PLURAL=[["ns","m",1],["ões","ão",1],["ães","ão",1],["ais","al",1],["éis","el",1],["eis","el",1],["óis","ol",1],["les","l",1],["res","r",2],["s","",2]];
+const FEM=[["ona","ão",3],["ora","or",3],["inha","inho",3],["esa","ês",3],["osa","oso",3],["ica","ico",3],["ada","ado",2],["ida","ido",3],["ima","imo",3],["iva","ivo",3],["eira","eiro",3],["na","no",4]];
+const AUG=[["zinho",2],["zinha",2],["inho",3],["inha",3],["íssimo",3],["íssima",3],["zão",2]];
+const NOUN=[["amento",3],["imento",3],["mento",4],["ação",3],["ção",3],["idade",5],["ismo",3],["ista",4],["ável",2],["ível",3],["ância",3],["ência",3],["ante",2],["eiro",3],["ivo",3],["oso",3],["eza",3],["ico",4]].sort((a,b)=>b[0].length-a[0].length);
+const VERB=["aríamos","eríamos","iríamos","ássemos","êssemos","íssemos","aremos","eremos","iremos","ávamos","íamos","ariam","eriam","iriam","assem","essem","issem","aram","eram","iram","avam","ando","endo","indo","aria","eria","iria","asse","esse","isse","amos","emos","imos","ado","ido","ada","ida","ava","ar","er","ir","ou","eu","iu","am","em","ei","ia"].sort((a,b)=>b.length-a.length);
+function trySuf(w,list,step,steps){
+  for(const [suf,rep,min] of list){ if(w.endsWith(suf) && w.length-suf.length>=min){ const n=w.slice(0,w.length-suf.length)+(rep||""); steps.push(`${step}: ${w} → ${n}`); return n; } }
+  return null;
+}
+function stem(word){
+  let w=word, steps=[];
+  if(w.length<3) return {s:stripAcc(w),steps:["palavra curta: sem mudança"]};
+  if(w.endsWith("s") && !EXC_S.has(w)){ const r=trySuf(w,PLURAL,"plural",steps); if(r) w=r; }
+  if(w.endsWith("a")){ const r=trySuf(w,FEM,"feminino",steps); if(r) w=r; }
+  let done=false, adv=false;
+  if(w.endsWith("mente") && w.length-5>=4){ const n=w.slice(0,-5); steps.push(`advérbio: ${w} → ${n}`); w=n; adv=true; }
+  if(!adv){ const r=trySuf(w,AUG.map(([s,m])=>[s,"",m]),"diminutivo/aumentativo",steps); if(r) w=r; }
+  if(adv) done=true;
+  if(!done){ const r=trySuf(w,NOUN.map(([s,m])=>[s,"",m]),"sufixo de substantivo",steps); if(r){ w=r; done=true; } }
+  if(!done){ const vl=VERB.filter(sf=>!(/^[ai]d[oa]$/.test(sf) && /[áéíóúâêô]/.test(w.slice(0,-3)))); const r=trySuf(w,vl.map(s=>[s,"",2]),"sufixo verbal",steps); if(r){ w=r; done=true; } }
+  if((!done||adv) && /[aeo]$/.test(w) && w.length-1>=3){ const n=w.slice(0,-1); steps.push(`vogal final: ${w} → ${n}`); w=n; }
+  const f=stripAcc(w); if(f!==w) steps.push(`acentos: ${w} → ${f}`);
+  if(!steps.length) steps.push("nenhuma regra se aplica");
+  return {s:f,steps};
+}
+const LEX={};
+[["estar","estava estavam estou está estão estive esteve estamos"],["ser","fui foram era eram é são sou seja sido"],["ter","tem têm tinha tive teve tenho tiveram"],
+ ["esperar","esperei esperou esperamos esperaram esperando"],["atender","atendeu atendido atendida atendidos atendidas atenderam atende atendendo"],["explicar","explicou explicaram explicado explica"],
+ ["ajudar","ajudou ajudaram"],["piorar","piorou"],["melhorar","melhorou"],["recomendar","recomendo recomendaria recomendou"],["sentir","senti sinto sentia sentiu"],["sair","saí saiu"],
+ ["voltar","volto voltaria voltarei voltou"],["resolver","resolveu"],["funcionar","funcionou"],["receber","recebi recebido recebida recebeu"],["adorar","adorei adorou"],["gostar","gostei gostou"],
+ ["cobrar","cobraram cobrou"],["atrasar","atrasou"],["saber","sabia sei"],["continuar","continuo continua"],["entregar","entregue entregou"],["demorar","demorou demoraram"],["examinar","examinou examinaram"],
+ ["dar","deu"],["fazer","fez fiz"],["ir","vou vai"],["bom","boa bons boas"],["ótimo","ótima ótimos ótimas"],["péssimo","péssima péssimos péssimas"],["melhor","melhores"],["satisfeito","satisfeita satisfeitos satisfeitas"],
+ ["longo","longa longos longas"],["rápido","rápida rápidos rápidas"],["lento","lenta lentos lentas"],["cansativo","cansativa cansativos cansativas"],["demorado","demorada"],["grosseiro","grosseira grosseiros grosseiras"],
+ ["atencioso","atenciosa atenciosos atenciosas"],["educado","educada educados educadas"],["gentil","gentis"],["atender","atenderam"],["explicar","explicaram"]
+].forEach(([l,fs])=>fs.split(" ").forEach(f=>LEX[f]=l));
+function lemma(word){
+  if(word==="foi") return {l:"ser",steps:["dicionário: foi → ser (ou ir: depende do contexto)"]};
+  if(LEX[word]) return {l:LEX[word],steps:[`dicionário: ${word} → ${LEX[word]}`]};
+  let w=word, steps=[];
+  if(w.endsWith("s") && !EXC_S.has(w) && w.length>3){ const r=trySuf(w,PLURAL,"plural",steps); if(r) w=r; }
+  if(w.endsWith("a")){ const r=trySuf(w,[["osa","oso",3],["iva","ivo",3],["ada","ado",3],["ida","ido",3]],"gênero",steps); if(r) w=r; }
+  if(LEX[w]){ steps.push(`dicionário: ${w} → ${LEX[w]}`); w=LEX[w]; }
+  if(!steps.length) steps.push("já está na forma de dicionário");
+  return {l:w,steps};
+}
+const SUBV=("o a os as e de do da com foi mas muito não bem mal me eu um uma no na em que se para pacient atend satisf esper cans long médic enferm hosp consult trat recep equip exam remédi cuid rápid excel ótim péssim grosseir demor organiz explic fila dor sent"
+ +" imento amento mento eito eitos eita ativa ativo iva ivo es s a o e os as ar er ou eu ava avam aram eram ado ada ido ida ção ções mente inha inho al eira eiro ente ante ável ível ou ei ia am em um ra").split(" ").sort((a,b)=>b.length-a.length);
+function subwords(word){
+  const w=word.toLowerCase(), out=[]; let i=0;
+  while(i<w.length){ let m=null; for(const p of SUBV){ if(w.startsWith(p,i)){ m=p; break; } } if(!m) m=w[i]; out.push((i?"##":"")+m); i+=m.length; }
+  return out;
+}
+const WORD_RE=/[\p{L}\p{N}]+|[^\s\p{L}\p{N}]/gu;
+const isWord=t=>/[\p{L}\p{N}]/u.test(t);
+/* pré-processa: devolve tokens com todas as informações */
+function prep(text,cfg){
+  const raw=text.match(WORD_RE)||[];
+  return raw.map(t0=>{
+    const b=t0.toLowerCase(), word=isWord(t0);
+    let disp=cfg.lower?b:t0; if(cfg.acc) disp=stripAcc(disp);
+    const stop=word && STOP.has(b) && !(cfg.neg && NEG.has(b));
+    const st=stem(b), le=lemma(b);
+    let term=cfg.norm==="stem"?st.s:cfg.norm==="lemma"?le.l:disp;
+    if(cfg.norm!=="none"){ if(!cfg.lower && cfg.norm==="none") term=disp; if(cfg.acc) term=stripAcc(term); }
+    return {t0,b,disp,word,stop,st,le,term};
+  });
+}
+function terms(text,cfg){
+  const toks=prep(text,cfg).filter(t=>(t.word||!cfg.punct)&&!(cfg.stop&&t.stop));
+  const uni=toks.map(t=>t.term);
+  const out=uni.slice(); if(cfg.bi) for(let i=0;i+1<uni.length;i++) out.push(uni[i]+"_"+uni[i+1]);
+  return {uni,all:out,toks};
+}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const fmt=(v,d=2)=>Number.isFinite(v)?v.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d}):"–";
+const pct=(v,d=0)=>fmt(100*v,d)+"%";
+const sig=z=>1/(1+Math.exp(-z));
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function cssv(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function hexRGB(h){ h=h.replace("#",""); if(h.length===3) h=h.split("").map(c=>c+c).join(""); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+function rgba(hex,a){ const [r,g,b]=hexRGB(hex); return `rgba(${r},${g},${b},${a})`; }
+
+const CFG={lower:true,acc:false,punct:true,stop:true,neg:true,norm:"stem",bi:false,tok:"word"};
+
+/* ---------- navegação do pipeline ---------- */
+$("pipe").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; $(b.dataset.go).scrollIntoView({behavior:reduce?"auto":"smooth"}); });
+
+/* ---------- 1 · laboratório ---------- */
+const LAB_EX=["Os pacientes estavam muito satisfeitos com o atendimento, mas a espera foi longa e cansativa!","Não fui bem atendido e a enfermeira não explicou nada.","As médicas atenderam rapidamente e explicaram os exames."];
+$("labText").value=LAB_EX[0];
+$("labEx").innerHTML=LAB_EX.map((t,i)=>`<button data-i="${i}">${esc(t)}</button>`).join("");
+$("labEx").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; $("labText").value=LAB_EX[+b.dataset.i]; renderLab(); });
+function stageRow(name,sub,content){ return `<div class="stage"><div class="nm"><b>${name}</b><span>${sub}</span></div><div>${content}</div></div>`; }
+function renderLab(){
+  const text=$("labText").value, c=CFG;
+  let s="";
+  s+=stageRow("Texto bruto","como chegou",`<div class="raw">${esc(text)||"&nbsp;"}</div>`);
+  let t1=c.lower?text.toLowerCase():text; if(c.acc) t1=stripAcc(t1);
+  s+=stageRow("Normalizar caracteres",[c.lower?"minúsculas":"",c.acc?"sem acentos":""].filter(Boolean).join(" e ")||"nada alterado",`<div class="raw">${esc(t1)||"&nbsp;"}</div>`);
+  const toks=prep(text,c);
+  if(c.tok==="space"){
+    const sp=t1.split(/\s+/).filter(Boolean);
+    const glued=sp.filter(w=>/[^\p{L}\p{N}]/u.test(w));
+    s+=stageRow("Tokenização por espaço",`${sp.length} tokens`,`<div class="chips">${sp.map(w=>`<span class="chip${/[^\p{L}\p{N}]/u.test(w)?" ch":""}">${esc(w)}</span>`).join("")}</div>${glued.length?`<p class="hint">Em destaque, a pontuação ficou grudada: "${esc(glued[0])}" seria uma palavra diferente de "${esc(glued[0].replace(/[^\p{L}\p{N}]/gu,""))}". Por isso, nas etapas seguintes, separamos palavras e pontuação.</p>`:""}`);
+  } else if(c.tok==="sub"){
+    const pieces=toks.filter(t=>t.word).flatMap(t=>subwords(t.disp));
+    s+=stageRow("Tokenização em subpalavras",`${pieces.length} tokens`,`<div class="chips">${pieces.map(p=>`<span class="chip${p.startsWith("##")?" sub":""}">${esc(p)}</span>`).join("")}</div><p class="hint">Palavras raras são quebradas em pedaços frequentes (## marca a continuação de uma palavra). É o que fazem os modelos de linguagem como BERT e GPT, que assim nunca encontram uma palavra totalmente desconhecida. As etapas seguintes voltam a usar palavras inteiras.</p>`);
+  }
+  if(c.tok!=="space") s+=stageRow("Tokenização em palavras",`${toks.length} tokens`,`<div class="chips">${toks.map(t=>`<span class="chip">${esc(t.disp)}</span>`).join("")}</div>`);
+  const afterP=toks.filter(t=>t.word||!c.punct);
+  s+=stageRow("Remover pontuação",c.punct?`${toks.length-afterP.length} removidos`:"desligado",`<div class="chips">${toks.map(t=>`<span class="chip${!t.word&&c.punct?" off":""}">${esc(t.disp)}</span>`).join("")}</div>`);
+  const afterS=afterP.filter(t=>!(c.stop&&t.stop));
+  const negKept=afterP.filter(t=>c.stop&&c.neg&&NEG.has(t.b));
+  s+=stageRow("Remover stopwords",c.stop?`${afterP.length-afterS.length} removidas`:"desligado",`<div class="chips">${afterP.map(t=>`<span class="chip${c.stop&&t.stop?" off":""}${c.stop&&c.neg&&NEG.has(t.b)?" ch":""}">${esc(t.disp)}</span>`).join("")}</div>${negKept.length?`<p class="hint">"${esc(negKept[0].b)}" está na lista padrão de stopwords, mas foi mantida: numa análise de sentimento, a negação inverte o sentido.</p>`:""}`);
+  const nm={none:"sem redução",stem:"stemização",lemma:"lematização"}[c.norm];
+  s+=stageRow("Reduzir",nm,`<div class="chips">${afterS.map(t=>{ const ch=c.norm!=="none"&&t.term!==t.disp; const tip=c.norm==="stem"?t.st.steps.join("\n"):c.norm==="lemma"?t.le.steps.join("\n"):""; return `<span class="chip${ch?" ch":""}" title="${esc(tip)}">${esc(t.term)}${ch?` <small>← ${esc(t.disp)}</small>`:""}</span>`; }).join("")}</div>`);
+  const T=terms(text,c), vocab=new Set(T.all);
+  s+=stageRow("Termos finais",`${T.all.length} termos, ${vocab.size} distintos`,`<div class="chips">${T.all.map(t=>`<span class="chip${t.includes("_")?" sub":""}">${esc(t)}</span>`).join("")}</div><p class="hint">É esta lista que vai para o bag of words.${c.bi?" Os bigramas (com _) juntam palavras vizinhas.":""}</p>`);
+  $("stages").innerHTML=s;
+  // tabela comparativa
+  const ws=toks.filter(t=>t.word);
+  $("cmpTbl").innerHTML=`<tr><th>palavra</th><th>stem (RSLP simplificado)</th><th>lema</th></tr>`+ws.map(t=>`<tr${c.stop&&t.stop?' style="opacity:.45"':""}><td>${esc(t.b)}${c.stop&&t.stop?' <small class="hint">(stopword)</small>':""}</td><td title="${esc(t.st.steps.join("\n"))}"><b>${esc(t.st.s)}</b></td><td title="${esc(t.le.steps.join("\n"))}">${esc(t.le.l)}${t.b==="foi"?' <small class="hint">(ou ir)</small>':""}</td></tr>`).join("");
+  const nWords=ws.filter(t=>!(c.stop&&t.stop)).length;
+  $("tokNote").textContent = c.stop
+    ? `Das ${ws.length} palavras, ${ws.length-nWords} são stopwords. Removê-las encurta o texto e destaca as palavras com conteúdo, mas tenha cuidado: "não", "muito" e "sem" estão na lista padrão e podem importar para o sentimento.`
+    : `Sem remover stopwords, palavras como "o", "de" e "foi" entram no vocabulário. Elas aparecem em quase todo texto e carregam pouca informação sobre o assunto.`;
+}
+$("labText").addEventListener("input",()=>{ renderLab(); });
+function bindCk(id,key){ $(id).addEventListener("change",e=>{ CFG[key]=e.target.checked; onCfg(); }); }
+bindCk("oLower","lower"); bindCk("oAcc","acc"); bindCk("oPunct","punct"); bindCk("oStop","stop"); bindCk("oNeg","neg"); bindCk("oBi","bi");
+function segBind(id,key,after){ $(id).addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; CFG[key]=b.dataset.v; syncSegs(); after(); }); }
+segBind("normSeg","norm",()=>onCfg());
+segBind("tokSeg","tok",()=>renderLab());
+let WMODE="count"; $("wSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; WMODE=b.dataset.v; syncSegs(); renderBow(); });
+function syncSegs(){
+  [["normSeg","norm"],["tokSeg","tok"]].forEach(([id,k])=>document.querySelectorAll(`#${id} button`).forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===CFG[k])));
+  document.querySelectorAll("#wSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===WMODE));
+}
+
+/* ---------- 2 · bag of words ---------- */
+const DOCS=["O atendimento foi ótimo e rápido.","O atendimento foi lento, não foi ótimo.","Não gostei, a espera foi lenta.","Gostei muito do atendimento rápido."];
+let shuffled=null, hotCell=null;
+function docText(i){ return i===0&&shuffled?shuffled:DOCS[i]; }
+$("shuffleBtn").addEventListener("click",()=>{
+  if(shuffled){ shuffled=null; $("shuffleBtn").textContent="Embaralhar as palavras do documento 1"; }
+  else { const w=DOCS[0].replace(/[.,]/g,"").split(" "); for(let i=w.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [w[i],w[j]]=[w[j],w[i]]; } if(w.join(" ")===DOCS[0].replace(/[.,]/g,"")) w.reverse(); shuffled=w.join(" ")+"."; $("shuffleBtn").textContent="Restaurar a ordem"; }
+  renderBow();
+});
+function bowData(){
+  const docs=DOCS.map((_,i)=>terms(docText(i),CFG).all), vocab=[];
+  docs.forEach(d=>d.forEach(t=>{ if(!vocab.includes(t)) vocab.push(t); }));
+  const cnt=docs.map(d=>vocab.map(v=>d.filter(x=>x===v).length));
+  const N=docs.length, df=vocab.map((_,j)=>cnt.filter(r=>r[j]>0).length), idf=df.map(d=>Math.log((1+N)/(1+d))+1);
+  const tfidf=cnt.map(r=>r.map((c,j)=>c*idf[j]));
+  return {docs,vocab,cnt,df,idf,tfidf};
+}
+function renderBow(){
+  const B=bowData(), M=WMODE==="count"?B.cnt:B.tfidf, mx=Math.max(...M.flat(),1), acc=cssv("--acc"), ink=cssv("--ink");
+  $("bowTbl").innerHTML=`<tr><th>documento</th>${B.vocab.map(v=>`<th class="v">${esc(v)}</th>`).join("")}</tr>`+
+    B.cnt.map((r,i)=>`<tr><td class="d" title="${esc(docText(i))}">D${i+1} <small class="hint" style="font-weight:400">${esc(docText(i))}</small></td>${r.map((c,j)=>{ const v=M[i][j]; return `<td class="c${hotCell&&hotCell[0]===i&&hotCell[1]===j?" hot":""}" data-i="${i}" data-j="${j}" style="background:${v?rgba(acc,.15+.6*v/mx):"transparent"};color:${v?ink:cssv("--muted")}">${v?(WMODE==="count"?c:fmt(v,2)):"0"}</td>`; }).join("")}</tr>`).join("");
+  if(hotCell){ const [i,j]=hotCell; if(j<B.vocab.length){ const v=B.vocab[j];
+    $("bowHint").textContent = WMODE==="count"
+      ? `D${i+1}, termo "${v}": aparece ${B.cnt[i][j]} vez(es) neste documento.`
+      : `D${i+1}, termo "${v}": contagem ${B.cnt[i][j]} × idf ${fmt(B.idf[j],2)} = ${fmt(B.tfidf[i][j],2)}. O idf vale ln((1 + 4) / (1 + ${B.df[j]})) + 1, porque o termo aparece em ${B.df[j]} dos 4 documentos.`; } }
+  else $("bowHint").textContent="Clique numa célula para ver de onde vem o número.";
+  // semelhança
+  const norm=r=>Math.sqrt(r.reduce((s,v)=>s+v*v,0)), cos=(a,b)=>{ const d=a.reduce((s,v,k)=>s+v*b[k],0); return d/(norm(a)*norm(b)||1); };
+  $("simTbl").innerHTML=`<tr><th></th>${M.map((_,i)=>`<th class="n">D${i+1}</th>`).join("")}</tr>`+M.map((a,i)=>`<tr><td><b>D${i+1}</b></td>${M.map((b,j)=>{ const v=cos(a,b); return `<td class="n" style="background:${i===j?"transparent":rgba(acc,.1+.55*v)}">${fmt(v,2)}</td>`; }).join("")}</tr>`).join("");
+  // nota
+  const hasOt=B.vocab.findIndex(v=>/^ótim|^otim/.test(v)), bi=B.vocab.find(v=>v.includes("_")&&/^n[aã]o_/.test(v)&&/tim/.test(v));
+  const notes=[];
+  if(shuffled) notes.push("O documento 1 foi embaralhado, mas a linha dele na tabela é idêntica: o bag of words guarda quais palavras aparecem e quantas vezes, não a ordem.");
+  if(hasOt>=0) notes.push(`"${B.vocab[hasOt]}" aparece em D1, um elogio, e em D2, uma reclamação. Sem contexto, o termo sozinho é enganoso.`);
+  if(CFG.bi && bi) notes.push(`Com bigramas, surge "${bi}", que só existe em D2 e captura a negação.`);
+  else if(CFG.bi && !CFG.neg && CFG.stop) notes.push(`Os bigramas estão ligados, mas "não" foi removido como stopword; o par que capturaria a negação nunca se forma.`);
+  else if(!CFG.bi) notes.push("Ligue os bigramas para recuperar um pouco da ordem entre palavras vizinhas.");
+  if(WMODE==="tfidf") notes.push("No TF-IDF, termos presentes em muitos documentos, como o que designa o atendimento, perdem peso; termos raros ganham.");
+  $("bowNote").innerHTML=notes.map(esc).join("<br><br>");
+}
+$("bowTbl").addEventListener("click",e=>{ const c=e.target.closest("td.c"); if(!c) return; hotCell=[+c.dataset.i,+c.dataset.j]; renderBow(); });
+
+/* ---------- 3 · treino ---------- */
+const POS=["Atendimento excelente, a enfermeira foi muito atenciosa.","Fui muito bem atendido e o médico explicou tudo com calma.","Equipe gentil e cuidadosa, recomendo o hospital.","O tratamento funcionou e me sinto muito melhor.","Ótima experiência, consulta rápida e organizada.","A médica foi atenciosa e resolveu meu problema.","Ambiente limpo e equipe educada.","Recebi um cuidado excelente durante a internação.","Adorei o atendimento, todos foram simpáticos.","O remédio ajudou bastante, estou satisfeito.","Profissionais competentes e muito humanos.","Fui recebido com carinho e respeito.","Exame rápido e resultado entregue no prazo.","Estou satisfeita com o acompanhamento da equipe.","O enfermeiro foi paciente e explicou cada etapa.","Excelente hospital, voltaria com certeza.","A cirurgia foi um sucesso e a recuperação tranquila.","Atendimento humano, organizado e eficiente.","Me senti seguro e bem cuidado.","Médico simpático e consulta muito esclarecedora."];
+const NEGS=["Esperei horas e ninguém me atendeu.","Atendimento péssimo, a recepção foi grosseira.","O médico foi apressado e não explicou nada.","Hospital sujo e desorganizado.","A fila era enorme e a espera foi cansativa.","O remédio não ajudou e a dor piorou.","Fui mal atendido e saí sem resposta.","Equipe desatenta, ninguém sabia informar.","Consulta demorada e muito confusa.","Péssima experiência, não recomendo.","O exame atrasou e o resultado veio errado.","A enfermeira foi grosseira comigo.","Ambiente barulhento e desconfortável.","Esperei muito e o atendimento foi ruim.","Me senti desrespeitado pela equipe.","Recepção desorganizada e demora absurda.","O tratamento não funcionou e continuo com dor.","Profissionais frios e sem paciência.","Nunca mais volto, atendimento horrível.","Cobraram caro por uma consulta ruim."];
+const TEST=[["Equipe atenciosa e atendimento excelente.",1],["O médico explicou com calma e fui bem cuidado.",1],["Consulta organizada, recomendo a equipe.",1],["Estou satisfeito, o remédio funcionou.",1],["Profissionais simpáticos e educados.",1],
+ ["Esperei muito tempo e ninguém explicou nada.",0],["Recepção grosseira e atendimento péssimo.",0],["Atendimento rápido, mas a recepção foi grosseira.",0],["Médico apressado, não recomendo.",0],["Continuo com dor, o remédio não ajudou.",0]].map(([t,y])=>({t,y}));
+const TRAIN0=POS.map(t=>({t,y:1})).concat(NEGS.map(t=>({t,y:0})));
+const USER=[];
+const LR=1.0, L2=0.01;
+let MD=null;
+function buildModel(){
+  const train=TRAIN0.concat(USER), X=train.map(d=>[...new Set(terms(d.t,CFG).all)]), vocab=[...new Set(X.flat())].sort();
+  const idx=new Map(vocab.map((v,i)=>[v,i]));
+  const Xi=X.map(r=>r.map(v=>idx.get(v))), Xt=TEST.map(d=>[...new Set(terms(d.t,CFG).all)].filter(v=>idx.has(v)).map(v=>idx.get(v)));
+  MD={train,vocab,idx,Xi,Xt,w:new Float64Array(vocab.length),b:0,ep:0,hist:[]};
+  MD.hist.push(evalModel());
+}
+function logits(rows){ return rows.map(r=>r.reduce((s,j)=>s+MD.w[j],MD.b)); }
+function lossAcc(rows,ys){ const z=logits(rows); let L=0,a=0; z.forEach((v,i)=>{ const p=Math.min(1-1e-9,Math.max(1e-9,sig(v))); L+=ys[i]?-Math.log(p):-Math.log(1-p); a+=((p>=.5)===!!ys[i])?1:0; }); return {L:L/z.length,a:a/z.length}; }
+function evalModel(){ const tr=lossAcc(MD.Xi,MD.train.map(d=>d.y)), te=lossAcc(MD.Xt,TEST.map(d=>d.y)); return {tr:tr.L,te:te.L,atr:tr.a,ate:te.a}; }
+function epoch(){
+  const n=MD.Xi.length, g=new Float64Array(MD.w.length); let gb=0;
+  MD.Xi.forEach((r,i)=>{ const p=sig(r.reduce((s,j)=>s+MD.w[j],MD.b)), e=p-MD.train[i].y; r.forEach(j=>g[j]+=e); gb+=e; });
+  for(let j=0;j<MD.w.length;j++) MD.w[j]-=LR*(g[j]/n+L2*MD.w[j]);
+  MD.b-=LR*gb/n; MD.ep++; MD.hist.push(evalModel());
+}
+function train(k){ for(let i=0;i<k;i++) epoch(); renderTrain(); renderAna(); }
+let trTimer=0;
+function trainAnim(k){ clearInterval(trTimer); if(reduce||k<=10){ train(k); return; } let left=k; trTimer=setInterval(()=>{ const s=Math.min(5,left); for(let i=0;i<s;i++) epoch(); left-=s; renderTrain(); renderAna(); if(left<=0) clearInterval(trTimer); },30); }
+$("tr1").addEventListener("click",()=>train(1));
+$("tr10").addEventListener("click",()=>trainAnim(10));
+$("tr100").addEventListener("click",()=>trainAnim(100));
+$("trReset").addEventListener("click",()=>{ clearInterval(trTimer); buildModel(); renderTrain(); renderAna(); });
+function addEx(y){ const t=$("newTxt").value.trim(); if(!t) { $("newTxt").focus(); return; } USER.push({t,y}); $("newTxt").value=""; const ep=MD.ep; clearInterval(trTimer); buildModel(); for(let i=0;i<ep;i++) epoch(); renderTrain(); renderAna(); renderDs(true); }
+$("addPos").addEventListener("click",()=>addEx(1)); $("addNeg").addEventListener("click",()=>addEx(0));
+$("newTxt").addEventListener("keydown",e=>{ if(e.key==="Enter") addEx(1); });
+function renderDs(flash){ $("dsList").innerHTML=MD.train.map((d,i)=>`<li class="${d.y?"p":"n"}${i>=TRAIN0.length?" new"+(flash&&i===MD.train.length-1?" flash":""):""}">${esc(d.t)}</li>`).join(""); }
+function drawLoss(){
+  const cv=$("lossCv"), r=cv.getBoundingClientRect(), d=devicePixelRatio||1, w=Math.max(10,r.width), h=Math.max(10,r.height);
+  cv.width=Math.round(w*d); cv.height=Math.round(h*d); const ctx=cv.getContext("2d"); ctx.setTransform(d,0,0,d,0,0);
+  const P={L:44,R:w-12,T:12,B:h-34}; P.W=P.R-P.L; P.H=P.B-P.T;
+  const H=MD.hist, E=Math.max(50,H.length-1), top=Math.max(.75,...H.map(x=>Math.max(x.tr,x.te)))*1.05;
+  const X=e=>P.L+e/E*P.W, Y=v=>P.B-v/top*P.H, muted=cssv("--muted"), line=cssv("--line");
+  ctx.font=`12px "Public Sans",system-ui,sans-serif`; ctx.fillStyle=muted; ctx.strokeStyle=line; ctx.lineWidth=1;
+  for(let v=0;v<=top;v+=.2){ ctx.beginPath(); ctx.moveTo(P.L,Y(v)); ctx.lineTo(P.R,Y(v)); ctx.stroke(); ctx.textAlign="right"; ctx.textBaseline="middle"; ctx.fillText(fmt(v,1),P.L-6,Y(v)); }
+  const step=E<=60?10:E<=150?25:E<=400?50:100; ctx.textAlign="center"; ctx.textBaseline="top";
+  for(let e=0;e<=E;e+=step) ctx.fillText(String(e),X(e),P.B+6);
+  ctx.fillText("épocas",(P.L+P.R)/2,P.B+19);
+  [["tr","--acc"],["te","--c1"]].forEach(([k,c])=>{ ctx.strokeStyle=cssv(c); ctx.lineWidth=2.4; ctx.beginPath(); H.forEach((x,i)=>i?ctx.lineTo(X(i),Y(x[k])):ctx.moveTo(X(i),Y(x[k]))); ctx.stroke(); });
+}
+function renderTrain(){
+  const last=MD.hist[MD.hist.length-1];
+  const st=(v,l)=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  $("trStats").innerHTML=st(MD.ep,"épocas")+st(pct(last.atr),"acerto no treino")+st(pct(last.ate),"acerto no teste")+st(MD.vocab.length,"termos no vocabulário");
+  drawLoss();
+  const ws=[...MD.w].map((v,j)=>[v,MD.vocab[j]]), pos=ws.filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,8), neg=ws.filter(x=>x[0]<0).sort((a,b)=>a[0]-b[0]).slice(0,8);
+  const mx=Math.max(.01,...ws.map(x=>Math.abs(x[0])));
+  const col=(list,cls,c)=>`<div><h4 class="${cls}" style="margin:0 0 .4rem;font-size:.9rem">${cls==="pos"?"Mais puxam para elogio":"Mais puxam para reclamação"}</h4>${list.length?list.map(([v,t])=>`<div class="wb"><span title="${esc(t)}">${esc(t)}</span><div class="tr"><i style="width:${100*Math.abs(v)/mx}%;background:${c}"></i></div><b>${v>0?"+":"−"}${fmt(Math.abs(v),2)}</b></div>`).join(""):'<p class="hint">Ainda nada: treine algumas épocas.</p>'}</div>`;
+  $("wbars").innerHTML=col(pos,"pos","var(--c0)")+col(neg,"neg","var(--c1)");
+  const neg0=MD.idx.has("não")?MD.w[MD.idx.get("não")]:(MD.idx.has("nao")?MD.w[MD.idx.get("nao")]:null);
+  $("wHint").textContent = MD.ep===0 ? "Todos os pesos começam em zero: o modelo dá 50% para qualquer comentário."
+    : `Viés (intercepto): ${fmt(MD.b,2)}. ${neg0!==null?`O termo "não" tem peso ${fmt(neg0,2)}: aparece quase só em reclamações.`:`"não" não está no vocabulário, porque foi removido como stopword.`} Os pesos são pequenos por causa da regularização L2, que evita que o modelo decore as frases de treino.`;
+  const z=logits(MD.Xt);
+  $("testTbl").innerHTML=`<tr><th>comentário</th><th>real</th><th>P(elogio)</th><th></th></tr>`+TEST.map((d,i)=>{ const p=sig(z[i]), ok=(p>=.5)===!!d.y; return `<tr><td>${esc(d.t)}</td><td class="${d.y?"pos":"neg"}">${d.y?"elogio":"reclamação"}</td><td>${pct(p)}</td><td>${MD.ep?(ok?"✓":"✗"):""}</td></tr>`; }).join("");
+  renderDs(false);
+}
+
+/* ---------- 4 · análise ---------- */
+const ANA_EX=["O médico foi atencioso e o atendimento foi rápido.","Não recomendo, esperei horas para ser atendido.","Não foi ruim.","Ótimo, esperei cinco horas na fila.","A consulta foi boa, mas a recepção foi grosseira."];
+$("anaText").value=ANA_EX[0];
+$("anaEx").innerHTML=ANA_EX.map((t,i)=>`<button data-i="${i}">${esc(t)}</button>`).join("");
+$("anaEx").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; $("anaText").value=ANA_EX[+b.dataset.i]; renderAna(); });
+$("anaText").addEventListener("input",()=>renderAna());
+function renderAna(){
+  const text=$("anaText").value, T=terms(text,CFG), uniq=[...new Set(T.all)];
+  const contrib=uniq.map(t=>[t,MD.idx.has(t)?MD.w[MD.idx.get(t)]:null]);
+  const z=MD.b+contrib.reduce((s,[,v])=>s+(v||0),0), p=sig(z);
+  $("anaLabel").innerHTML = MD.ep===0 ? `<span style="color:var(--muted)">modelo não treinado</span>` : `<span class="${p>=.5?"pos":"neg"}">${p>=.5?"Elogio":"Reclamação"}</span> <span style="font-size:1.1rem;font-weight:600;color:var(--muted)">${pct(p>=.5?p:1-p)} de confiança</span>`;
+  $("gaugeI").style.left=`${100*p}%`;
+  const c0=cssv("--c0"), c1=cssv("--c1"), mx=Math.max(.3,...contrib.map(([,v])=>Math.abs(v||0)));
+  const wOf=t=>{ const k=MD.idx.get(t); return k===undefined?null:MD.w[k]; };
+  $("anaChips").innerHTML = T.toks.length ? T.toks.map(t=>{ const v=wOf(t.term); const bg=v===null?"var(--soft)":rgba(v>=0?c0:c1,.12+.6*Math.min(1,Math.abs(v)/mx)); return `<span class="chip" style="background:${bg}${v===null?";color:var(--muted)":""}" title="${esc(t.term)}: ${v===null?"fora do vocabulário":(v>=0?"+":"")+fmt(v,2)}">${esc(t.disp)}${t.term!==t.disp?` <small>(${esc(t.term)})</small>`:""}</span>`; }).join("") : '<span class="hint">Nenhum termo depois do pré-processamento.</span>';
+  $("anaTrain").innerHTML = MD.ep===0 ? `<p class="note">O modelo ainda não foi treinado, então todos os pesos valem zero. <button class="btn primary" id="anaTrainBtn" style="margin-left:.4rem">Treinar 100 épocas agora</button></p>` : "";
+  if($("anaTrainBtn")) $("anaTrainBtn").addEventListener("click",()=>trainAnim(100));
+  const known=contrib.filter(([,v])=>v!==null).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])), unk=contrib.filter(([,v])=>v===null).map(([t])=>t);
+  const row=(lab,v)=>`<div class="wb"><span title="${esc(lab)}">${esc(lab)}</span><div class="tr"><i style="width:${100*Math.min(1,Math.abs(v)/mx)}%;background:${v>=0?"var(--c0)":"var(--c1)"}"></i></div><b class="${v>=0?"pos":"neg"}">${v>=0?"+":"−"}${fmt(Math.abs(v),2)}</b></div>`;
+  $("anaSum").innerHTML = row("viés (intercepto)",MD.b)+known.map(([t,v])=>row(t,v)).join("")+
+    `<div class="wb" style="border-top:1.5px solid var(--ink);padding-top:.35rem;margin-top:.35rem"><span><b style="font-family:var(--body);text-align:left">soma (logit)</b></span><span></span><b>${fmt(z,2)}</b></div>
+     <p style="margin:.6rem 0 0">P(elogio) = σ(${fmt(z,2)}) = <b>${pct(p,1)}</b></p>`+
+    (unk.length?`<p class="hint">Fora do vocabulário, ignorados: ${unk.map(u=>`"${esc(u)}"`).join(", ")}.</p>`:"");
+  let note="O modelo soma pistas isoladas. Funciona bem quando o comentário usa palavras que apareceram no treino.";
+  const low=text.toLowerCase();
+  if(/esperei cinco horas|ótimo, esperei/.test(low)) note="Sarcasmo: \"Ótimo\" puxa para elogio, e nada no bag of words sabe que \"esperei cinco horas\" desmente a palavra. Modelos com contexto, como os transformers, conseguem ler essa relação.";
+  else if(/não foi ruim/.test(low)) note="Dupla negação: \"não\" e \"ruim\" puxam os dois para reclamação, mas juntos formam um elogio discreto. Com bigramas, \"não_ruim\" poderia ter peso próprio, se aparecesse no treino.";
+  else if(/boa, mas|mas a/.test(low)) note="Comentário misto: as pistas se somam e se cancelam. Um bom analisador talvez devesse separar os aspectos: consulta (positivo) e recepção (negativo).";
+  if(!CFG.neg && CFG.stop && /\bn[ãa]o\b/.test(low)) note+=" Atenção: \"não\" está sendo removido como stopword, e a negação se perdeu antes de chegar ao modelo.";
+  $("anaNote").textContent=note;
+}
+
+/* ---------- configuração global ---------- */
+function onCfg(){ const ep=MD?MD.ep:0; clearInterval(trTimer); buildModel(); for(let i=0;i<ep;i++) epoch(); renderLab(); renderBow(); renderTrain(); renderAna(); }
+syncSegs(); buildModel(); renderLab(); renderBow(); renderTrain(); renderAna();
+let rz=0; window.addEventListener("resize",()=>{ clearTimeout(rz); rz=setTimeout(drawLoss,120); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ renderBow(); renderTrain(); renderAna(); });
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(drawLoss);
+})();
+</script></body></html>
