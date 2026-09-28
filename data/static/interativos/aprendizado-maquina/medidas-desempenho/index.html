@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Um limiar, quatro caixas: medidas de desempenho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F4F8; --surface:#FFFFFF; --ink:#172033; --muted:#566076; --line:#D5DBE5; --soft:#E7ECF3;
+  --c0:#4C6FA5; --c1:#B0306A; --acc:#B96F0C; --acc-soft:#F6E7CF;
+  --display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141C; --surface:#171D28; --ink:#E6EAF2; --muted:#98A2B6; --line:#2A3242; --soft:#1F2735;
+    --c0:#86A8DB; --c1:#E46CA3; --acc:#E9A640; --acc-soft:#3A2E1A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141C; --surface:#171D28; --ink:#E6EAF2; --muted:#98A2B6; --line:#2A3242; --soft:#1F2735;
+  --c0:#86A8DB; --c1:#E46CA3; --acc:#E9A640; --acc-soft:#3A2E1A;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding:2.8rem 1.25rem 4rem}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0}
+h1{font-size:clamp(2.3rem,6vw,4.2rem);font-weight:800;letter-spacing:-.025em;max-width:18ch}
+h2{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;letter-spacing:-.015em;display:flex;gap:.7rem;align-items:baseline}
+h2 .n{font-size:.95em;color:var(--acc);font-variant-numeric:tabular-nums}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
+p{margin:.45rem 0}
+.lede{font-size:1.15rem;max-width:66ch;color:var(--muted);margin-top:1rem}
+section.block{margin-top:4rem}
+.sub{color:var(--muted);max-width:70ch;margin:.6rem 0 1.2rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:1.1rem;align-items:start}
+.grid2.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.grid2.mx{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}
+@media (max-width:880px){.grid2,.grid2.even,.grid2.mx{grid-template-columns:minmax(0,1fr)}}
+canvas.cv{width:100%;display:block;touch-action:none}
+.r1{aspect-ratio:1/1} .r53{aspect-ratio:5/3} .r52{aspect-ratio:5/2} .r43{aspect-ratio:4/3}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;font-size:.9rem;color:var(--muted);margin-top:.6rem}
+.legend span{display:inline-flex;align-items:center;gap:.4rem}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;flex:none}
+.dot.c0{background:var(--c0)} .dot.c1{background:var(--c1)} .dot.acc{background:var(--acc)}
+.dot.r0{border:2px solid var(--c0)} .dot.r1{border:2px solid var(--c1)}
+.hint{font-size:.87rem;color:var(--muted);margin:.35rem 0 0}
+.group>.lbl{font-weight:700;font-size:.93rem;margin-bottom:.3rem;display:flex;justify-content:space-between;gap:.5rem;align-items:baseline}
+.group>.lbl output{font-family:var(--display);font-weight:800;color:var(--acc);font-size:1.1rem;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.seg{display:flex;flex-wrap:wrap;gap:.35rem}
+.seg button,.btn{font:inherit;font-size:.9rem;border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:.35rem .8rem;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#10141C}}
+:root[data-theme="dark"] .btn.primary{color:#10141C}
+.btns{display:flex;flex-wrap:wrap;gap:.45rem}
+button:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.scen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem;margin-top:1.6rem}
+@media (max-width:880px){.scen{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--soft);border-radius:10px;padding:.55rem .7rem}
+.stat b{font-family:var(--display);font-size:1.35rem;display:block;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat span{font-size:.82rem;color:var(--muted);display:block;line-height:1.3}
+.readout{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.stat.wide{grid-column:1/-1}
+/* matriz */
+.cm{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr) auto;gap:5px;font-size:.88rem}
+.cm .h{color:var(--muted);font-size:.8rem;padding:.2rem .35rem;display:flex;align-items:end;line-height:1.2}
+.cm .h.row{align-items:center}
+.cm .cell{border-radius:9px;padding:.55rem .65rem;line-height:1.2;border:2.5px solid transparent;transition:background .2s,border-color .2s}
+.cm .cell b{font-family:var(--display);font-size:1.6rem;display:block;font-variant-numeric:tabular-nums}
+.cm .cell span{font-size:.8rem}
+.cell.vp{background:color-mix(in srgb,var(--c1) 22%,var(--surface))}
+.cell.fn{background:color-mix(in srgb,var(--c1) 8%,var(--surface));border-style:dashed;border-color:color-mix(in srgb,var(--c1) 45%,var(--surface))}
+.cell.fp{background:color-mix(in srgb,var(--c0) 22%,var(--surface))}
+.cell.vn{background:color-mix(in srgb,var(--c0) 8%,var(--surface));border-style:dashed;border-color:color-mix(in srgb,var(--c0) 45%,var(--surface))}
+.cm .cell.den{box-shadow:0 0 0 4px var(--acc-soft)}
+.cm .cell.num{border:2.5px solid var(--acc)}
+.cm .tot{background:var(--soft);border-radius:9px;padding:.45rem .6rem;font-size:.8rem;color:var(--muted);line-height:1.25}
+.cm .tot b{font-family:var(--display);color:var(--ink);font-size:1.05rem;display:block;font-variant-numeric:tabular-nums}
+/* medidas */
+.mgroups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem 1.2rem}
+@media (max-width:560px){.mgroups{grid-template-columns:1fr}}
+.mg h4{margin:0 0 .35rem;font-size:.85rem;color:var(--muted);font-weight:600}
+.mbtn{font:inherit;display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;width:100%;text-align:left;background:var(--soft);border:1.5px solid transparent;border-radius:9px;padding:.4rem .6rem;margin-bottom:.3rem;color:var(--ink);cursor:pointer}
+.mbtn b{font-family:var(--display);font-variant-numeric:tabular-nums;font-size:1.05rem}
+.mbtn[aria-pressed="true"]{border-color:var(--acc);background:var(--surface)}
+.explain{margin-top:1rem;border-top:2px solid var(--ink);padding-top:.9rem}
+.explain .f{font-family:var(--display);font-weight:500;font-size:1.1rem;overflow-x:auto;white-space:nowrap;padding:.2rem 0}
+.explain .f b{color:var(--acc)}
+.tag{display:inline-block;font-size:.8rem;border-radius:999px;padding:.1rem .55rem;background:var(--soft);color:var(--muted);margin-top:.4rem}
+.tag.yes{background:var(--acc-soft);color:var(--ink)}
+.note{background:var(--soft);border-radius:10px;padding:.7rem .9rem;margin-top:.9rem;font-size:.93rem}
+.try{columns:2 320px;column-gap:2rem;padding-left:1.1rem;margin:.5rem 0 0}
+.try li{margin-bottom:.65rem;break-inside:avoid}
+@media (max-width:480px){.panel{padding:.8rem}.cm{gap:3px}.cm .cell{padding:.4rem .45rem}.cm .cell b{font-size:1.25rem}.cm .cell span,.cm .tot{font-size:.72rem;hyphens:auto;overflow-wrap:anywhere}.cm .h{overflow-wrap:anywhere}.cm .cell b,.cm .tot b{font-size:1.1rem}.cm .h{font-size:.72rem;padding:.1rem}.cm .tot{padding:.35rem .4rem}.cm .tot b{font-size:.95rem}}
+footer{margin-top:3.5rem;font-size:.85rem;color:var(--muted);max-width:80ch}
+</style>
+<style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head>
+<body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../">Todas as atividades</a><a href="../../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+<div class="wrap">
+  <header>
+    <h1>Um limiar, quatro caixas</h1>
+    <p class="lede">Um modelo estima, para cada um de 1.000 pacientes, a probabilidade de ter uma doença. Para agir, escolhemos um limiar: quem fica acima é sinalizado. Essa escolha distribui os pacientes em quatro caixas, e todas as medidas de desempenho saem delas. Comece definindo o cenário.</p>
+    <div class="scen">
+      <div class="group"><div class="lbl">Prevalência da doença<output id="prevOut"></output></div><input type="range" id="prev" min="1" max="60" step="1" value="15">
+        <div class="btns" id="prevPresets" style="margin-top:.5rem">
+          <button class="btn" data-v="2">Triagem (2%)</button><button class="btn" data-v="15">Ambulatório (15%)</button><button class="btn" data-v="40">Emergência (40%)</button>
+        </div>
+      </div>
+      <div class="group"><div class="lbl">Capacidade de separar os grupos (AUC)<output id="aucOut"></output></div><input type="range" id="auc" min="0.55" max="0.98" step="0.01" value="0.82">
+        <p class="hint">0,5 é um sorteio; 1 separa perfeitamente quem tem de quem não tem a doença.</p>
+      </div>
+      <div class="group"><div class="lbl">Limiar<output id="tOut"></output></div><input type="range" id="tIn" min="0" max="1000" step="1">
+        <p class="hint">Probabilidade a partir da qual o paciente é sinalizado. Também dá para arrastar no gráfico abaixo.</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="block" id="s1">
+    <h2><span class="n">1</span>O limiar separa os pacientes</h2>
+    <p class="sub">Cada curva mostra como as probabilidades previstas se distribuem em um grupo real. Tudo o que fica à direita do limiar é sinalizado. Como os dois grupos se sobrepõem, nenhum limiar acerta todos: movê-lo troca um tipo de erro pelo outro.</p>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Probabilidades previstas, por grupo real</h3>
+        <canvas id="distCv" class="cv r53" tabindex="0" aria-label="Distribuições das probabilidades previstas. Arraste para mover o limiar."></canvas>
+        <div class="legend">
+          <span><i class="dot c1"></i>Com a doença</span><span><i class="dot c0"></i>Sem a doença</span><span><i class="dot acc"></i>Limiar (arraste)</span>
+        </div>
+        <div class="seg" id="hMode" style="margin-top:.6rem"><button data-m="count">Altura = número de pacientes</button><button data-m="share">Altura = proporção dentro do grupo</button></div>
+      </div>
+      <div class="panel">
+        <h3>Os 1.000 pacientes</h3>
+        <canvas id="iconCv" class="cv r52" aria-label="Mil pacientes coloridos pela caixa em que caem"></canvas>
+        <div class="legend">
+          <span><i class="dot c1"></i>Verdadeiro positivo</span><span><i class="dot r1"></i>Falso negativo</span>
+          <span><i class="dot c0"></i>Falso positivo</span><span><i class="dot r0"></i>Verdadeiro negativo</span>
+        </div>
+        <p class="hint">A cor diz o grupo real; o círculo cheio, que o paciente foi sinalizado.</p>
+      </div>
+    </div>
+    <div class="grid2 mx" style="margin-top:1.1rem">
+      <div class="panel">
+        <h3>Matriz de confusão</h3>
+        <div class="cm" id="cm"></div>
+        <div class="explain" id="explain" aria-live="polite"></div>
+      </div>
+      <div class="panel">
+        <h3>Medidas de desempenho</h3>
+        <p class="hint" style="margin:0 0 .8rem">Clique numa medida para ver, na matriz, de onde vêm o numerador (contorno) e o denominador (halo). Elas estão agrupadas pelo denominador: é ele que diz sobre quem a medida fala.</p>
+        <div class="mgroups" id="mgroups"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="s2">
+    <h2><span class="n">2</span>A prevalência muda o valor dos números</h2>
+    <p class="sub">Sensibilidade e especificidade olham para dentro de cada grupo real, por isso não dependem de quantos doentes há. Precisão (VPP) e VPN olham para os sinalizados e os não sinalizados, que misturam os dois grupos. O gráfico mantém o mesmo teste e o mesmo ponto de corte, e varia só a prevalência. (No controle do topo é diferente: um modelo calibrado ajusta suas probabilidades à prevalência, então o mesmo limiar em probabilidade passa a cortar em outro lugar.)</p>
+    <div class="grid2">
+      <div class="panel">
+        <canvas id="prevCv" class="cv r53" aria-label="Medidas em função da prevalência, com o mesmo ponto de corte"></canvas>
+        <div class="legend" id="prevLegend"></div>
+      </div>
+      <div class="panel">
+        <h3>Com a prevalência atual</h3>
+        <div class="readout" id="prevStats"></div>
+        <p class="note" id="prevNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="s3">
+    <h2><span class="n">3</span>A curva ROC reúne todos os limiares</h2>
+    <p class="sub">Cada limiar gera um par (1 − especificidade, sensibilidade). Ligando os pares de todos os limiares, obtemos a curva ROC. O canto superior esquerdo é o modelo perfeito; a diagonal, um sorteio. Clique ou arraste sobre a curva para escolher o limiar por ela.</p>
+    <div class="grid2">
+      <div class="panel">
+        <div class="seg" id="curveSeg" style="margin-bottom:.7rem"><button data-v="roc">Curva ROC</button><button data-v="pr">Precisão × recall</button></div>
+        <canvas id="rocCv" class="cv r1" tabindex="0" aria-label="Curva ROC com o limiar atual. Clique para escolher um ponto."></canvas>
+        <p class="hint" id="curveHint"></p>
+      </div>
+      <div style="display:grid;gap:1.1rem">
+        <div class="panel">
+          <h3>O que a AUC mede</h3>
+          <p class="hint" style="margin-top:0">A AUC é a chance de que, sorteando um paciente com a doença e um sem, o modelo dê probabilidade maior ao que tem a doença. Sorteie pares e compare com a AUC.</p>
+          <div class="btns" style="margin:.7rem 0"><button class="btn" id="pair1">Sortear 1 par</button><button class="btn" id="pair100">Sortear 100 pares</button><button class="btn" id="pairReset">Zerar</button></div>
+          <div class="readout"><div class="stat"><b id="pairPct">–</b><span id="pairN">pares em que o doente teve a maior probabilidade</span></div><div class="stat"><b id="aucCalc">–</b><span>AUC destes 1.000 pacientes</span></div>
+          <div class="stat wide"><b id="pairLast" style="font-size:1rem">Nenhum par sorteado ainda.</b><span>último par</span></div></div>
+        </div>
+        <div class="panel">
+          <h3>Escolher o limiar pelo custo dos erros</h3>
+          <div class="group"><div class="lbl">Peso de um falso negativo, em falsos positivos<output id="kOut"></output></div><input type="range" id="kIn" min="1" max="20" step="1" value="5"></div>
+          <div class="btns" style="margin-top:.7rem"><button class="btn primary" id="useCost">Usar o limiar de menor custo</button><button class="btn" id="useYouden">Usar o ponto de Youden</button></div>
+          <p class="hint" id="costTxt"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="s4">
+    <h2><span class="n">4</span>Calibração: a probabilidade vale o que diz?</h2>
+    <p class="sub">A ROC só usa a ordem dos pacientes. A calibração pergunta se os números estão certos: entre quem recebe 30%, cerca de 30% têm a doença? Distorça as probabilidades. A ordem não muda, a AUC não muda, mas o mesmo limiar passa a sinalizar outras pessoas, e a regra de decisão pelo custo deixa de funcionar.</p>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Curva de calibração</h3>
+        <canvas id="calCv" class="cv r43" aria-label="Probabilidade prevista versus frequência observada"></canvas>
+        <p class="hint">Pontos: dez grupos de risco, da menor para a maior probabilidade prevista. Linha: relação exata entre previsto e real. Acima da diagonal, o modelo subestima; abaixo, superestima.</p>
+      </div>
+      <div class="panel">
+        <h3>Probabilidades do modelo</h3>
+        <div class="seg" id="distSeg">
+          <button data-d="ok">Calibrado</button><button data-d="over">Superconfiante</button><button data-d="under">Subconfiante</button><button data-d="up">Superestima</button><button data-d="down">Subestima</button>
+        </div>
+        <p class="hint" id="distTxt"></p>
+        <div class="readout" id="calStats" style="margin-top:.9rem"></div>
+        <p class="note" id="calNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Para experimentar em aula</h2>
+    <ol class="try">
+      <li>Com prevalência de 15%, leve o limiar até 0,5 e depois até 0,1. Veja quais caixas crescem e quais encolhem nos 1.000 pacientes.</li>
+      <li>Clique em acurácia com a prevalência em 2%. Um modelo que não sinaliza ninguém já acertaria 98%. Compare com a acurácia balanceada.</li>
+      <li>No gráfico da seção 2, siga as curvas da triagem (2%) até a emergência (40%). Sensibilidade e especificidade ficam retas; a precisão sobe de forma dramática.</li>
+      <li>Sorteie 100 pares algumas vezes. A porcentagem de acertos se aproxima da AUC.</li>
+      <li>Na ROC, troque para precisão × recall com prevalência de 2%. A ROC parece boa; a curva de precisão mostra quantos falsos alarmes há por caso encontrado.</li>
+      <li>Aumente o peso do falso negativo de 1 para 20. O limiar de menor custo desce e o ponto desliza para cima na ROC, ao longo da tangente.</li>
+      <li>Na seção 4, escolha "Superestima". A AUC fica igual, mas o limiar dado pela regra 1 / (1 + peso) passa a custar mais do que o mínimo possível.</li>
+    </ol>
+  </section>
+
+  <footer>Simulação didática com 1.000 pacientes fictícios. As probabilidades do modelo calibrado seguem um modelo binormal de variâncias iguais; as distorções alteram os log-odds de forma monótona, sem mudar a ordem dos pacientes. Não se destina a uso clínico.</footer>
+</div>
+<script>
+(function(){
+"use strict";
+/* ---------- utilidades ---------- */
+const $ = id => document.getElementById(id);
+const sig = z => 1/(1+Math.exp(-z));
+const logit = p => Math.log(p/(1-p));
+const clamp = (v,a,b) => Math.min(b,Math.max(a,v));
+const fmt = (v,d=2) => Number.isFinite(v) ? v.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d}) : "–";
+const pct = (v,d=1) => Number.isFinite(v) ? fmt(100*v,d)+"%" : "–";
+const int = v => Math.round(v).toLocaleString("pt-BR");
+function erf(x){ const t=1/(1+0.3275911*Math.abs(x)); const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x); return x>=0?y:-y; }
+const Phi = x => 0.5*(1+erf(x/Math.SQRT2));
+function Phinv(p){
+  const a=[-39.69683028665376,220.9460984245205,-275.9285104469687,138.3577518672690,-30.66479806614716,2.506628277459239],
+        b=[-54.47609879822406,161.5858368580409,-155.6989798598866,66.80131188771972,-13.28068155288572],
+        c=[-0.007784894002430293,-0.3223964580411365,-2.400758277161838,-2.549732539343734,4.374664141464968,2.938163982698783],
+        d=[0.007784695709041462,0.3224671290700398,2.445134137142996,3.754408661907416];
+  const pl=0.02425;
+  if(p<pl){ const q=Math.sqrt(-2*Math.log(p)); return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  if(p>1-pl){ const q=Math.sqrt(-2*Math.log(1-p)); return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  const q=p-0.5, r=q*q; return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+}
+let C={};
+function hexRGB(h){ h=h.trim().replace("#",""); if(h.length===3) h=h.split("").map(c=>c+c).join(""); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+function rgba(hex,a){ const [r,g,b]=hexRGB(hex); return `rgba(${r},${g},${b},${a})`; }
+function readColors(){ const cs=getComputedStyle(document.documentElement), g=v=>cs.getPropertyValue(v).trim();
+  C={ink:g("--ink"),muted:g("--muted"),line:g("--line"),surf:g("--surface"),soft:g("--soft"),c0:g("--c0"),c1:g("--c1"),acc:g("--acc")}; }
+function setup(cv){ const r=cv.getBoundingClientRect(), d=window.devicePixelRatio||1, w=Math.max(10,r.width), h=Math.max(10,r.height);
+  if(cv.width!==Math.round(w*d)||cv.height!==Math.round(h*d)){ cv.width=Math.round(w*d); cv.height=Math.round(h*d); }
+  const ctx=cv.getContext("2d"); ctx.setTransform(d,0,0,d,0,0); ctx.clearRect(0,0,w,h); return {ctx,w,h}; }
+const font=(px,w)=>`${w||400} ${px}px "Public Sans","Segoe UI",system-ui,sans-serif`;
+function label(ctx,t,x,y,al,bl,col){ ctx.fillStyle=col||C.muted; ctx.font=font(12); ctx.textAlign=al||"center"; ctx.textBaseline=bl||"top"; ctx.fillText(t,x,y); }
+function vlabel(ctx,t,x,y){ ctx.save(); ctx.translate(x,y); ctx.rotate(-Math.PI/2); label(ctx,t,0,0,"center","middle"); ctx.restore(); }
+
+/* ---------- estado ---------- */
+const N=1000;
+const S={ prev:0.15, auc:0.82, lt:logit(0.2), mode:"count", sel:"sens", view:"roc", k:5, dist:"ok", pairs:{n:0,hit:0,last:null} };
+const DISTS={
+  ok:{txt:"As probabilidades são as verdadeiras: entre quem recebe 30%, 30% têm a doença."},
+  over:{txt:"Os log-odds foram esticados ao dobro em torno da prevalência. O modelo exagera nos dois sentidos, como costuma acontecer com sobreajuste."},
+  under:{txt:"Os log-odds foram encolhidos pela metade. As previsões se amontoam perto da prevalência, como numa regularização forte demais."},
+  up:{txt:"Todos os log-odds subiram 1 unidade. O modelo superestima o risco, como quando é levado de um hospital de referência para a atenção primária."},
+  down:{txt:"Todos os log-odds caíram 1 unidade. O modelo subestima o risco, como quando é aplicado a uma população mais doente que a do treino."}
+};
+let W; // mundo atual
+function build(){
+  const d=Math.SQRT2*Phinv(S.auc), m=logit(S.prev), L0=m-d*d/2;
+  const n1=Math.max(1,Math.round(N*S.prev)), n0=N-n1;
+  const aff={ok:[1,0],over:[2,-m],under:[.5,m/2],up:[1,1],down:[1,-1]}[S.dist];
+  const pop=[];
+  for(let i=0;i<n1;i++){ const s=d+Phinv((i+.5)/n1); pop.push({y:1,s}); }
+  for(let i=0;i<n0;i++){ const s=Phinv((i+.5)/n0); pop.push({y:0,s}); }
+  pop.forEach(q=>{ q.l=L0+d*q.s; q.lp=aff[0]*q.l+aff[1]; q.p=sig(q.lp); q.pt=sig(q.l); });
+  const sorted=pop.slice().sort((a,b)=>b.lp-a.lp);
+  W={d,m,L0,n1,n0,aff,pop,sorted};
+  // AUC pelos pares (exata para esta população)
+  let hits=0; const neg=pop.filter(q=>!q.y).map(q=>q.lp).sort((a,b)=>a-b);
+  pop.filter(q=>q.y).forEach(q=>{ let lo=0,hi=neg.length; while(lo<hi){ const mid=(lo+hi)>>1; if(neg[mid]<q.lp) lo=mid+1; else hi=mid; } hits+=lo; });
+  W.aucPop=hits/(n1*n0);
+}
+// ponto de corte no escore s para um limiar em log-odds do modelo
+const cutS = lt => ((lt-W.aff[1])/W.aff[0]-W.L0)/W.d;
+function counts(lt){
+  let vp=0,fn=0,fp=0,vn=0;
+  for(const q of W.pop){ const f=q.lp>=lt; if(q.y) f?vp++:fn++; else f?fp++:vn++; }
+  return {vp,fn,fp,vn};
+}
+const div=(a,b)=>b>0?a/b:NaN;
+
+/* ---------- medidas ---------- */
+const GROUPS=[
+  {t:"Entre quem tem a doença", ids:["sens","fnr"]},
+  {t:"Entre quem não tem", ids:["spec","fpr"]},
+  {t:"Entre os sinalizados", ids:["ppv","nns"]},
+  {t:"Entre os não sinalizados", ids:["npv","for"]},
+  {t:"Na população inteira", ids:["prev","flag","acc"]},
+  {t:"Medidas combinadas", ids:["bacc","f1","lrp","lrn"]}
+];
+const M={
+  sens:{n:"Sensibilidade", a:"recall, taxa de verdadeiros positivos", num:["vp"], den:["vp","fn"], v:c=>div(c.vp,c.vp+c.fn), f:c=>`VP / (VP + FN) = ${c.vp} / (${c.vp} + ${c.fn})`, dep:false,
+    txt:(c,v)=>`De cada 100 pacientes com a doença, o modelo sinaliza ${fmt(100*v,0)}. É a medida de quem não quer deixar casos passarem.`},
+  fnr:{n:"Taxa de falsos negativos", a:"1 − sensibilidade", num:["fn"], den:["vp","fn"], v:c=>div(c.fn,c.vp+c.fn), f:c=>`FN / (VP + FN) = ${c.fn} / (${c.vp} + ${c.fn})`, dep:false,
+    txt:(c,v)=>`${fmt(100*v,0)} de cada 100 doentes não são sinalizados e seguem sem investigação.`},
+  spec:{n:"Especificidade", a:"taxa de verdadeiros negativos", num:["vn"], den:["vn","fp"], v:c=>div(c.vn,c.vn+c.fp), f:c=>`VN / (VN + FP) = ${c.vn} / (${c.vn} + ${c.fp})`, dep:false,
+    txt:(c,v)=>`De cada 100 pacientes sem a doença, ${fmt(100*v,0)} são corretamente deixados de fora.`},
+  fpr:{n:"Taxa de falsos positivos", a:"1 − especificidade, eixo x da ROC", num:["fp"], den:["vn","fp"], v:c=>div(c.fp,c.vn+c.fp), f:c=>`FP / (VN + FP) = ${c.fp} / (${c.vn} + ${c.fp})`, dep:false,
+    txt:(c,v)=>`${fmt(100*v,0)} de cada 100 pessoas saudáveis recebem um alarme falso.`},
+  ppv:{n:"Precisão", a:"valor preditivo positivo (VPP)", num:["vp"], den:["vp","fp"], v:c=>div(c.vp,c.vp+c.fp), f:c=>`VP / (VP + FP) = ${c.vp} / (${c.vp} + ${c.fp})`, dep:true,
+    txt:(c,v)=>Number.isFinite(v)?`Entre os sinalizados, ${fmt(100*v,0)}% têm a doença. É a pergunta do paciente com resultado positivo: "qual a chance de eu ter mesmo?".`:"Ninguém foi sinalizado, então a precisão não está definida."},
+  nns:{n:"Sinalizados por caso encontrado", a:"1 / precisão", num:["vp","fp"], den:["vp"], v:c=>div(c.vp+c.fp,c.vp), f:c=>`(VP + FP) / VP = (${c.vp} + ${c.fp}) / ${c.vp}`, dep:true, num1:true,
+    txt:(c,v)=>Number.isFinite(v)?`É preciso investigar cerca de ${fmt(v,1)} pacientes sinalizados para encontrar um caso. Traduz a precisão em carga de trabalho.`:"Nenhum caso foi encontrado com este limiar."},
+  npv:{n:"Valor preditivo negativo", a:"VPN", num:["vn"], den:["vn","fn"], v:c=>div(c.vn,c.vn+c.fn), f:c=>`VN / (VN + FN) = ${c.vn} / (${c.vn} + ${c.fn})`, dep:true,
+    txt:(c,v)=>Number.isFinite(v)?`Entre os não sinalizados, ${fmt(100*v,1)}% de fato não têm a doença. É o quanto dá para tranquilizar quem ficou abaixo do limiar.`:"Todos foram sinalizados, então o VPN não está definido."},
+  for:{n:"Casos entre os não sinalizados", a:"1 − VPN, taxa de falsa omissão", num:["fn"], den:["vn","fn"], v:c=>div(c.fn,c.vn+c.fn), f:c=>`FN / (VN + FN) = ${c.fn} / (${c.vn} + ${c.fn})`, dep:true,
+    txt:(c,v)=>Number.isFinite(v)?`${fmt(100*v,1)}% dos que foram tranquilizados têm a doença.`:"Todos foram sinalizados."},
+  prev:{n:"Prevalência", a:"proporção com a doença", num:["vp","fn"], den:["vp","fn","fp","vn"], v:c=>(c.vp+c.fn)/N, f:c=>`(VP + FN) / N = (${c.vp} + ${c.fn}) / ${N}`, dep:true, num1:true,
+    txt:(c,v)=>`${int(c.vp+c.fn)} dos ${int(N)} pacientes têm a doença. Não depende do modelo nem do limiar, mas muda o sentido de várias outras medidas.`},
+  flag:{n:"Sinalizados", a:"proporção de positivos previstos", num:["vp","fp"], den:["vp","fn","fp","vn"], v:c=>(c.vp+c.fp)/N, f:c=>`(VP + FP) / N = (${c.vp} + ${c.fp}) / ${N}`, dep:true, num1:true,
+    txt:(c,v)=>`${int(c.vp+c.fp)} pacientes seriam chamados para investigação. É o que define a demanda gerada pelo modelo.`},
+  acc:{n:"Acurácia", a:"proporção de acertos", num:["vp","vn"], den:["vp","fn","fp","vn"], v:c=>(c.vp+c.vn)/N, f:c=>`(VP + VN) / N = (${c.vp} + ${c.vn}) / ${N}`, dep:true,
+    txt:(c,v)=>`${fmt(100*v,0)}% de acertos. Com doença rara, é dominada pelos verdadeiros negativos: não sinalizar ninguém daria ${pct(1-S.prev,0)}.`},
+  bacc:{n:"Acurácia balanceada", a:"(sensibilidade + especificidade) / 2", num:["vp","vn"], den:["vp","fn","fp","vn"], v:c=>(div(c.vp,c.vp+c.fn)+div(c.vn,c.vn+c.fp))/2, f:c=>`(${fmt(div(c.vp,c.vp+c.fn),3)} + ${fmt(div(c.vn,c.vn+c.fp),3)}) / 2`, dep:false,
+    txt:(c,v)=>`Dá o mesmo peso aos dois grupos, qualquer que seja o tamanho deles. Não sinalizar ninguém daria 50%.`},
+  f1:{n:"F1", a:"média harmônica de precisão e recall", num:["vp"], den:["vp","fp","fn"], v:c=>div(2*c.vp,2*c.vp+c.fp+c.fn), f:c=>`2·VP / (2·VP + FP + FN) = ${2*c.vp} / (${2*c.vp} + ${c.fp} + ${c.fn})`, dep:true,
+    txt:(c,v)=>`Só é alto se precisão e recall forem altos juntos. Ignora os verdadeiros negativos, por isso depende da prevalência.`},
+  lrp:{n:"Razão de verossimilhança positiva", a:"LR+ = sensibilidade / (1 − especificidade)", num:["vp","fn"], den:["fp","vn"], v:c=>div(div(c.vp,c.vp+c.fn),div(c.fp,c.fp+c.vn)), f:c=>`${fmt(div(c.vp,c.vp+c.fn),3)} / ${fmt(div(c.fp,c.fp+c.vn),3)}`, dep:false, num1:true,
+    txt:(c,v)=>Number.isFinite(v)?`Um resultado positivo multiplica as chances pré-teste por ${fmt(v,1)}. Chances pós-teste = chances pré-teste × LR+.`:"Sem falsos positivos, a LR+ fica infinita."},
+  lrn:{n:"Razão de verossimilhança negativa", a:"LR− = (1 − sensibilidade) / especificidade", num:["vp","fn"], den:["fp","vn"], v:c=>div(div(c.fn,c.vp+c.fn),div(c.vn,c.fp+c.vn)), f:c=>`${fmt(div(c.fn,c.vp+c.fn),3)} / ${fmt(div(c.vn,c.fp+c.vn),3)}`, dep:false, num1:true,
+    txt:(c,v)=>Number.isFinite(v)?`Um resultado negativo multiplica as chances pré-teste por ${fmt(v,2)}. Quanto mais perto de 0, mais o negativo afasta a doença.`:"Sem verdadeiros negativos, a LR− não está definida."}
+};
+const isRatio=id=>["nns","lrp","lrn"].includes(id);
+const showV=(id,v)=>isRatio(id)?fmt(v,id==="lrn"?2:1):pct(v,1);
+
+function renderMatrix(c){
+  const m=M[S.sel], cls=k=>`cell ${k}${m.num.includes(k)?" num":""}${m.den.includes(k)?" den":""}`;
+  const cell=(k,nome)=>`<div class="${cls(k)}"><b>${c[k]}</b><span>${nome}</span></div>`;
+  const tot=(v,l)=>`<div class="tot"><b>${int(v)}</b>${l}</div>`;
+  $("cm").innerHTML=`<span></span><span class="h">Sinalizado</span><span class="h">Não sinalizado</span><span class="h">Total</span>
+   <span class="h row">Com a doença</span>${cell("vp","verdadeiros positivos")}${cell("fn","falsos negativos")}${tot(c.vp+c.fn,pct((c.vp+c.fn)/N,0)+" do total")}
+   <span class="h row">Sem a doença</span>${cell("fp","falsos positivos")}${cell("vn","verdadeiros negativos")}${tot(c.fp+c.vn,pct((c.fp+c.vn)/N,0)+" do total")}
+   <span class="h row">Total</span>${tot(c.vp+c.fp,"sinalizados")}${tot(c.fn+c.vn,"não sinalizados")}${tot(N,"pacientes")}`;
+  const v=m.v(c);
+  $("explain").innerHTML=`<h3>${m.n} <span style="font-weight:400;color:var(--muted);font-size:.9rem">(${m.a})</span></h3>
+    <div class="f">${m.f(c)} = <b>${showV(S.sel,v)}</b></div><p>${m.txt(c,v)}</p>
+    <span class="tag${m.dep?" yes":""}">${m.dep?"Depende da prevalência":"Não depende da prevalência"}</span>`;
+}
+function renderGroups(c){
+  $("mgroups").innerHTML=GROUPS.map(g=>`<div class="mg"><h4>${g.t}</h4>${g.ids.map(id=>`<button class="mbtn" data-id="${id}" aria-pressed="${id===S.sel}"><span>${M[id].n}</span><b>${showV(id,M[id].v(c))}</b></button>`).join("")}</div>`).join("");
+}
+$("mgroups").addEventListener("click",e=>{ const b=e.target.closest(".mbtn"); if(!b) return; S.sel=b.dataset.id; renderSec1(); });
+
+/* ---------- 1 · distribuições e pacientes ---------- */
+const LT_R=[-6,6];
+const TICKS=[0.01,0.02,0.05,0.1,0.2,0.5,0.8,0.9,0.95,0.98,0.99];
+function distMap(w,h){ const P={L:14,R:w-14,T:24,B:h-34}; P.W=P.R-P.L; P.H=P.B-P.T;
+  return {P,X:l=>P.L+(l-LT_R[0])/(LT_R[1]-LT_R[0])*P.W, inv:x=>LT_R[0]+(x-P.L)/P.W*(LT_R[1]-LT_R[0])}; }
+function drawDist(){
+  const cv=$("distCv"), {ctx,w,h}=setup(cv), Mp=distMap(w,h), P=Mp.P;
+  const a=W.aff[0], b=W.aff[1];
+  const grp=[{y:1,n:W.n1,mu:a*(W.L0+W.d*W.d)+b,sd:Math.abs(a)*W.d,col:C.c1},{y:0,n:W.n0,mu:a*W.L0+b,sd:Math.abs(a)*W.d,col:C.c0}];
+  const dens=(g,l)=>Math.exp(-0.5*((l-g.mu)/g.sd)**2)/(g.sd*Math.sqrt(2*Math.PI))*(S.mode==="count"?g.n:1);
+  let mx=0; grp.forEach(g=>{ mx=Math.max(mx,dens(g,g.mu)); });
+  const Y=v=>P.B-v/mx*(P.H-6);
+  // grade de probabilidades
+  const shown=w<520?[0.01,0.05,0.2,0.5,0.8,0.95,0.99]:TICKS;
+  shown.forEach(p=>{ const x=Mp.X(logit(p)); ctx.strokeStyle=C.line; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(x,P.T); ctx.lineTo(x,P.B); ctx.stroke(); label(ctx,p<0.01||p>0.99?fmt(100*p,1)+"%":fmt(100*p,0)+"%",x,P.B+6); });
+  label(ctx,"probabilidade prevista pelo modelo (escala de log-odds)",(P.L+P.R)/2,P.B+20);
+  const lt=S.lt, tx=Mp.X(lt);
+  grp.forEach(g=>{
+    for(const side of [0,1]){
+      ctx.beginPath(); let started=false;
+      const x0=side?Math.max(lt,LT_R[0]):LT_R[0], x1=side?LT_R[1]:Math.min(lt,LT_R[1]); if(x1<=x0) continue;
+      ctx.moveTo(Mp.X(x0),P.B);
+      for(let k=0;k<=300;k++){ const l=x0+(x1-x0)*k/300; ctx.lineTo(Mp.X(l),Y(dens(g,l))); }
+      ctx.lineTo(Mp.X(x1),P.B); ctx.closePath();
+      ctx.fillStyle=rgba(g.col,side?.55:.16); ctx.fill();
+    }
+    ctx.strokeStyle=g.col; ctx.lineWidth=2; ctx.beginPath();
+    for(let k=0;k<=400;k++){ const l=LT_R[0]+(LT_R[1]-LT_R[0])*k/400; k?ctx.lineTo(Mp.X(l),Y(dens(g,l))):ctx.moveTo(Mp.X(l),Y(dens(g,l))); } ctx.stroke();
+  });
+  ctx.strokeStyle=C.ink; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(P.L,P.B); ctx.lineTo(P.R,P.B); ctx.stroke();
+  ctx.strokeStyle=C.acc; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(tx,P.T-10); ctx.lineTo(tx,P.B); ctx.stroke();
+  ctx.fillStyle=C.acc; ctx.beginPath(); ctx.arc(tx,P.T-10,6,0,Math.PI*2); ctx.fill();
+  ctx.font=font(12,700); ctx.textBaseline="middle"; const right=tx+110<P.R;
+  ctx.textAlign=right?"left":"right"; ctx.fillText(right?"sinalizados →":"← não sinalizados",tx+(right?10:-10),P.T-10);
+}
+function drawIcons(){
+  const {ctx,w,h}=setup($("iconCv")), cols=50, rows=20, cw=w/cols, ch=h/rows, r=Math.min(cw,ch)*0.36;
+  const c=counts(S.lt), seq=[["vp",c.vp],["fn",c.fn],["fp",c.fp],["vn",c.vn]];
+  let i=0;
+  for(const [k,n] of seq) for(let j=0;j<n;j++,i++){
+    const x=(i%cols+.5)*cw, y=(Math.floor(i/cols)+.5)*ch, col=(k==="vp"||k==="fn")?C.c1:C.c0;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    if(k==="vp"||k==="fp"){ ctx.fillStyle=col; ctx.fill(); } else { ctx.strokeStyle=rgba(col,.75); ctx.lineWidth=Math.max(1,r*.38); ctx.stroke(); }
+  }
+}
+function renderSec1(){ const c=counts(S.lt); drawDist(); drawIcons(); renderMatrix(c); renderGroups(c); }
+
+/* ---------- 2 · prevalência ---------- */
+const PL=[{k:"sens",n:"Sensibilidade",dash:[6,5]},{k:"spec",n:"Especificidade",dash:[2,4]},{k:"ppv",n:"Precisão (VPP)",dash:[]},{k:"npv",n:"VPN",dash:[]}];
+function testAt(){ const c=cutS(S.lt); return {se:1-Phi(c-W.d), sp:Phi(c)}; }
+function drawPrev(){
+  const {ctx,w,h}=setup($("prevCv")), P={L:48,R:w-14,T:12,B:h-38}; P.W=P.R-P.L; P.H=P.B-P.T;
+  const X=p=>P.L+(Math.log(p)-Math.log(0.005))/(Math.log(0.6)-Math.log(0.005))*P.W, Y=v=>P.B-v*P.H;
+  for(const v of [0,.25,.5,.75,1]){ ctx.strokeStyle=C.line; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(P.L,Y(v)); ctx.lineTo(P.R,Y(v)); ctx.stroke(); label(ctx,pct(v,0),P.L-6,Y(v),"right","middle"); }
+  for(const p of [0.005,0.01,0.02,0.05,0.1,0.2,0.4,0.6]) label(ctx,p<0.01?"0,5%":pct(p,0),X(p),P.B+6);
+  label(ctx,"prevalência (escala logarítmica)",(P.L+P.R)/2,P.B+21);
+  const {se,sp}=testAt();
+  const f={sens:()=>se, spec:()=>sp, ppv:p=>se*p/(se*p+(1-sp)*(1-p)), npv:p=>sp*(1-p)/(sp*(1-p)+(1-se)*p)};
+  const xc=X(S.prev); ctx.strokeStyle=C.acc; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(xc,P.T); ctx.lineTo(xc,P.B); ctx.stroke();
+  PL.forEach(s=>{
+    const col=s.k==="ppv"?C.c1:s.k==="npv"?C.c0:C.ink;
+    ctx.strokeStyle=col; ctx.lineWidth=s.k==="ppv"||s.k==="npv"?2.6:1.8; ctx.setLineDash(s.dash); ctx.beginPath();
+    for(let k=0;k<=200;k++){ const p=Math.exp(Math.log(0.005)+k/200*(Math.log(0.6)-Math.log(0.005))); const v=f[s.k](p); k?ctx.lineTo(X(p),Y(v)):ctx.moveTo(X(p),Y(v)); } ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(xc,Y(f[s.k](S.prev)),4.5,0,Math.PI*2); ctx.fill();
+  });
+  $("prevLegend").innerHTML=`<span><i class="dot c1"></i>Precisão (VPP)</span><span><i class="dot c0"></i>VPN</span><span>— — sensibilidade</span><span>· · · especificidade</span>`;
+  const st=(v,l)=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  const ppv=f.ppv(S.prev), npv=f.npv(S.prev), lrp=se/(1-sp), o=S.prev/(1-S.prev);
+  $("prevStats").innerHTML=st(pct(se),"sensibilidade")+st(pct(sp),"especificidade")+st(pct(ppv),"precisão (VPP)")+st(pct(npv),"VPN")
+    +`<div class="stat wide"><b>${fmt(o,3)} × ${fmt(lrp,1)} = ${fmt(o*lrp,3)}</b><span>chances pré-teste × LR+ = chances pós-teste, que correspondem a ${pct(o*lrp/(1+o*lrp))}: a mesma precisão, por outro caminho (teorema de Bayes).</span></div>`;
+  const pl=f.ppv(0.02), ph=f.ppv(0.4);
+  $("prevNote").textContent=`Com este ponto de corte, a precisão seria ${pct(pl,0)} numa triagem com 2% de prevalência e ${pct(ph,0)} numa emergência com 40%, sem mudar nada no modelo. Por isso VPP e VPN não se transportam de um serviço para outro; sensibilidade e especificidade, em princípio, sim.`;
+}
+
+/* ---------- 3 · ROC ---------- */
+function rocMap(w,h){ const P={L:52,R:w-12,T:12,B:h-40}; P.W=P.R-P.L; P.H=P.B-P.T; return {P,X:v=>P.L+v*P.W,Y:v=>P.B-v*P.H}; }
+function curvePts(){
+  const pts=[]; for(let k=0;k<=400;k++){ const c=-5+(W.d+10)*k/400, tpr=1-Phi(c-W.d), fpr=1-Phi(c); pts.push({c,tpr,fpr,prec:W.n1*tpr/(W.n1*tpr+W.n0*fpr)}); } return pts;
+}
+function costOpt(){
+  // percorre os limiares entre pacientes vizinhos na ordem do modelo
+  let vp=0,fp=0,best={cost:S.k*W.n1,idx:-1,vp:0,fp:0};
+  W.sorted.forEach((q,i)=>{ q.y?vp++:fp++; const cost=S.k*(W.n1-vp)+fp; if(cost<best.cost-1e-9) best={cost,idx:i,vp,fp}; });
+  const lt = best.idx<0 ? W.sorted[0].lp+0.01 : (best.idx+1<W.sorted.length ? (W.sorted[best.idx].lp+W.sorted[best.idx+1].lp)/2 : W.sorted[best.idx].lp-0.01);
+  return {...best, lt};
+}
+function youden(){
+  let vp=0,fp=0,best={j:-1,idx:0};
+  W.sorted.forEach((q,i)=>{ q.y?vp++:fp++; const j=vp/W.n1-fp/W.n0; if(j>best.j) best={j,idx:i}; });
+  const i=best.idx; return {j:best.j, lt: i+1<W.sorted.length?(W.sorted[i].lp+W.sorted[i+1].lp)/2:W.sorted[i].lp-0.01};
+}
+function drawRoc(){
+  const cv=$("rocCv"), {ctx,w,h}=setup(cv), Mp=rocMap(w,h), P=Mp.P, pr=S.view==="pr";
+  ctx.strokeStyle=C.line; ctx.lineWidth=1;
+  for(const v of [0,.25,.5,.75,1]){ ctx.beginPath(); ctx.moveTo(P.L,Mp.Y(v)); ctx.lineTo(P.R,Mp.Y(v)); ctx.stroke(); ctx.beginPath(); ctx.moveTo(Mp.X(v),P.T); ctx.lineTo(Mp.X(v),P.B); ctx.stroke();
+    label(ctx,pct(v,0),P.L-6,Mp.Y(v),"right","middle"); label(ctx,pct(v,0),Mp.X(v),P.B+6); }
+  label(ctx,pr?"recall (sensibilidade)":"1 − especificidade (taxa de falsos positivos)",(P.L+P.R)/2,P.B+22);
+  vlabel(ctx,pr?"precisão":"sensibilidade",12,(P.T+P.B)/2);
+  const pts=curvePts(), c=counts(S.lt), px=pr?c.vp/W.n1:c.fp/W.n0, py=pr?div(c.vp,c.vp+c.fp):c.vp/W.n1;
+  ctx.setLineDash([5,5]); ctx.strokeStyle=C.muted; ctx.lineWidth=1.3; ctx.beginPath();
+  if(pr){ ctx.moveTo(Mp.X(0),Mp.Y(S.prev)); ctx.lineTo(Mp.X(1),Mp.Y(S.prev)); } else { ctx.moveTo(Mp.X(0),Mp.Y(0)); ctx.lineTo(Mp.X(1),Mp.Y(1)); }
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.font=font(12); ctx.fillStyle=C.muted; ctx.textAlign="right"; ctx.textBaseline="bottom";
+  if(pr) ctx.fillText(`sorteio: precisão = prevalência (${pct(S.prev,0)})`,P.R-6,Mp.Y(S.prev)-4); else { ctx.save(); ctx.translate(Mp.X(.72),Mp.Y(.72)); ctx.rotate(-Math.atan2(P.H,P.W)); ctx.textAlign="center"; ctx.fillText("sorteio",0,-4); ctx.restore(); }
+  if(!pr){ // área e linha de custo
+    ctx.fillStyle=rgba(C.acc,.1); ctx.beginPath(); ctx.moveTo(Mp.X(0),Mp.Y(0)); pts.slice().reverse().forEach(p=>ctx.lineTo(Mp.X(p.fpr),Mp.Y(p.tpr))); ctx.lineTo(Mp.X(1),Mp.Y(0)); ctx.closePath(); ctx.fill();
+    const o=costOpt(), ox=o.fp/W.n0, oy=o.vp/W.n1, slope=W.n0/(S.k*W.n1);
+    ctx.save(); ctx.beginPath(); ctx.rect(P.L,P.T,P.W,P.H); ctx.clip();
+    ctx.strokeStyle=rgba(C.ink,.55); ctx.lineWidth=1.2; ctx.setLineDash([2,3]); ctx.beginPath();
+    ctx.moveTo(Mp.X(ox-2),Mp.Y(oy-2*slope)); ctx.lineTo(Mp.X(ox+2),Mp.Y(oy+2*slope)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle=C.ink; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(Mp.X(ox),Mp.Y(oy),8,0,Math.PI*2); ctx.stroke(); ctx.restore();
+  }
+  ctx.strokeStyle=C.ink; ctx.lineWidth=2.4; ctx.beginPath();
+  let first=true; pts.forEach(p=>{ const x=pr?p.tpr:p.fpr, y=pr?p.prec:p.tpr; if(!Number.isFinite(y)) return; first?ctx.moveTo(Mp.X(x),Mp.Y(y)):ctx.lineTo(Mp.X(x),Mp.Y(y)); first=false; }); ctx.stroke();
+  if(Number.isFinite(py)){ ctx.fillStyle=C.acc; ctx.strokeStyle=C.surf; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(Mp.X(px),Mp.Y(py),7.5,0,Math.PI*2); ctx.fill(); ctx.stroke(); }
+  ctx.font=font(14,700); ctx.fillStyle=C.ink; ctx.textAlign="right"; ctx.textBaseline="bottom";
+  if(!pr) ctx.fillText(`AUC = ${fmt(W.aucPop,3)}`,P.R-10,P.B-10);
+  $("curveHint").textContent = pr
+    ? `Na curva de precisão × recall, a linha de base é a prevalência. Com doença rara, uma ROC que parece boa pode esconder uma precisão baixa: aqui, com recall de ${pct(c.vp/W.n1,0)}, a precisão é de ${pct(py,0)}.`
+    : `Ponto laranja: limiar atual (${pct(sig(S.lt),1)}), com sensibilidade ${pct(c.vp/W.n1,0)} e taxa de falsos positivos ${pct(c.fp/W.n0,0)}. Círculo vazado: ponto de menor custo, onde a reta tracejada de custo constante toca a curva. A área sombreada é a AUC.`;
+}
+function renderCost(){
+  $("kOut").textContent=S.k;
+  const o=costOpt(), c=counts(S.lt), cost=S.k*c.fn+c.fp, t=1/(1+S.k);
+  $("costTxt").innerHTML=`Custo total = ${S.k} × FN + FP. Com o limiar atual: ${S.k} × ${c.fn} + ${c.fp} = <b>${int(cost)}</b>. O menor custo possível é <b>${int(o.cost)}</b>, com limiar em ${pct(sig(o.lt),1)}. Se as probabilidades forem calibradas, a teoria da decisão dá esse limiar direto: 1 / (1 + ${S.k}) = ${pct(t,1)}.`;
+}
+function renderPairs(){
+  const P=S.pairs; $("pairPct").textContent=P.n?pct(P.hit/P.n,1):"–"; $("pairN").textContent=`dos ${int(P.n)} pares, o doente teve a maior probabilidade`;
+  $("aucCalc").textContent=fmt(W.aucPop,3);
+  if(P.last) $("pairLast").textContent=`Com a doença: ${pct(P.last[0],1)} · sem a doença: ${pct(P.last[1],1)} → ${P.last[0]>P.last[1]?"o modelo ordenou certo":P.last[0]===P.last[1]?"empate (conta meio)":"o modelo ordenou errado"}`;
+  else $("pairLast").textContent="Nenhum par sorteado ainda.";
+}
+function drawPairs(n){
+  const pos=W.pop.filter(q=>q.y), neg=W.pop.filter(q=>!q.y);
+  for(let i=0;i<n;i++){ const a=pos[Math.floor(Math.random()*pos.length)], b=neg[Math.floor(Math.random()*neg.length)];
+    S.pairs.n++; S.pairs.hit+= a.lp>b.lp?1:a.lp===b.lp?.5:0; S.pairs.last=[a.p,b.p]; }
+  renderPairs();
+}
+$("pair1").addEventListener("click",()=>drawPairs(1));
+$("pair100").addEventListener("click",()=>drawPairs(100));
+$("pairReset").addEventListener("click",()=>{ S.pairs={n:0,hit:0,last:null}; renderPairs(); });
+$("kIn").addEventListener("input",e=>{ S.k=+e.target.value; drawRoc(); renderCost(); renderCal(); });
+$("useCost").addEventListener("click",()=>setLt(costOpt().lt));
+$("useYouden").addEventListener("click",()=>setLt(youden().lt));
+
+/* ---------- 4 · calibração ---------- */
+function renderCal(){
+  const pop=W.pop, n=N;
+  const bySorted=W.sorted.slice().reverse(), bins=[];
+  for(let g=0;g<10;g++){ const s=bySorted.slice(Math.round(g*n/10),Math.round((g+1)*n/10)); bins.push({mp:s.reduce((a,q)=>a+q.p,0)/s.length, ob:s.reduce((a,q)=>a+q.y,0)/s.length}); }
+  const brier=pop.reduce((a,q)=>a+(q.p-q.y)**2,0)/n, brierT=pop.reduce((a,q)=>a+(q.pt-q.y)**2,0)/n;
+  const meanP=pop.reduce((a,q)=>a+q.p,0)/n;
+  const tRule=logit(1/(1+S.k)), cR=counts(tRule), costR=S.k*cR.fn+cR.fp, o=costOpt();
+  $("distTxt").textContent=DISTS[S.dist].txt;
+  const st=(v,l,wide)=>`<div class="stat${wide?" wide":""}"><b>${v}</b><span>${l}</span></div>`;
+  $("calStats").innerHTML=st(fmt(W.aucPop,3),"AUC: a ordem é a mesma")+st(fmt(brier,4),`Brier score (calibrado: ${fmt(brierT,4)})`)
+    +st(`${pct(meanP,1)} / ${pct(S.prev,1)}`,"média prevista / prevalência real")+st(`${int(cR.vp+cR.fp)}`,`sinalizados pela regra 1 / (1 + ${S.k}) = ${pct(1/(1+S.k),1)}`)
+    +st(`${int(costR)} × ${int(o.cost)}`,`custo com a regra × menor custo possível (peso do falso negativo = ${S.k})`,true);
+  $("calNote").textContent = S.dist==="ok"
+    ? `Com o modelo calibrado, a regra 1 / (1 + peso) chega ao custo mínimo (ou muito perto dele) sem precisar procurar o limiar. É a principal razão prática para se importar com calibração.`
+    : `A distorção não mexe na AUC nem no custo mínimo possível, pois a ordem dos pacientes é a mesma. Mas quem confia nos números e aplica a regra 1 / (1 + peso) paga ${int(costR)} em vez de ${int(o.cost)}. Para corrigir, recalibra-se o modelo (Platt, regressão isotônica) numa amostra da população onde ele será usado.`;
+  drawCal(bins);
+}
+function drawCal(bins){
+  const {ctx,w,h}=setup($("calCv"));
+  let top=Math.max(...bins.map(b=>Math.max(b.mp,b.ob)),0.2); top=Math.min(1,Math.ceil(top*10)/10);
+  const P={L:58,R:w-12,T:12,B:h-40}; P.W=P.R-P.L; P.H=P.B-P.T;
+  const X=v=>P.L+v/top*P.W, Y=v=>P.B-v/top*P.H, step=top>0.5?0.2:0.1;
+  ctx.strokeStyle=C.line; ctx.lineWidth=1;
+  for(let v=0;v<=top+1e-9;v+=step){ ctx.beginPath(); ctx.moveTo(P.L,Y(v)); ctx.lineTo(P.R,Y(v)); ctx.stroke(); label(ctx,pct(v,0),P.L-6,Y(v),"right","middle"); label(ctx,pct(v,0),X(v),P.B+6); }
+  label(ctx,"probabilidade prevista",(P.L+P.R)/2,P.B+22); vlabel(ctx,"frequência observada",14,(P.T+P.B)/2);
+  ctx.save(); ctx.beginPath(); ctx.rect(P.L,P.T,P.W,P.H); ctx.clip();
+  ctx.setLineDash([5,5]); ctx.strokeStyle=C.muted; ctx.lineWidth=1.3; ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(top),Y(top)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle=C.acc; ctx.lineWidth=2.2; ctx.beginPath();
+  for(let k=1;k<400;k++){ const pp=top*k/400, l=(logit(pp)-W.aff[1])/W.aff[0], pt=sig(l); k>1?ctx.lineTo(X(pp),Y(pt)):ctx.moveTo(X(pp),Y(pt)); } ctx.stroke();
+  ctx.restore();
+  bins.forEach(b=>{ ctx.fillStyle=C.ink; ctx.strokeStyle=C.surf; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(X(b.mp),Y(b.ob),5.5,0,Math.PI*2); ctx.fill(); ctx.stroke(); });
+  // limiar
+  const tp=sig(S.lt); if(tp<=top){ ctx.strokeStyle=rgba(C.acc,.8); ctx.lineWidth=1.5; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(X(tp),P.T); ctx.lineTo(X(tp),P.B); ctx.stroke(); ctx.setLineDash([]); label(ctx,"limiar",X(tp)+4,P.T+2,"left","top",C.acc); }
+}
+
+/* ---------- controles globais ---------- */
+function setLt(lt){ S.lt=clamp(lt,LT_R[0],LT_R[1]); renderDecision(); }
+function renderDecision(){
+  $("tIn").value=Math.round((S.lt-LT_R[0])/(LT_R[1]-LT_R[0])*1000); $("tOut").textContent=pct(sig(S.lt),1);
+  renderSec1(); drawPrev(); drawRoc(); renderCost(); renderCal();
+}
+function renderWorld(){
+  $("prevOut").textContent=pct(S.prev,0); $("aucOut").textContent=fmt(S.auc,2);
+  build(); S.pairs={n:0,hit:0,last:null}; renderPairs(); renderDecision();
+}
+function sync(){
+  document.querySelectorAll("#hMode button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===S.mode));
+  document.querySelectorAll("#curveSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.view));
+  document.querySelectorAll("#distSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===S.dist));
+}
+$("prev").addEventListener("input",e=>{ S.prev=+e.target.value/100; renderWorld(); });
+$("prevPresets").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; $("prev").value=b.dataset.v; S.prev=+b.dataset.v/100; renderWorld(); });
+$("auc").addEventListener("input",e=>{ S.auc=+e.target.value; renderWorld(); });
+$("tIn").addEventListener("input",e=>setLt(LT_R[0]+(+e.target.value)/1000*(LT_R[1]-LT_R[0])));
+$("hMode").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; S.mode=b.dataset.m; sync(); drawDist(); });
+$("curveSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; S.view=b.dataset.v; sync(); drawRoc(); });
+$("distSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; S.dist=b.dataset.d; sync(); renderWorld(); });
+(function(){
+  const cv=$("distCv"); let drag=false;
+  const pick=e=>{ const r=cv.getBoundingClientRect(), Mp=distMap(r.width,r.height); setLt(Mp.inv(e.clientX-r.left)); };
+  cv.addEventListener("pointerdown",e=>{ drag=true; cv.setPointerCapture(e.pointerId); pick(e); });
+  cv.addEventListener("pointermove",e=>{ if(drag) pick(e); }); cv.addEventListener("pointerup",()=>drag=false);
+  cv.addEventListener("keydown",e=>{ if(e.key==="ArrowLeft"||e.key==="ArrowRight"){ e.preventDefault(); setLt(S.lt+(e.key==="ArrowRight"?.05:-.05)); } });
+  const rc=$("rocCv"); let d2=false;
+  const pickR=e=>{ const r=rc.getBoundingClientRect(), Mp=rocMap(r.width,r.height), x=e.clientX-r.left, y=e.clientY-r.top;
+    let best=null,bd=Infinity; curvePts().forEach(p=>{ const px=S.view==="pr"?p.tpr:p.fpr, py=S.view==="pr"?p.prec:p.tpr; if(!Number.isFinite(py)) return; const q=Math.hypot(Mp.X(px)-x,Mp.Y(py)-y); if(q<bd){bd=q;best=p;} });
+    if(best){ const l=W.L0+W.d*best.c; setLt(W.aff[0]*l+W.aff[1]); } };
+  rc.addEventListener("pointerdown",e=>{ d2=true; rc.setPointerCapture(e.pointerId); pickR(e); });
+  rc.addEventListener("pointermove",e=>{ if(d2) pickR(e); }); rc.addEventListener("pointerup",()=>d2=false);
+  rc.addEventListener("keydown",e=>{ if(e.key==="ArrowLeft"||e.key==="ArrowDown"){ e.preventDefault(); setLt(S.lt+.05); } if(e.key==="ArrowRight"||e.key==="ArrowUp"){ e.preventDefault(); setLt(S.lt-.05); } });
+})();
+
+function renderAll(){ readColors(); sync(); renderWorld(); }
+renderAll();
+let rz=0; window.addEventListener("resize",()=>{ clearTimeout(rz); rz=setTimeout(()=>{ readColors(); renderDecision(); },120); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ readColors(); renderDecision(); });
+new MutationObserver(()=>{ readColors(); renderDecision(); }).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>renderDecision());
+})();
+</script>
+</body>
+</html>
