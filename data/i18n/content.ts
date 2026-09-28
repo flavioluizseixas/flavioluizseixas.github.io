@@ -1,18 +1,5 @@
 export const englishContent: Record<string, string> = {
-  'Atividades interativas: catálogo por tema':
-    'Interactive activities: browse by topic (in Portuguese)',
-  'Aprendizado supervisionado: árvore de decisão':
-    'Supervised learning: decision tree (in Portuguese)',
-  'Aprendizado supervisionado: floresta aleatória':
-    'Supervised learning: random forest (in Portuguese)',
-  'Aprendizado não supervisionado: k-means':
-    'Unsupervised learning: k-means (in Portuguese)',
-  'Redes neurais: CNN Playground':
-    'Neural networks: CNN Playground (in Portuguese)',
-  'Aprendizado por reforço: GridWorld':
-    'Reinforcement learning: GridWorld (in Portuguese)',
-  'Aprendizado por reforço: CartPole':
-    'Reinforcement learning: CartPole (in Portuguese)',
+  'Atividades interativas': 'Interactive activities (in Portuguese)',
   'Aprendizado de Máquina na Saúde': 'Machine Learning in Healthcare',
   'Métodos, implementação e avaliação de aprendizado de máquina aplicados à saúde.':
     'Methods, implementation, and evaluation of machine learning applied to healthcare.',
