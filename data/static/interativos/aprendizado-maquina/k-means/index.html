@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Como o k-means funciona</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#F6F8FB; --grid:#DCE5F0; --grid-strong:#C4D3E6;
+  --ink:#1C2B4A; --muted:#5B6B85; --panel:#FFFFFF; --line:#D5DEEA;
+  --btn:#1C2B4A; --btn-ink:#FFFFFF; --soft:#EBF0F7;
+  --c1:#E0533D; --c2:#1F8A70; --c3:#3E6FD8; --c4:#D9960F; --c5:#8E4FC2; --c6:#D2477F;
+  --neutral:#8C9AB0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#141B2B; --grid:#212C42; --grid-strong:#2C3A55;
+    --ink:#E6ECF5; --muted:#9AA8BF; --panel:#1B2437; --line:#2C3A55;
+    --btn:#E6ECF5; --btn-ink:#141B2B; --soft:#232E45;
+    --c1:#FF7A63; --c2:#3CC49E; --c3:#7A9FFF; --c4:#F2BE45; --c5:#B98AEB; --c6:#F06FA2;
+    --neutral:#6F7E97;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141B2B; --grid:#212C42; --grid-strong:#2C3A55;
+  --ink:#E6ECF5; --muted:#9AA8BF; --panel:#1B2437; --line:#2C3A55;
+  --btn:#E6ECF5; --btn-ink:#141B2B; --soft:#232E45;
+  --c1:#FF7A63; --c2:#3CC49E; --c3:#7A9FFF; --c4:#F2BE45; --c5:#B98AEB; --c6:#F06FA2;
+  --neutral:#6F7E97;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px; line-height:1.5;
+}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 20px 40px}
+header h1{
+  font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  font-weight:800; font-size:clamp(30px,4.6vw,52px); line-height:1.02;
+  letter-spacing:-0.02em; margin:0 0 10px;
+}
+header p{margin:0 0 22px;color:var(--muted);max-width:62ch}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}
+@media (max-width:920px){.layout{grid-template-columns:1fr}}
+
+.board{
+  position:relative; background:var(--panel); border:1px solid var(--line);
+  border-radius:14px; padding:10px;
+}
+canvas{display:block;width:100%;aspect-ratio:4/3;border-radius:8px;touch-action:none;cursor:crosshair}
+.board-foot{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;padding:10px 6px 2px;font-size:15px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px}
+.legend span{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+.legend i{width:12px;height:12px;border-radius:50%;display:inline-block}
+
+.panel{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:600;font-size:19px;margin:0 0 10px;letter-spacing:-0.01em}
+
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+ol.steps li{display:flex;gap:12px;align-items:flex-start;padding:8px 10px;border-radius:10px;color:var(--muted);transition:background .25s,color .25s}
+ol.steps li b{
+  flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font-size:14px;border:1.5px solid var(--grid-strong);color:var(--muted);
+}
+ol.steps li.now{background:var(--soft);color:var(--ink)}
+ol.steps li.now b{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+ol.steps li.done b{border-color:var(--ink);color:var(--ink)}
+
+.explain{min-height:120px;font-size:17px}
+.explain p{margin:0 0 8px}
+.explain .tip{color:var(--muted);font-size:15px}
+
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button,select{font:inherit;color:inherit}
+.btn{
+  appearance:none;border:1.5px solid var(--ink);background:transparent;color:var(--ink);
+  padding:10px 14px;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;
+}
+.btn.primary{grid-column:1/-1;background:var(--btn);color:var(--btn-ink);border-color:var(--btn);font-size:18px;padding:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,select:focus-visible,.seg button:focus-visible,input:focus-visible{outline:3px solid var(--c3);outline-offset:2px}
+
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0}
+.row:first-child{margin-top:0}
+.row label{font-weight:700;font-size:15px}
+.seg{display:flex;border:1.5px solid var(--grid-strong);border-radius:10px;overflow:hidden}
+.seg button{appearance:none;border:0;background:transparent;padding:6px 12px;cursor:pointer;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink)}
+select{background:var(--panel);border:1.5px solid var(--grid-strong);border-radius:10px;padding:6px 8px;max-width:210px}
+.checks{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px}
+.checks label{display:inline-flex;gap:6px;align-items:center;cursor:pointer;font-weight:400}
+input[type=range]{width:150px;accent-color:var(--ink)}
+.small-btns{display:flex;gap:8px}
+.small-btns .btn{padding:6px 12px;font-size:15px;flex:1}
+
+.metric{display:flex;justify-content:space-between;align-items:baseline}
+.metric strong{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:28px;font-weight:800}
+.metric span{color:var(--muted);font-size:15px}
+#chart{width:100%;height:70px;display:block;margin-top:6px}
+.note{font-size:14px;color:var(--muted);margin:6px 0 0}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+<style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head>
+<body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../">Todas as atividades</a><a href="../../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+<div class="wrap">
+  <header>
+    <h1>Como o k-means agrupa pontos</h1>
+    <p>O k-means separa dados em <em>k</em> grupos repetindo duas ideias simples: cada ponto escolhe o centro mais próximo, e cada centro vai para o meio dos seus pontos. Avance passo a passo e observe.</p>
+  </header>
+
+  <div class="layout">
+    <section class="board" aria-label="Quadro de pontos">
+      <canvas id="cv" role="img" aria-label="Gráfico com os pontos e os centroides"></canvas>
+      <div class="board-foot">
+        <div class="legend" id="legend"></div>
+        <div>Clique para adicionar pontos · arraste os ✕ para mover centroides</div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="card">
+        <h2>O algoritmo</h2>
+        <ol class="steps" id="steps">
+          <li><b>1</b><span>Sortear <em>k</em> centroides iniciais</span></li>
+          <li><b>2</b><span>Cada ponto vai para o centroide mais próximo</span></li>
+          <li><b>3</b><span>Cada centroide vai para a média dos seus pontos</span></li>
+          <li><b>4</b><span>Repetir 2 e 3 até ninguém mudar de grupo</span></li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="explain" id="explain" aria-live="polite"></div>
+        <div class="actions">
+          <button class="btn primary" id="next">Próximo passo</button>
+          <button class="btn" id="run">Executar tudo</button>
+          <button class="btn" id="reset">Reiniciar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <label>Número de grupos (k)</label>
+          <div class="seg" id="kseg" role="group" aria-label="Número de grupos"></div>
+        </div>
+        <div class="row">
+          <label for="dataset">Dados</label>
+          <select id="dataset">
+            <option value="blobs">Grupos bem separados</option>
+            <option value="overlap">Grupos sobrepostos</option>
+            <option value="uniform">Espalhados ao acaso</option>
+            <option value="rings">Dois anéis</option>
+            <option value="empty">Quadro vazio</option>
+          </select>
+        </div>
+        <div class="small-btns">
+          <button class="btn" id="regen">Gerar novos pontos</button>
+          <button class="btn" id="clear">Limpar quadro</button>
+        </div>
+        <div class="row">
+          <label for="speed">Velocidade</label>
+          <input type="range" id="speed" min="0" max="10" value="5">
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" id="showRegions" checked> Mostrar regiões</label>
+          <label><input type="checkbox" id="showLines" checked> Mostrar ligações</label>
+          <label><input type="checkbox" id="showTrails" checked> Mostrar trajetos</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="metric">
+          <span>Iteração <b id="iter">0</b></span>
+          <span>Erro total</span>
+        </div>
+        <div class="metric"><span></span><strong id="inertia">—</strong></div>
+        <svg id="chart" viewBox="0 0 300 70" preserveAspectRatio="none" aria-label="Evolução do erro total"></svg>
+        <p class="note">Soma das distâncias ao quadrado de cada ponto até seu centroide. Quanto menor, mais “apertados” estão os grupos. No k-means ele nunca aumenta.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+const H = 0.75; // altura do mundo (largura = 1)
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const $ = id => document.getElementById(id);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let pts = [];        // {x,y,c}
+let cents = [];      // {x,y,trail:[[x,y]], anim}
+let K = 3;
+let phase = 'setup'; // setup | init | assigned | updated | converged
+let iter = 0, lastChanged = 0, emptyCount = 0, hist = [];
+let manualNote = '';
+let running = false, timer = null;
+let assignT = 0;
+let colors = {};
+
+function readColors(){
+  const s = getComputedStyle(document.documentElement);
+  const g = n => s.getPropertyValue(n).trim();
+  colors = {paper:g('--panel'), grid:g('--grid'), gridStrong:g('--grid-strong'), ink:g('--ink'),
+    neutral:g('--neutral'), cl:[g('--c1'),g('--c2'),g('--c3'),g('--c4'),g('--c5'),g('--c6')]};
+}
+
+/* ---------- dados ---------- */
+function gauss(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+function makeData(kind){
+  const out = [];
+  if(kind==='blobs' || kind==='overlap'){
+    const n = 3 + Math.floor(Math.random()*3);
+    const sd = kind==='blobs' ? 0.035 : 0.075;
+    const centers = [];
+    let tries = 0;
+    while(centers.length<n && tries<500){
+      tries++;
+      const c = {x:0.12+Math.random()*0.76, y:0.1+Math.random()*(H-0.2)};
+      const minD = kind==='blobs'?0.2:0.12;
+      if(centers.every(o=>Math.hypot(o.x-c.x,o.y-c.y)>minD)) centers.push(c);
+    }
+    centers.forEach(c=>{
+      const m = 30 + Math.floor(Math.random()*25);
+      for(let i=0;i<m;i++) out.push({x:clamp(c.x+gauss()*sd,0.02,0.98), y:clamp(c.y+gauss()*sd,0.02,H-0.02), c:-1});
+    });
+  } else if(kind==='uniform'){
+    for(let i=0;i<150;i++) out.push({x:0.04+Math.random()*0.92, y:0.04+Math.random()*(H-0.08), c:-1});
+  } else if(kind==='rings'){
+    const cx=0.5, cy=H/2;
+    [[0.09,70],[0.27,140]].forEach(([r,m])=>{
+      for(let i=0;i<m;i++){ const a=Math.random()*Math.PI*2, rr=r+gauss()*0.015;
+        out.push({x:cx+Math.cos(a)*rr, y:cy+Math.sin(a)*rr, c:-1}); }
+    });
+  }
+  return out;
+}
+
+/* ---------- algoritmo ---------- */
+function d2(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return dx*dx+dy*dy; }
+function centPos(c){
+  if(!c.anim) return c;
+  const t = clamp((performance.now()-c.anim.t0)/c.anim.dur,0,1);
+  const e = t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+  return {x:c.anim.fx+(c.x-c.anim.fx)*e, y:c.anim.fy+(c.y-c.anim.fy)*e};
+}
+function inertia(){ let s=0; pts.forEach(p=>{ if(p.c>=0) s+=d2(p,cents[p.c]); }); return s*100; }
+
+function initCentroids(){
+  cents = [];
+  const pool = pts.slice();
+  for(let i=0;i<K;i++){
+    let p;
+    if(pool.length){ p = pool.splice(Math.floor(Math.random()*pool.length),1)[0]; }
+    else p = {x:0.1+Math.random()*0.8, y:0.1+Math.random()*(H-0.2)};
+    cents.push({x:p.x, y:p.y, trail:[[p.x,p.y]], anim:null});
+  }
+  pts.forEach(p=>p.c=-1);
+  iter=0; hist=[]; lastChanged=0; manualNote='';
+  phase='init';
+}
+function assign(){
+  let changed=0;
+  pts.forEach(p=>{
+    let best=-1,bd=Infinity;
+    cents.forEach((c,i)=>{ const d=d2(p,c); if(d<bd){bd=d;best=i;} });
+    if(best!==p.c) changed++;
+    p.c=best;
+  });
+  iter++; lastChanged=changed; manualNote='';
+  hist.push(inertia());
+  assignT = performance.now();
+  phase = (iter>1 && changed===0) ? 'converged' : 'assigned';
+}
+function update(){
+  const dur = reduceMotion ? 0 : Math.min(700, delay()*0.75);
+  emptyCount=0;
+  cents.forEach((c,i)=>{
+    let sx=0,sy=0,n=0;
+    pts.forEach(p=>{ if(p.c===i){sx+=p.x;sy+=p.y;n++;} });
+    if(!n){ emptyCount++; return; }
+    const nx=sx/n, ny=sy/n;
+    c.anim = dur ? {fx:c.x, fy:c.y, t0:performance.now(), dur} : null;
+    c.x=nx; c.y=ny;
+    const last=c.trail[c.trail.length-1];
+    if(Math.hypot(last[0]-nx,last[1]-ny)>1e-6) c.trail.push([nx,ny]);
+  });
+  hist.push(inertia());
+  manualNote='';
+  phase='updated';
+  kick();
+}
+function next(){
+  if(pts.length===0){ manualNote='empty'; render(); return; }
+  if(phase==='setup') initCentroids();
+  else if(phase==='init' || phase==='updated') assign();
+  else if(phase==='assigned') update();
+  render();
+}
+function resetAlgo(){
+  stop();
+  cents=[]; pts.forEach(p=>p.c=-1);
+  phase='setup'; iter=0; hist=[]; manualNote='';
+  render();
+}
+
+/* ---------- execução automática ---------- */
+function delay(){ return 1600 - (+$('speed').value)*140; }
+function tick(){
+  if(!running) return;
+  if(phase==='converged' || pts.length===0){ stop(); return; }
+  next();
+  timer=setTimeout(tick, delay());
+}
+function stop(){ running=false; clearTimeout(timer); updateUI(); }
+$('run').onclick = ()=>{ if(running){ stop(); } else { running=true; updateUI(); tick(); } };
+
+/* ---------- desenho ---------- */
+let W=0, dpr=1;
+function resize(){
+  dpr = window.devicePixelRatio||1;
+  W = cv.clientWidth;
+  cv.width = Math.round(W*dpr); cv.height = Math.round(W*H*dpr);
+  draw();
+}
+function hexA(hex,a){
+  const h=hex.replace('#','');
+  const n=parseInt(h.length===3?h.split('').map(c=>c+c).join(''):h,16);
+  return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;
+}
+function draw(){
+  if(!W) return;
+  const w=W, h=W*H;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle=colors.paper; ctx.fillRect(0,0,w,h);
+  const cp = cents.map(centPos);
+
+  // regiões
+  if($('showRegions').checked && cp.length){
+    const step = Math.max(6, Math.round(w/110));
+    for(let y=0;y<h;y+=step) for(let x=0;x<w;x+=step){
+      const q={x:(x+step/2)/w, y:(y+step/2)/w};
+      let best=0,bd=Infinity;
+      cp.forEach((c,i)=>{ const d=d2(q,c); if(d<bd){bd=d;best=i;} });
+      ctx.fillStyle=hexA(colors.cl[best],0.13);
+      ctx.fillRect(x,y,step,step);
+    }
+  }
+  // papel quadriculado
+  ctx.lineWidth=1;
+  for(let i=0;i<=20;i++){
+    const x=Math.round(i*w/20)+.5;
+    ctx.strokeStyle = i%5===0?colors.gridStrong:colors.grid;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+  }
+  for(let i=0;i<=15;i++){
+    const y=Math.round(i*w/20)+.5;
+    ctx.strokeStyle = i%5===0?colors.gridStrong:colors.grid;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+  }
+  // ligações
+  if($('showLines').checked && cp.length && phase!=='setup' && phase!=='init'){
+    const fa = reduceMotion?1:clamp((performance.now()-assignT)/450,0,1);
+    ctx.lineWidth=1;
+    pts.forEach(p=>{
+      if(p.c<0) return;
+      const c=cp[p.c];
+      ctx.strokeStyle=hexA(colors.cl[p.c],0.28*fa);
+      ctx.beginPath(); ctx.moveTo(p.x*w,p.y*w); ctx.lineTo(c.x*w,c.y*w); ctx.stroke();
+    });
+  }
+  // pontos
+  const r = Math.max(3.5, w/150);
+  pts.forEach(p=>{
+    ctx.beginPath(); ctx.arc(p.x*w,p.y*w,r,0,Math.PI*2);
+    ctx.fillStyle = p.c>=0 ? colors.cl[p.c] : colors.neutral;
+    ctx.fill();
+    ctx.lineWidth=1.2; ctx.strokeStyle=colors.paper; ctx.stroke();
+  });
+  // trajetos
+  if($('showTrails').checked){
+    cents.forEach((c,i)=>{
+      if(c.trail.length<2) return;
+      ctx.setLineDash([5,5]); ctx.lineWidth=2; ctx.strokeStyle=hexA(colors.cl[i],0.8);
+      ctx.beginPath();
+      const t=c.trail.slice(0,-1);
+      t.forEach(([x,y],j)=>j?ctx.lineTo(x*w,y*w):ctx.moveTo(x*w,y*w));
+      ctx.lineTo(cp[i].x*w,cp[i].y*w);
+      ctx.stroke(); ctx.setLineDash([]);
+      t.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x*w,y*w,3,0,Math.PI*2); ctx.fillStyle=colors.cl[i]; ctx.fill(); });
+    });
+  }
+  // centroides
+  const R = Math.max(11, w/58);
+  cp.forEach((c,i)=>{
+    const x=c.x*w, y=c.y*w;
+    ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2);
+    ctx.fillStyle=colors.paper; ctx.fill();
+    ctx.lineWidth=3; ctx.strokeStyle=colors.cl[i]; ctx.stroke();
+    const a=R*0.5;
+    ctx.lineWidth=3.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x-a,y-a); ctx.lineTo(x+a,y+a); ctx.moveTo(x+a,y-a); ctx.lineTo(x-a,y+a); ctx.stroke();
+    ctx.lineCap='butt';
+  });
+}
+let raf=null;
+function kick(){
+  if(raf) return;
+  const loop=()=>{
+    draw();
+    const busy = cents.some(c=>c.anim && performance.now()-c.anim.t0<c.anim.dur) || performance.now()-assignT<500;
+    if(busy) raf=requestAnimationFrame(loop);
+    else { cents.forEach(c=>c.anim=null); raf=null; draw(); }
+  };
+  raf=requestAnimationFrame(loop);
+}
+
+/* ---------- interface ---------- */
+const stepsEl=[...$('steps').children];
+function explainHTML(){
+  if(manualNote==='empty') return `<p>O quadro está vazio. Clique nele para criar pontos ou escolha um conjunto de dados e clique em <b>Gerar novos pontos</b>.</p>`;
+  if(manualNote==='drag') return `<p>Você moveu um centroide à mão. As cores antigas não valem mais: no próximo passo cada ponto vai procurar de novo o centroide mais próximo.</p><p class="tip">Experimente colocar dois centroides no mesmo grupo e veja o que acontece.</p>`;
+  if(manualNote==='point') return `<p>Novo ponto adicionado. Ele ainda não tem grupo (está cinza) — no próximo passo de atribuição ele vai escolher o centroide mais próximo.</p>`;
+  const ds=$('dataset').value;
+  switch(phase){
+    case 'setup': return `<p>Temos ${pts.length} pontos cinza, sem nenhum rótulo. O k-means vai tentar dividi-los em <b>${K} grupos</b>.</p><p class="tip">Escolha o valor de k abaixo e clique em <b>Próximo passo</b>. Você também pode clicar no quadro para criar pontos.</p>`;
+    case 'init': return `<p>Sorteamos ${K} pontos para servir de <b>centroides</b> iniciais (os círculos com ✕). Eles são o “centro provisório” de cada grupo — por enquanto, escolhidos ao acaso.</p><p class="tip">Antes de continuar, arraste os centroides para outros lugares e veja como o ponto de partida muda o resultado.</p>`;
+    case 'assigned': return `<p><b>Iteração ${iter}:</b> cada ponto mediu a distância até todos os centroides e ficou com a cor do mais próximo. ${iter===1?'Todos os pontos ganharam um grupo.':`<b>${lastChanged}</b> ${lastChanged===1?'ponto mudou':'pontos mudaram'} de grupo.`}</p>${$('showRegions').checked?'<p class="tip">As áreas coloridas mostram a “zona” de cada centroide: qualquer ponto ali dentro pertence àquela cor.</p>':''}`;
+    case 'updated': return `<p>Cada centroide andou até a <b>média</b> dos pontos da sua cor — ou seja, até o centro de gravidade do seu grupo.</p>${emptyCount?`<p class="tip">${emptyCount===1?'Um centroide ficou':'Alguns centroides ficaram'} sem pontos e não se mexeu.</p>`:''}<p class="tip">Como os centros mudaram de lugar, alguns pontos agora podem estar mais perto de outro centroide. Por isso repetimos a atribuição.</p>`;
+    case 'converged': return `<p><b>Convergiu!</b> Na iteração ${iter} nenhum ponto mudou de grupo, então os centroides também não vão mais se mover. Esse é o resultado final.</p>${ds==='rings'?'<p class="tip">Repare que os anéis não foram separados: o k-means imagina grupos “redondos” em volta de um centro, e isso não descreve anéis.</p>':'<p class="tip">Clique em <b>Reiniciar</b> e tente de novo: outros centroides iniciais podem levar a um resultado diferente.</p>'}`;
+  }
+}
+function updateUI(){
+  const idx = {setup:-1, init:0, assigned:1, updated:2, converged:3}[phase];
+  stepsEl.forEach((li,i)=>{
+    li.classList.toggle('now', i===idx);
+    li.classList.toggle('done', i<idx || phase==='converged');
+  });
+  $('explain').innerHTML = explainHTML();
+  const labels = {setup:'Sortear centroides', init:'Atribuir pontos', assigned:'Mover centroides', updated:'Atribuir pontos', converged:'Terminou'};
+  $('next').textContent = labels[phase];
+  $('next').disabled = phase==='converged' || running;
+  $('run').textContent = running ? 'Pausar' : 'Executar tudo';
+  $('run').disabled = phase==='converged' && !running;
+  $('iter').textContent = iter;
+  $('inertia').textContent = hist.length ? hist[hist.length-1].toFixed(2) : '—';
+  // legenda
+  const counts = cents.map((_,i)=>pts.filter(p=>p.c===i).length);
+  $('legend').innerHTML = cents.length && phase!=='init'
+    ? counts.map((n,i)=>`<span><i style="background:${colors.cl[i]}"></i>Grupo ${i+1}: ${n}</span>`).join('')
+    : `<span>${pts.length} pontos</span>`;
+  // gráfico
+  const svg=$('chart');
+  if(hist.length<2){ svg.innerHTML=''; }
+  else{
+    const mx=Math.max(...hist), mn=Math.min(...hist), span=(mx-mn)||1;
+    const xs=i=>6+i*(288/(hist.length-1)), ys=v=>8+(1-(v-mn)/span)*54;
+    const d=hist.map((v,i)=>`${xs(i).toFixed(1)},${ys(v).toFixed(1)}`).join(' ');
+    svg.innerHTML=`<polyline points="${d}" fill="none" stroke="${colors.ink}" stroke-width="2" vector-effect="non-scaling-stroke"/>`
+      + hist.map((v,i)=>`<circle cx="${xs(i)}" cy="${ys(v)}" r="2.6" fill="${colors.ink}"/>`).join('');
+  }
+}
+function render(){ updateUI(); kick(); draw(); }
+
+// k
+for(let k=2;k<=6;k++){
+  const b=document.createElement('button'); b.textContent=k; b.setAttribute('aria-pressed',k===K);
+  b.onclick=()=>{ K=k; [...$('kseg').children].forEach(x=>x.setAttribute('aria-pressed',+x.textContent===K)); resetAlgo(); };
+  $('kseg').appendChild(b);
+}
+$('next').onclick=next;
+$('reset').onclick=resetAlgo;
+$('regen').onclick=()=>{ pts=makeData($('dataset').value); resetAlgo(); };
+$('dataset').onchange=$('regen').onclick;
+$('clear').onclick=()=>{ pts=[]; resetAlgo(); };
+['showRegions','showLines','showTrails'].forEach(id=>$(id).onchange=()=>{ draw(); updateUI(); });
+
+// ponteiro
+let drag=-1, down=null;
+function toWorld(e){ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width, y:(e.clientY-r.top)/r.width}; }
+function hitCent(p){
+  const R=Math.max(11,W/58)+6;
+  for(let i=cents.length-1;i>=0;i--){ if(Math.hypot(cents[i].x-p.x,cents[i].y-p.y)*W<R) return i; }
+  return -1;
+}
+cv.addEventListener('pointerdown',e=>{
+  if(running) return;
+  const p=toWorld(e); const i=hitCent(p);
+  if(i>=0){ drag=i; cv.setPointerCapture(e.pointerId); cv.style.cursor='grabbing'; }
+  else down=p;
+});
+cv.addEventListener('pointermove',e=>{
+  const p=toWorld(e);
+  if(drag>=0){
+    const c=cents[drag]; c.anim=null;
+    c.x=clamp(p.x,0,1); c.y=clamp(p.y,0,H); c.trail=[[c.x,c.y]];
+    draw(); return;
+  }
+  cv.style.cursor = hitCent(p)>=0 && !running ? 'grab' : 'crosshair';
+});
+cv.addEventListener('pointerup',e=>{
+  if(drag>=0){
+    drag=-1; cv.style.cursor='grab';
+    if(phase!=='init' || iter>0){ phase='updated'; manualNote='drag'; }
+    else manualNote='';
+    render(); return;
+  }
+  if(down){
+    const p=toWorld(e);
+    if(Math.hypot(p.x-down.x,p.y-down.y)*W<6 && p.x>=0&&p.x<=1&&p.y>=0&&p.y<=H){
+      pts.push({x:p.x,y:p.y,c:-1});
+      if(cents.length){ if(phase==='assigned'||phase==='converged') phase='updated'; manualNote='point'; }
+      render();
+    }
+    down=null;
+  }
+});
+
+// tema
+const mq=window.matchMedia('(prefers-color-scheme: dark)');
+const retheme=()=>{ readColors(); draw(); updateUI(); };
+mq.addEventListener ? mq.addEventListener('change',retheme) : mq.addListener(retheme);
+new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+readColors();
+pts=makeData('blobs');
+new ResizeObserver(resize).observe(cv);
+resize(); updateUI();
+})();
+</script>
+</body>
+</html>

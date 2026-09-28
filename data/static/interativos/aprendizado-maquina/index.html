@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aprendizado de máquina, na prática</title>
+<meta name="description" content="Explicações interativas de algoritmos de aprendizado de máquina: árvores de decisão, florestas aleatórias, k-means, redes convolucionais e aprendizado por reforço.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF0EE; --surface:#F7FAF9; --ink:#15262B; --muted:#4D6068;
+  --line:#C5D2CF; --teal:#0E7478; --amber:#B7791F; --plum:#7A4E8C;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --text:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1B1E; --surface:#16262A; --ink:#E4EEEC; --muted:#9DB0B3;
+    --line:#2A3F44; --teal:#4FC2C2; --amber:#E0A94F; --plum:#C29AD6;
+  }
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.6 var(--text)}
+.wrap{max-width:62rem;margin:0 auto;padding:0 1.5rem}
+
+header{padding:4rem 0 3rem;display:grid;grid-template-columns:1.25fr 1fr;gap:2.5rem;align-items:center}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,6vw,4.2rem);line-height:1.02;letter-spacing:-.025em;margin:0 0 1.25rem}
+.intro{color:var(--muted);max-width:34rem;margin:0}
+.hero svg{width:100%;height:auto;display:block}
+.hero circle.p{animation:settle 1.6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes settle{from{transform:translate(var(--dx),var(--dy));opacity:.2}}
+@media (prefers-reduced-motion: reduce){.hero circle.p{animation:none}}
+
+section{border-top:1px solid var(--line);padding:2rem 0 2.5rem;display:grid;grid-template-columns:14rem 1fr;gap:2rem}
+h2{font-family:var(--display);font-weight:500;font-size:1.3rem;line-height:1.25;margin:0}
+h2 small{display:block;font-family:var(--text);font-size:.9rem;color:var(--muted);margin-top:.35rem;font-weight:400}
+ul{list-style:none;margin:0;padding:0;display:grid;gap:1rem}
+li a{display:block;text-decoration:none;color:inherit;padding:1rem 1.25rem;background:var(--surface);border-left:4px solid var(--c);border-radius:0 10px 10px 0}
+li a:hover h3{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+li a:focus-visible{outline:3px solid var(--c);outline-offset:3px}
+h3{font-family:var(--display);font-weight:800;font-size:1.25rem;margin:0 0 .25rem;color:var(--ink)}
+li p{margin:0;color:var(--muted);max-width:40rem}
+.sup{--c:var(--teal)} .uns{--c:var(--amber)} .nn{--c:var(--plum)} .rl{--c:var(--teal)}
+
+footer{border-top:1px solid var(--line);padding:1.5rem 0 3rem;color:var(--muted);font-size:.9rem}
+
+@media (max-width:760px){
+  header{grid-template-columns:1fr;padding-top:2.5rem}
+  .hero{order:-1;max-width:22rem}
+  section{grid-template-columns:1fr;gap:1rem}
+}
+</style>
+<style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head>
+<body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Aprendizado de máquina, na prática</h1>
+      <p class="intro">Explicações interativas de algoritmos clássicos. Cada página roda no navegador: mexa nos dados, avance passo a passo e veja o algoritmo decidir.</p>
+    </div>
+    <div class="hero" aria-hidden="true">
+      <svg viewBox="0 0 320 240">
+        <g fill="var(--teal)">
+          <circle class="p" cx="70" cy="70" r="6" style="--dx:90px;--dy:60px"/>
+          <circle class="p" cx="92" cy="56" r="6" style="--dx:60px;--dy:90px"/>
+          <circle class="p" cx="58" cy="96" r="6" style="--dx:120px;--dy:20px"/>
+          <circle class="p" cx="100" cy="88" r="6" style="--dx:80px;--dy:40px"/>
+          <circle class="p" cx="80" cy="112" r="6" style="--dx:140px;--dy:-10px"/>
+        </g>
+        <g fill="var(--amber)">
+          <circle class="p" cx="232" cy="62" r="6" style="--dx:-90px;--dy:80px"/>
+          <circle class="p" cx="256" cy="84" r="6" style="--dx:-120px;--dy:50px"/>
+          <circle class="p" cx="214" cy="92" r="6" style="--dx:-60px;--dy:70px"/>
+          <circle class="p" cx="248" cy="44" r="6" style="--dx:-100px;--dy:110px"/>
+        </g>
+        <g fill="var(--plum)">
+          <circle class="p" cx="140" cy="182" r="6" style="--dx:20px;--dy:-90px"/>
+          <circle class="p" cx="168" cy="198" r="6" style="--dx:-10px;--dy:-110px"/>
+          <circle class="p" cx="186" cy="172" r="6" style="--dx:-40px;--dy:-70px"/>
+          <circle class="p" cx="156" cy="160" r="6" style="--dx:30px;--dy:-60px"/>
+          <circle class="p" cx="196" cy="204" r="6" style="--dx:-60px;--dy:-120px"/>
+        </g>
+        <g fill="none" stroke="var(--ink)" stroke-width="2.5">
+          <path d="M72 88h16M80 80v16"/><path d="M232 68h16M240 60v16"/><path d="M162 184h16M170 176v16"/>
+        </g>
+      </svg>
+    </div>
+  </header>
+
+  <section class="sup">
+    <h2>Aprendizado supervisionado<small>Aprender com exemplos rotulados</small></h2>
+    <ul>
+      <li><a href="arvore-de-decisao/"><h3>Como uma árvore de decisão aprende</h3><p>Uma sequência de perguntas escolhidas para separar os dados em grupos puros, conta por conta.</p></a></li>
+      <li><a href="floresta-aleatoria/"><h3>Floresta aleatória na prática</h3><p>Várias árvores treinadas em amostras sorteadas votam juntas na resposta final.</p></a></li>
+    </ul>
+  </section>
+
+  <section class="uns">
+    <h2>Aprendizado não supervisionado<small>Encontrar estrutura sem rótulos</small></h2>
+    <ul>
+      <li><a href="k-means/"><h3>Como o k-means agrupa pontos</h3><p>Centroides se movem a cada iteração até que os grupos fiquem estáveis.</p></a></li>
+    </ul>
+  </section>
+
+  <section class="nn">
+    <h2>Redes neurais<small>Camadas que aprendem representações</small></h2>
+    <ul>
+      <li><a href="cnn-playground/"><h3>CNN Playground</h3><p>Convolução, pooling e classificação: como uma rede convolucional transforma pixels em uma classe.</p></a></li>
+    </ul>
+  </section>
+
+  <section class="rl">
+    <h2>Aprendizado por reforço<small>Aprender por tentativa e recompensa</small></h2>
+    <ul>
+      <li><a href="gridworld/"><h3>GridWorld</h3><p>Uma grade 5×5, um agente e uma regra de recompensa. Mova o agente e veja como o ambiente responde.</p></a></li>
+      <li><a href="cartpole/"><h3>CartPole</h3><p>Equilibre um poste sobre um carrinho e entenda estados, ações e episódios.</p></a></li>
+    </ul>
+  </section>
+
+  <footer>Páginas estáticas, sem rastreamento e sem cadastro.</footer>
+</div>
+</body>
+</html>

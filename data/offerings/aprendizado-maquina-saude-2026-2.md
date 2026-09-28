@@ -57,8 +57,29 @@ references:
   - 'PANESAR, Arjun. Machine Learning and AI for Healthcare: Big Data for Improved Health Outcomes. Berkeley: Apress, 2019.'
   - 'BERNER, Eta S. Clinical Decision Support Systems: Theory and Practice. 2. ed. New York: Springer, 2007.'
 language: pt-BR
-updated: 16/08/2026
-materials: []
+updated: 27/09/2026
+materials:
+  - title: 'Atividades interativas: catálogo por tema'
+    url: /interativos/aprendizado-maquina/
+    type: software
+  - title: 'Aprendizado supervisionado: árvore de decisão'
+    url: /interativos/aprendizado-maquina/arvore-de-decisao/
+    type: software
+  - title: 'Aprendizado supervisionado: floresta aleatória'
+    url: /interativos/aprendizado-maquina/floresta-aleatoria/
+    type: software
+  - title: 'Aprendizado não supervisionado: k-means'
+    url: /interativos/aprendizado-maquina/k-means/
+    type: software
+  - title: 'Redes neurais: CNN Playground'
+    url: /interativos/aprendizado-maquina/cnn-playground/
+    type: software
+  - title: 'Aprendizado por reforço: GridWorld'
+    url: /interativos/aprendizado-maquina/gridworld/
+    type: software
+  - title: 'Aprendizado por reforço: CartPole'
+    url: /interativos/aprendizado-maquina/cartpole/
+    type: software
 calendar:
   - date: '2026-08-07'
     title: Apresentação do curso

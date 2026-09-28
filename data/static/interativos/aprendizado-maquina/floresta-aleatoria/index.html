@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Floresta aleatória na prática</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F5EF; --surface:#FFFFFF; --ink:#18261D; --muted:#56675B; --line:#D3DDD1;
+  --forest:#2E6B45; --forest-soft:#E1EDE3; --pass:#2563A8; --fail:#D9822B;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111913; --surface:#1A241D; --ink:#E5EDE6; --muted:#9BAFA0; --line:#2D3C32;
+    --forest:#72C28E; --forest-soft:#20332616; --pass:#6FA8E8; --fail:#F0A55A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111913; --surface:#1A241D; --ink:#E5EDE6; --muted:#9BAFA0; --line:#2D3C32;
+  --forest:#72C28E; --forest-soft:#203326; --pass:#6FA8E8; --fail:#F0A55A;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0}
+h1{font-size:clamp(2.2rem,5.5vw,3.9rem);font-weight:800;letter-spacing:-.02em;max-width:16ch}
+h2{font-size:1.6rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.4rem}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:.4rem 0}
+.lede{font-size:1.15rem;max-width:62ch;color:var(--muted);margin-top:1rem}
+.lede strong{color:var(--ink)}
+
+/* passos */
+.steps{list-style:none;padding:0;margin:2.2rem 0 2.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:2px solid var(--ink)}
+.steps li{padding:1rem 1rem 0 0;counter-increment:s}
+.steps li+li{padding-left:1rem;border-left:1px solid var(--line)}
+.steps .n{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;color:var(--forest)}
+.steps h3{margin:.35rem 0 .25rem}
+.steps p{font-size:.95rem;color:var(--muted);margin:0}
+@media (max-width:820px){
+  .steps{grid-template-columns:1fr 1fr}
+  .steps li:nth-child(3){padding-left:0;border-left:0}
+  .steps li:nth-child(n+3){border-top:1px solid var(--line);margin-top:1rem}
+}
+@media (max-width:480px){
+  .steps{grid-template-columns:1fr}
+  .steps li,.steps li+li{padding-left:0;border-left:0}
+  .steps li+li{border-top:1px solid var(--line);margin-top:1rem}
+}
+
+/* laboratório */
+.lab{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:1.5rem;align-items:start}
+@media (max-width:900px){.lab{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.1rem}
+.field-wrap{position:relative}
+#field{width:100%;aspect-ratio:1/1;display:block;touch-action:none;cursor:crosshair;border-radius:10px}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;font-size:.92rem;color:var(--muted);margin-top:.7rem}
+.legend span{display:inline-flex;align-items:center;gap:.4rem}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.dot.pass{background:var(--pass)} .dot.fail{background:var(--fail)}
+.star{color:var(--ink);font-size:1rem;line-height:1}
+
+.ctrl{display:grid;gap:1.1rem}
+.group>.lbl{font-weight:700;font-size:.95rem;margin-bottom:.35rem;display:flex;justify-content:space-between;gap:.5rem}
+.group>.lbl output{font-family:var(--display);font-weight:800;color:var(--forest);font-size:1.1rem}
+.hint{font-size:.85rem;color:var(--muted);margin:.25rem 0 0}
+.seg{display:flex;flex-wrap:wrap;gap:.35rem}
+.seg button,.btn{font:inherit;font-size:.9rem;border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:.35rem .8rem;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.primary{background:var(--forest);border-color:var(--forest);color:var(--surface);font-weight:700;padding:.55rem 1.1rem;font-size:1rem}
+button:focus-visible,input:focus-visible,.mini:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+input[type=range]{width:100%;accent-color:var(--forest)}
+.check{display:flex;gap:.55rem;align-items:flex-start;font-size:.95rem}
+.check input{margin-top:.3rem;accent-color:var(--forest);width:18px;height:18px}
+
+.verdict{border-top:2px solid var(--ink);padding-top:.9rem}
+.verdict .big{font-family:var(--display);font-weight:800;font-size:1.9rem;line-height:1.1;margin:.2rem 0 .5rem}
+.verdict .big.pass{color:var(--pass)} .verdict .big.fail{color:var(--fail)}
+.ballots{display:flex;flex-wrap:wrap;gap:4px;margin:.4rem 0}
+.ballots button{width:22px;height:22px;border-radius:5px;border:0;padding:0;cursor:pointer}
+.ballots button.sel{outline:2px solid var(--ink);outline-offset:2px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.8rem}
+.stat{background:var(--bg);border-radius:10px;padding:.6rem .75rem}
+.stat b{font-family:var(--display);font-size:1.6rem;display:block;line-height:1.1}
+.stat span{font-size:.85rem;color:var(--muted)}
+
+section.block{margin-top:3rem}
+.sub{color:var(--muted);max-width:66ch;margin-bottom:1rem}
+.grove{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.75rem}
+.mini{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:.45rem;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.mini.sel{border-color:var(--forest);box-shadow:0 0 0 2px var(--forest)}
+.mini canvas{width:100%;aspect-ratio:1/1;display:block;border-radius:7px}
+.mini .cap{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;margin-top:.35rem;gap:.3rem}
+.chip{border-radius:999px;padding:.05rem .45rem;color:#fff;font-weight:700;font-size:.72rem}
+.chip.pass{background:var(--pass)} .chip.fail{background:var(--fail)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .chip{color:#111913} }
+:root[data-theme="dark"] .chip{color:#111913}
+.grow{animation:grow .45s cubic-bezier(.2,.8,.3,1.2) both}
+@keyframes grow{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.grow{animation:none}}
+
+.treebox{overflow-x:auto}
+.tree,.tree ul{list-style:none;margin:0;padding:0}
+.tree ul{padding-left:1.3rem;margin-left:.6rem;border-left:2px solid var(--line)}
+.tree li{margin:.35rem 0}
+.node{display:inline-flex;align-items:center;gap:.45rem;padding:.25rem .65rem;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);white-space:nowrap;font-size:.95rem}
+.node.on{border-color:var(--forest);background:var(--forest-soft);font-weight:700}
+.branch{font-size:.78rem;color:var(--muted);margin-right:.35rem;display:inline-block;min-width:2.1rem}
+.branch.on{color:var(--forest);font-weight:700}
+.leaf.pass{border-color:var(--pass)} .leaf.fail{border-color:var(--fail)}
+.leaf .dot{width:10px;height:10px}
+.leaf.on.pass{background:color-mix(in srgb,var(--pass) 16%,var(--surface))}
+.leaf.on.fail{background:color-mix(in srgb,var(--fail) 18%,var(--surface))}
+
+.try{columns:2 300px;column-gap:2rem;padding-left:1.1rem;margin:.5rem 0 0}
+.try li{margin-bottom:.6rem;break-inside:avoid}
+.imp{margin-top:1.1rem;border-top:1px solid var(--line);padding-top:.9rem}
+.imp h3{margin-bottom:.5rem}
+.imp-row{display:grid;grid-template-columns:4.2rem 1fr 3rem;align-items:center;gap:.6rem;margin:.35rem 0;font-size:.95rem}
+.imp-bar{height:14px;background:var(--bg);border-radius:999px;overflow:hidden}
+.imp-bar i{display:block;height:100%;background:var(--forest);border-radius:999px;transition:width .35s ease}
+.imp-row b{font-family:var(--display);text-align:right}
+@media (prefers-reduced-motion: reduce){.imp-bar i{transition:none}}
+footer{margin-top:3rem;font-size:.85rem;color:var(--muted)}
+</style>
+<style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head>
+<body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../">Todas as atividades</a><a href="../../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+<div class="wrap">
+  <header>
+    <h1>Como uma floresta aleatória decide</h1>
+    <p class="lede">Queremos prever se um aluno vai ser <strong>aprovado</strong> ou <strong>reprovado</strong> olhando só duas coisas: quantas horas ele estuda e quantas horas dorme. Em vez de confiar em uma única árvore de decisão, a floresta treina várias árvores um pouco diferentes e deixa que elas votem.</p>
+  </header>
+
+  <ol class="steps">
+    <li><div class="n">1</div><h3>Sorteio dos alunos</h3><p>Cada árvore recebe uma amostra sorteada com reposição: alguns alunos aparecem repetidos, outros ficam de fora.</p></li>
+    <li><div class="n">2</div><h3>Sorteio das perguntas</h3><p>A cada divisão, a árvore só pode escolher entre algumas variáveis. Isso deixa as árvores diferentes entre si.</p></li>
+    <li><div class="n">3</div><h3>Cada árvore aprende</h3><p>Ela faz perguntas como “estuda menos de 4 h?” até separar bem os grupos ou atingir a profundidade máxima.</p></li>
+    <li><div class="n">4</div><h3>Votação</h3><p>Para um aluno novo, cada árvore dá seu palpite. A resposta da floresta é a da maioria.</p></li>
+  </ol>
+
+  <div class="lab">
+    <div class="panel">
+      <div class="field-wrap"><canvas id="field" aria-label="Gráfico com os alunos: horas de estudo no eixo horizontal, horas de sono no eixo vertical"></canvas></div>
+      <div class="legend">
+        <span><i class="dot pass"></i>Aprovado</span>
+        <span><i class="dot fail"></i>Reprovado</span>
+        <span><b class="star">★</b>Aluno novo (arraste)</span>
+        <span>Cor de fundo mais forte = árvores mais de acordo</span>
+      </div>
+    </div>
+
+    <div class="panel ctrl">
+      <div class="group">
+        <div class="lbl">Turma de exemplo</div>
+        <div class="seg" id="presets">
+          <button data-p="reta">Fronteira reta</button>
+          <button data-p="duas">Precisa das duas</button>
+          <button data-p="circulo">Ponto ideal</button>
+          <button data-p="ruido">Com bagunça</button>
+          <button data-p="vazio">Turma vazia</button>
+        </div>
+      </div>
+      <div class="group">
+        <div class="lbl">Clicar no gráfico para</div>
+        <div class="seg" id="modes">
+          <button data-m="move">Mover aluno novo</button>
+          <button data-m="1">Adicionar aprovado</button>
+          <button data-m="0">Adicionar reprovado</button>
+          <button data-m="del">Apagar aluno</button>
+        </div>
+      </div>
+      <div class="group">
+        <div class="lbl"><label for="nTrees">Número de árvores</label><output id="nTreesOut"></output></div>
+        <input type="range" id="nTrees" min="1" max="30" step="1">
+      </div>
+      <div class="group">
+        <div class="lbl"><label for="depth">Profundidade máxima de cada árvore</label><output id="depthOut"></output></div>
+        <input type="range" id="depth" min="1" max="7" step="1">
+        <p class="hint">Quantas perguntas seguidas cada árvore pode fazer.</p>
+      </div>
+      <label class="check"><input type="checkbox" id="featRand"><span>Sortear a variável em cada pergunta<br><span class="hint">Desligado, toda árvore sempre escolhe a melhor variável.</span></span></label>
+      <div class="group">
+        <div class="lbl">O gráfico mostra</div>
+        <div class="seg" id="views">
+          <button data-v="forest">A floresta inteira</button>
+          <button data-v="tree">Só a árvore escolhida</button>
+        </div>
+      </div>
+      <div><button class="btn primary" id="plant">Plantar nova floresta</button></div>
+
+      <div class="verdict" aria-live="polite">
+        <div id="voteText"></div>
+        <div class="ballots" id="ballots"></div>
+        <div class="big" id="bigVerdict"></div>
+        <div class="stats">
+          <div class="stat"><b id="accForest">–</b><span>acerto da floresta</span></div>
+          <div class="stat"><b id="accTree">–</b><span>acerto de uma árvore, em média</span></div>
+        </div>
+        <p class="hint">Medido com os alunos que cada árvore não viu no sorteio (amostra “fora da sacola”).</p>
+        <div class="imp">
+          <h3>Importância das variáveis</h3>
+          <div class="imp-row"><span>Estudo</span><div class="imp-bar"><i id="impBar0" style="width:0"></i></div><b id="imp0">–</b></div>
+          <div class="imp-row"><span>Sono</span><div class="imp-bar"><i id="impBar1" style="width:0"></i></div><b id="imp1">–</b></div>
+          <p class="hint">Quanto cada variável reduziu a impureza (Gini) nas divisões de todas as árvores, somado e dividido pelo total. Mostra no que o modelo se apoia — é associação dentro do modelo, não efeito causal.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="block">
+    <h2>As árvores da floresta</h2>
+    <p class="sub">Cada quadrinho é uma árvore. Os pontos maiores são alunos sorteados mais de uma vez; os círculos vazios ficaram de fora do sorteio dela. Clique numa árvore para ver suas perguntas.</p>
+    <div class="grove" id="grove"></div>
+  </section>
+
+  <section class="block">
+    <h2 id="treeTitle">Por dentro da árvore</h2>
+    <p class="sub">O caminho destacado mostra as perguntas que essa árvore faz sobre o aluno novo até chegar ao seu voto.</p>
+    <div class="panel treebox"><ul class="tree" id="treeView"></ul></div>
+  </section>
+
+  <section class="block">
+    <h2>Para experimentar em aula</h2>
+    <ol class="try">
+      <li>Deixe <b>1 árvore</b> com profundidade 7 na turma “Com bagunça”. A fronteira fica cheia de recortes para acertar cada aluno: é o sobreajuste.</li>
+      <li>Agora suba para <b>30 árvores</b>. Os recortes de cada uma se compensam e a fronteira fica mais suave e confiável.</li>
+      <li>Compare os dois números de acerto: a floresta costuma acertar mais do que uma árvore sozinha.</li>
+      <li>Arraste o aluno novo para perto da fronteira. Veja a votação ficar dividida e a cor de fundo enfraquecer.</li>
+      <li>Desligue o sorteio da variável e plante de novo. As árvores ficam mais parecidas entre si, e a votação ganha menos com isso.</li>
+      <li>Olhe a importância das variáveis em cada turma. Na “Fronteira reta”, o estudo pesa bem mais; em “Precisa das duas”, o sono ganha espaço e as duas contam. Lembre: o número diz no que o modelo se apoia, não que dormir mais <i>causa</i> aprovação.</li>
+      <li>Adicione um aluno “estranho” no meio do outro grupo e veja quais árvores mudam por causa dele.</li>
+    </ol>
+  </section>
+  <footer>Simulação simplificada para fins didáticos: duas variáveis, divisões pelo índice de Gini e votação por maioria.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const FEAT = ["Estudo", "Sono"];
+const FEAT_Q = ["estuda", "dorme"];
+const S = { points:[], nTrees:12, maxDepth:4, featRand:true, seed:7, test:{x:5.2,y:4.6}, mode:"move", view:"forest", selected:0, preset:"duas" };
+let forest = [];
+let curImp = [0,0];
+
+function rngOf(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const fmt = v => v.toLocaleString("pt-BR",{maximumFractionDigits:1});
+
+/* ---------- turmas de exemplo ---------- */
+function makePreset(name){
+  const r = rngOf({reta:11,duas:22,circulo:33,ruido:44}[name]||1);
+  const pts=[];
+  if(name==="vazio") return pts;
+  const N = 64;
+  for(let i=0;i<N;i++){
+    const x = 0.4 + r()*9.2, y = 0.4 + r()*9.2;
+    let c;
+    if(name==="reta") c = (x*0.8 + y*0.35) > 5.6 ? 1:0;
+    else if(name==="duas") c = (x>4.2 && y>4.8) ? 1:0;
+    else if(name==="circulo") c = Math.hypot(x-6.3,y-6.8) < 2.9 ? 1:0;
+    else c = (x*0.75 + y*0.4) > 5.4 ? 1:0;
+    const flip = name==="ruido" ? 0.18 : 0.05;
+    if(r()<flip) c = 1-c;
+    pts.push({x,y,c});
+  }
+  return pts;
+}
+
+/* ---------- árvore de decisão ---------- */
+function gini(a,b){ const n=a+b; if(!n) return 0; const p=a/n; return 1-p*p-(1-p)*(1-p); }
+function buildTree(idx, depth, rng){
+  const P=S.points, counts=[0,0];
+  for(const i of idx) counts[P[i].c]++;
+  const n=idx.length;
+  const leaf = {leaf:true, c: counts[1]>=counts[0]?1:0, n, counts};
+  if(n<2 || depth>=S.maxDepth || counts[0]===0 || counts[1]===0) return leaf;
+  const parent = gini(counts[0],counts[1]);
+  let feats = S.featRand ? [rng()<0.5?0:1] : [0,1];
+  let best = findSplit(idx, feats, counts);
+  if(!best && S.featRand) best = findSplit(idx, [1-feats[0]], counts);
+  if(!best || parent-best.g < 1e-9) return leaf;
+  curImp[best.f] += n*(parent-best.g);
+  const L=[], R=[];
+  for(const i of idx) ((best.f===0?P[i].x:P[i].y) < best.t ? L : R).push(i);
+  return {leaf:false, f:best.f, t:best.t, n, counts,
+          left:buildTree(L,depth+1,rng), right:buildTree(R,depth+1,rng)};
+}
+function findSplit(idx, feats, counts){
+  const P=S.points, n=idx.length; let best=null;
+  for(const f of feats){
+    const v = i => f===0?P[i].x:P[i].y;
+    const s = idx.slice().sort((a,b)=>v(a)-v(b));
+    const l=[0,0];
+    for(let k=0;k<n-1;k++){
+      l[P[s[k]].c]++;
+      const a=v(s[k]), b=v(s[k+1]);
+      if(b-a<1e-9) continue;
+      const nl=k+1, nr=n-nl;
+      const g = (nl*gini(l[0],l[1]) + nr*gini(counts[0]-l[0],counts[1]-l[1]))/n;
+      if(!best || g<best.g-1e-12) best={f, t:(a+b)/2, g};
+    }
+  }
+  return best;
+}
+function predict(node,x,y,path){
+  while(!node.leaf){ if(path) path.add(node); node = ((node.f===0?x:y) < node.t) ? node.left : node.right; }
+  if(path) path.add(node);
+  return node.c;
+}
+
+function plant(){
+  const P=S.points, n=P.length; forest=[];
+  for(let t=0;t<S.nTrees;t++){
+    const rng = rngOf(S.seed*1009 + t*7919);
+    const bag = new Array(n).fill(0), idx=[];
+    for(let k=0;k<n;k++){ const i=Math.floor(rng()*n); idx.push(i); bag[i]++; }
+    curImp=[0,0];
+    const root=buildTree(idx,0,rng);
+    forest.push({root, bag, imp:curImp});
+  }
+  if(S.selected>=forest.length) S.selected=forest.length-1;
+}
+function forestP(x,y){ let s=0; for(const t of forest) s+=predict(t.root,x,y); return s/forest.length; }
+
+function oob(){
+  const P=S.points; if(!P.length) return [null,null];
+  let fc=0,fn=0, tSum=0,tN=0;
+  for(const t of forest){
+    let c=0,m=0;
+    P.forEach((p,i)=>{ if(!t.bag[i]){ m++; if(predict(t.root,p.x,p.y)===p.c) c++; } });
+    if(m){ tSum+=c/m; tN++; }
+  }
+  P.forEach((p,i)=>{
+    let v=0,k=0;
+    for(const t of forest) if(!t.bag[i]){ v+=predict(t.root,p.x,p.y); k++; }
+    if(k){ fn++; if(((v/k)>=0.5?1:0)===p.c) fc++; }
+  });
+  return [fn?fc/fn:null, tN?tSum/tN:null];
+}
+
+/* ---------- cores e desenho ---------- */
+let C={};
+function hex(h){h=h.trim().replace("#",""); if(h.length===3)h=h.split("").map(c=>c+c).join(""); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function readColors(){
+  const cs=getComputedStyle(document.documentElement), g=v=>cs.getPropertyValue(v).trim();
+  C={surf:hex(g("--surface")), pass:hex(g("--pass")), fail:hex(g("--fail")),
+     passH:g("--pass"), failH:g("--fail"), ink:g("--ink"), muted:g("--muted"), line:g("--line"), surfH:g("--surface"), forest:g("--forest")};
+}
+function tint(p){
+  const k = p>=0.5?C.pass:C.fail, s=0.08+0.40*Math.abs(2*p-1);
+  return [0,1,2].map(i=>Math.round(C.surf[i]*(1-s)+k[i]*s));
+}
+function setup(cv){
+  const r=cv.getBoundingClientRect(), d=window.devicePixelRatio||1;
+  const w=Math.max(1,Math.round(r.width)), h=Math.max(1,Math.round(r.height));
+  if(cv.width!==w*d||cv.height!==h*d){cv.width=w*d;cv.height=h*d;}
+  const ctx=cv.getContext("2d"); ctx.setTransform(d,0,0,d,0,0); return {ctx,w,h};
+}
+const off=document.createElement("canvas");
+function drawRegions(ctx,X,Y,W,H,res,fn){
+  off.width=res; off.height=res;
+  const o=off.getContext("2d"), img=o.createImageData(res,res);
+  for(let j=0;j<res;j++) for(let i=0;i<res;i++){
+    const c=tint(fn((i+.5)/res*10, 10-(j+.5)/res*10)), q=(j*res+i)*4;
+    img.data[q]=c[0]; img.data[q+1]=c[1]; img.data[q+2]=c[2]; img.data[q+3]=255;
+  }
+  o.putImageData(img,0,0);
+  ctx.imageSmoothingEnabled=false; ctx.drawImage(off,X,Y,W,H);
+}
+function starPath(ctx,cx,cy,R){
+  ctx.beginPath();
+  for(let k=0;k<10;k++){ const a=-Math.PI/2+k*Math.PI/5, r=k%2?R*0.45:R; ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a)); }
+  ctx.closePath();
+}
+
+const field=document.getElementById("field");
+let geo={L:0,T:0,W:1,H:1};
+function drawField(){
+  const {ctx,w,h}=setup(field);
+  const L=46,T=10,Rm=12,B=42, W=w-L-Rm, H=h-T-B; geo={L,T,W,H};
+  ctx.clearRect(0,0,w,h);
+  const tree = forest[S.selected];
+  const fn = S.view==="tree" && tree ? (x,y)=>predict(tree.root,x,y) : forestP;
+  drawRegions(ctx,L,T,W,H,90,fn);
+  // grade
+  ctx.strokeStyle=C.line; ctx.lineWidth=1; ctx.fillStyle=C.muted;
+  ctx.font="12px "+getComputedStyle(document.body).fontFamily;
+  for(let v=0;v<=10;v+=2){
+    const x=L+v/10*W, y=T+(1-v/10)*H;
+    ctx.globalAlpha=.5; ctx.beginPath(); ctx.moveTo(x,T); ctx.lineTo(x,T+H); ctx.moveTo(L,y); ctx.lineTo(L+W,y); ctx.stroke(); ctx.globalAlpha=1;
+    ctx.textAlign="center"; ctx.textBaseline="top"; ctx.fillText(v+"h",x,T+H+5);
+    ctx.textAlign="right"; ctx.textBaseline="middle"; ctx.fillText(v+"h",L-6,y);
+  }
+  ctx.fillStyle=C.ink; ctx.font="bold 13px "+getComputedStyle(document.body).fontFamily;
+  ctx.textAlign="center"; ctx.textBaseline="bottom"; ctx.fillText("Horas de estudo por dia →",L+W/2,h-2);
+  ctx.save(); ctx.translate(12,T+H/2); ctx.rotate(-Math.PI/2); ctx.textBaseline="middle"; ctx.fillText("Horas de sono por noite →",0,0); ctx.restore();
+  // alunos
+  const sx=x=>L+x/10*W, sy=y=>T+(1-y/10)*H;
+  const onlyTree = S.view==="tree" && tree;
+  S.points.forEach((p,i)=>{
+    const inBag = !onlyTree || tree.bag[i]>0;
+    const r = onlyTree && inBag ? 4+2.2*Math.sqrt(tree.bag[i]-1) : 5.5;
+    ctx.beginPath(); ctx.arc(sx(p.x),sy(p.y),r,0,Math.PI*2);
+    if(inBag){ ctx.fillStyle=p.c?C.passH:C.failH; ctx.fill(); ctx.lineWidth=1.5; ctx.strokeStyle=C.surfH; ctx.stroke(); }
+    else { ctx.lineWidth=1.5; ctx.strokeStyle=p.c?C.passH:C.failH; ctx.globalAlpha=.55; ctx.stroke(); ctx.globalAlpha=1; }
+  });
+  // aluno novo
+  starPath(ctx,sx(S.test.x),sy(S.test.y),12);
+  ctx.fillStyle=C.ink; ctx.fill(); ctx.lineWidth=2.5; ctx.strokeStyle=C.surfH; ctx.stroke();
+}
+
+/* ---------- mini árvores ---------- */
+const grove=document.getElementById("grove");
+function buildGrove(animate){
+  grove.innerHTML="";
+  forest.forEach((t,i)=>{
+    const b=document.createElement("button");
+    b.className="mini"+(animate?" grow":""); if(animate) b.style.animationDelay=(i*35)+"ms";
+    b.innerHTML=`<canvas></canvas><div class="cap"><span>Árvore ${i+1}</span><span class="chip"></span></div>`;
+    b.addEventListener("click",()=>{S.selected=i; renderLight();});
+    grove.appendChild(b);
+  });
+}
+function drawGrove(){
+  [...grove.children].forEach((b,i)=>{
+    const t=forest[i]; if(!t) return;
+    const cv=b.querySelector("canvas"), {ctx,w,h}=setup(cv);
+    drawRegions(ctx,0,0,w,h,40,(x,y)=>predict(t.root,x,y));
+    S.points.forEach((p,k)=>{
+      const x=p.x/10*w, y=(1-p.y/10)*h;
+      ctx.beginPath();
+      if(t.bag[k]){ ctx.arc(x,y,1.8+1.4*Math.sqrt(t.bag[k]),0,Math.PI*2); ctx.fillStyle=p.c?C.passH:C.failH; ctx.fill(); }
+      else { ctx.arc(x,y,2.2,0,Math.PI*2); ctx.lineWidth=1; ctx.strokeStyle=p.c?C.passH:C.failH; ctx.globalAlpha=.6; ctx.stroke(); ctx.globalAlpha=1; }
+    });
+    starPath(ctx,S.test.x/10*w,(1-S.test.y/10)*h,6); ctx.fillStyle=C.ink; ctx.fill();
+    b.querySelector(".chip").textContent=""; // atualizado em renderVotes
+  });
+}
+
+/* ---------- votação ---------- */
+function renderVotes(){
+  const votes=forest.map(t=>predict(t.root,S.test.x,S.test.y));
+  const yes=votes.filter(v=>v).length, n=votes.length;
+  document.getElementById("voteText").innerHTML =
+    `Aluno novo: estuda <b>${fmt(S.test.x)} h</b> e dorme <b>${fmt(S.test.y)} h</b>.<br><b>${yes} de ${n}</b> árvores votaram aprovado.`;
+  const bb=document.getElementById("ballots"); bb.innerHTML="";
+  votes.forEach((v,i)=>{
+    const b=document.createElement("button");
+    b.style.background=v?"var(--pass)":"var(--fail)";
+    b.title=`Árvore ${i+1}: ${v?"aprovado":"reprovado"}`; b.setAttribute("aria-label",b.title);
+    if(i===S.selected) b.className="sel";
+    b.addEventListener("click",()=>{S.selected=i; renderLight();});
+    bb.appendChild(b);
+  });
+  const pass = yes/n>=0.5, big=document.getElementById("bigVerdict");
+  const conf = Math.round(100*Math.max(yes,n-yes)/n);
+  big.className="big "+(pass?"pass":"fail");
+  big.textContent=`A floresta diz: ${pass?"aprovado":"reprovado"} (${conf}% dos votos)`;
+  [...grove.children].forEach((b,i)=>{
+    b.classList.toggle("sel",i===S.selected);
+    const c=b.querySelector(".chip"); c.className="chip "+(votes[i]?"pass":"fail"); c.textContent=votes[i]?"aprova":"reprova";
+  });
+}
+function renderStats(){
+  const [f,t]=oob(), pct=v=>v==null?"–":Math.round(v*100)+"%";
+  document.getElementById("accForest").textContent=pct(f);
+  document.getElementById("accTree").textContent=pct(t);
+  const tot=[0,0]; for(const tr of forest){ tot[0]+=tr.imp[0]; tot[1]+=tr.imp[1]; }
+  const sum=tot[0]+tot[1];
+  [0,1].forEach(f=>{
+    const v = sum>0 ? tot[f]/sum : null;
+    document.getElementById("imp"+f).textContent = v==null ? "–" : Math.round(v*100)+"%";
+    document.getElementById("impBar"+f).style.width = v==null ? "0" : (v*100)+"%";
+  });
+}
+
+/* ---------- diagrama da árvore ---------- */
+function nodeHTML(node,path){
+  const on=path.has(node);
+  if(node.leaf){
+    const cls=node.c?"pass":"fail", nm=node.c?"Aprovado":"Reprovado";
+    const k=node.counts[node.c];
+    return `<span class="node leaf ${cls}${on?" on":""}"><i class="dot ${cls}"></i>${nm} <span style="color:var(--muted);font-weight:400">(${k} de ${node.n} alunos)</span></span>`;
+  }
+  const lOn=path.has(node.left), rOn=path.has(node.right);
+  return `<span class="node${on?" on":""}">${FEAT_Q[node.f]} menos de ${fmt(node.t)} h?</span>
+  <ul><li><span class="branch${lOn?" on":""}">sim</span>${nodeHTML(node.left,path)}</li>
+      <li><span class="branch${rOn?" on":""}">não</span>${nodeHTML(node.right,path)}</li></ul>`;
+}
+function renderTree(){
+  const t=forest[S.selected], el=document.getElementById("treeView");
+  document.getElementById("treeTitle").textContent=`Por dentro da árvore ${S.selected+1}`;
+  if(!t){el.innerHTML="";return;}
+  if(!S.points.length){ el.innerHTML=`<li>Adicione alunos no gráfico para a árvore ter o que aprender.</li>`; return; }
+  const path=new Set(); predict(t.root,S.test.x,S.test.y,path);
+  el.innerHTML=`<li>${nodeHTML(t.root,path)}</li>`;
+}
+
+/* ---------- ciclo ---------- */
+function renderLight(){ drawField(); drawGrove(); renderVotes(); renderTree(); }
+function renderAll(animate){ plant(); buildGrove(animate); renderLight(); renderStats(); syncUI(); }
+
+function syncUI(){
+  document.querySelectorAll("#presets button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===S.preset));
+  document.querySelectorAll("#modes button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===S.mode));
+  document.querySelectorAll("#views button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.view));
+  document.getElementById("nTreesOut").textContent=S.nTrees;
+  document.getElementById("depthOut").textContent=S.maxDepth;
+}
+
+/* ---------- controles ---------- */
+const nT=document.getElementById("nTrees"), dp=document.getElementById("depth"), fr=document.getElementById("featRand");
+nT.value=S.nTrees; dp.value=S.maxDepth; fr.checked=S.featRand;
+nT.addEventListener("input",()=>{S.nTrees=+nT.value; renderAll(false);});
+dp.addEventListener("input",()=>{S.maxDepth=+dp.value; renderAll(false);});
+fr.addEventListener("change",()=>{S.featRand=fr.checked; renderAll(true);});
+document.getElementById("presets").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; S.preset=b.dataset.p; S.points=makePreset(S.preset); if(S.preset==="vazio") S.mode="1"; renderAll(true);});
+document.getElementById("modes").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; S.mode=b.dataset.m; syncUI();});
+document.getElementById("views").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; S.view=b.dataset.v; syncUI(); drawField();});
+document.getElementById("plant").addEventListener("click",()=>{S.seed=1+Math.floor(Math.random()*99999); renderAll(true);});
+
+let drag=false;
+function toData(e){
+  const r=field.getBoundingClientRect(), px=e.clientX-r.left, py=e.clientY-r.top;
+  const x=(px-geo.L)/geo.W*10, y=(1-(py-geo.T)/geo.H)*10;
+  return {x:Math.min(10,Math.max(0,x)), y:Math.min(10,Math.max(0,y)), px, py, inside: x>=0&&x<=10&&y>=0&&y<=10};
+}
+field.addEventListener("pointerdown",e=>{
+  const d=toData(e);
+  const tx=geo.L+S.test.x/10*geo.W, ty=geo.T+(1-S.test.y/10)*geo.H;
+  const nearTest=Math.hypot(d.px-tx,d.py-ty)<18;
+  if(nearTest || S.mode==="move"){ drag=true; field.setPointerCapture(e.pointerId); S.test={x:d.x,y:d.y}; renderLight(); return; }
+  if(!d.inside) return;
+  if(S.mode==="del"){
+    let bi=-1,bd=1e9;
+    S.points.forEach((p,i)=>{ const q=Math.hypot((p.x-d.x)/10*geo.W,(p.y-d.y)/10*geo.H); if(q<bd){bd=q;bi=i;} });
+    if(bi>=0 && bd<16) S.points.splice(bi,1); else return;
+  } else {
+    S.points.push({x:d.x,y:d.y,c:+S.mode});
+  }
+  renderAll(false);
+});
+field.addEventListener("pointermove",e=>{ if(!drag) return; const d=toData(e); S.test={x:d.x,y:d.y}; renderLight(); });
+const end=()=>{drag=false;}; field.addEventListener("pointerup",end); field.addEventListener("pointercancel",end);
+
+let rt; new ResizeObserver(()=>{cancelAnimationFrame(rt); rt=requestAnimationFrame(()=>{drawField(); drawGrove();});}).observe(document.body);
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{readColors(); renderLight();});
+
+readColors();
+S.points=makePreset(S.preset);
+renderAll(true);
+})();
+</script>
+</body>
+</html>

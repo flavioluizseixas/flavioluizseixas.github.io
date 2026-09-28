@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Como uma árvore de decisão aprende</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F8FC; --grid:#E2E9F3; --card:#FFFFFF; --ink:#1B2A41; --muted:#56667E;
+  --line:#CAD5E4; --sim:#1D8A6E; --sim-soft:#D5EFE7; --nao:#C33A5B; --nao-soft:#F7DCE3;
+  --hl:#FFD84D; --hl-ink:#1B2A41; --focus:#2F6FEB;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111925; --grid:#1A2433; --card:#172131; --ink:#E4ECF7; --muted:#9AA9BF;
+    --line:#2C3A50; --sim:#4CC9A6; --sim-soft:#173B35; --nao:#F07392; --nao-soft:#3F1C28;
+    --hl:#E9C84A; --hl-ink:#111925; --focus:#7FA8FF;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111925; --grid:#1A2433; --card:#172131; --ink:#E4ECF7; --muted:#9AA9BF;
+  --line:#2C3A50; --sim:#4CC9A6; --sim-soft:#173B35; --nao:#F07392; --nao-soft:#3F1C28;
+  --hl:#E9C84A; --hl-ink:#111925; --focus:#7FA8FF;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; color:var(--ink); background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:1.0625rem; line-height:1.55;
+}
+h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;line-height:1.1;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.8rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:.6em 0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header.hero{padding:56px 0 28px}
+.hero p.lead{max-width:62ch;font-size:1.2rem;color:var(--muted)}
+.hero .question{display:inline-block;margin-top:18px;background:var(--hl);color:var(--hl-ink);padding:4px 12px;border-radius:3px;font-weight:700;transform:rotate(-1deg)}
+section{padding:28px 0 36px}
+section > .wrap > p.intro{max-width:66ch;color:var(--muted)}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:20px}
+.sim{color:var(--sim);font-weight:700}
+.nao{color:var(--nao);font-weight:700}
+.mark{background:linear-gradient(transparent 55%,var(--hl) 55%);color:inherit;padding:0 2px}
+code,.math{font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.math{display:block;background:var(--paper);border-left:4px solid var(--hl);padding:8px 12px;margin:10px 0;border-radius:0 6px 6px 0;overflow-x:auto;white-space:nowrap}
+button,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Playground */
+.play{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;margin-top:18px}
+.counter{display:flex;align-items:center;gap:10px;margin:6px 0}
+.counter .lab{width:90px}
+.counter button{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);font-size:1.2rem;line-height:1}
+.counter output{min-width:2ch;text-align:center;font-weight:700;font-size:1.2rem}
+.dots{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;padding:10px;border:1.5px dashed var(--line);border-radius:8px;margin:12px 0;background:var(--paper)}
+.dot{width:20px;height:20px;border-radius:50%}
+.dot.s{background:var(--sim)} .dot.n{background:var(--nao)}
+.verdict{font-weight:700}
+.curve svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:16px;font-size:.9rem;color:var(--muted);flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:22px;height:0;border-top:3px solid var(--ink);vertical-align:middle;margin-right:6px}
+.legend .ent::before{border-top-style:dashed;border-color:var(--muted)}
+
+/* Stepper */
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:18px 0 14px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--ink);background:var(--card);padding:8px 16px;border-radius:6px;font-weight:700}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:8px 14px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--hl);color:var(--hl-ink)}
+.stepcount{font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.progress i{display:block;height:100%;background:var(--ink);transition:width .3s}
+.treebox{overflow-x:auto;padding:10px}
+.treebox svg{display:block;margin:0 auto;min-width:760px;max-width:100%;height:auto}
+.below{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;margin-top:20px;align-items:start}
+.explain h3{margin-bottom:6px}
+.tag{display:inline-block;font-size:.85rem;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--paper);border:1.5px solid var(--line);margin-bottom:8px}
+.cand{border-top:1.5px solid var(--line);padding:12px 0}
+.cand:first-of-type{border-top:0}
+.cand.best{background:linear-gradient(90deg,color-mix(in srgb,var(--hl) 30%,transparent),transparent);margin:0 -20px;padding:12px 20px}
+.cand-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.cand-head b{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.1rem}
+.gainbar{height:10px;background:var(--paper);border-radius:5px;overflow:hidden;margin:6px 0;border:1px solid var(--line)}
+.gainbar i{display:block;height:100%;background:var(--ink)}
+.cand.best .gainbar i{background:var(--hl);}
+.br{display:grid;grid-template-columns:minmax(90px,auto) 1fr auto;gap:10px;align-items:center;font-size:.95rem;margin:3px 0}
+.mini{height:12px;display:flex;border-radius:3px;overflow:hidden;background:var(--line)}
+.mini .s{background:var(--sim)} .mini .n{background:var(--nao)}
+.small{font-size:.9rem;color:var(--muted)}
+.winner{display:inline-block;background:var(--hl);color:var(--hl-ink);font-weight:700;font-size:.8rem;padding:1px 8px;border-radius:3px;margin-left:6px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-family:"Bricolage Grotesque",system-ui,sans-serif}
+tr.off td{opacity:.22}
+tr.on td:first-child{box-shadow:inset 4px 0 0 var(--hl)}
+td.cls-s{color:var(--sim);font-weight:700} td.cls-n{color:var(--nao);font-weight:700}
+.classify{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0}
+.classify label{display:flex;flex-direction:column;font-size:.9rem;font-weight:700;gap:4px}
+.classify select{padding:6px;border:1.5px solid var(--line);border-radius:6px;background:var(--paper)}
+.result{font-size:1.25rem;font-weight:700;margin-top:6px}
+
+/* Tree svg */
+.node rect.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.node.cur rect.box{stroke:var(--ink);stroke-width:3}
+.node.leaf-s rect.box{fill:var(--sim-soft);stroke:var(--sim)}
+.node.leaf-n rect.box{fill:var(--nao-soft);stroke:var(--nao)}
+.node.path rect.box{stroke:var(--hl);stroke-width:4}
+.node text{fill:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.node .t1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;font-size:15px}
+.node .t2{font-size:12px;fill:var(--muted)}
+.edge{stroke:var(--muted);stroke-width:1.6;fill:none}
+.edge.path{stroke:var(--hl);stroke-width:4}
+.elab rect{fill:var(--paper);stroke:var(--line)}
+.elab text{fill:var(--ink);font-size:12px;font-weight:700;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.fadein{animation:fi .45s ease-out}
+@keyframes fi{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+ol.algo{padding-left:1.3em;max-width:70ch}
+ol.algo li{margin:.5em 0}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px}
+footer{padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+
+@media (max-width:860px){
+  .play,.below,.cols2{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  .fadein{animation:none}.progress i{transition:none}
+}
+</style>
+<style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head>
+<body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../">Todas as atividades</a><a href="../../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+
+<header class="hero wrap">
+  <h1>Como uma árvore de decisão aprende</h1>
+  <p class="lead">Uma árvore de decisão é uma sequência de perguntas. O algoritmo escolhe, a cada passo, a pergunta que melhor separa os dados em grupos "puros". Vamos ver isso acontecer, conta por conta, com um exemplo clássico.</p>
+  <span class="question">Com base no clima, vamos jogar tênis hoje?</span>
+</header>
+
+<section id="impureza">
+  <div class="wrap">
+    <h2>Primeiro: medir a bagunça de um grupo</h2>
+    <p class="intro">Antes de escolher perguntas, precisamos de um número que diga o quão misturado está um grupo. Um grupo só com <span class="sim">Sim</span> é puro. Metade <span class="sim">Sim</span> e metade <span class="nao">Não</span> é o mais misturado possível. Mexa nas quantidades e veja o índice mudar.</p>
+    <div class="play">
+      <div class="panel">
+        <div class="counter"><span class="lab sim">Sim</span>
+          <button type="button" data-k="s" data-d="-1" aria-label="Remover um Sim">−</button>
+          <output id="cs">6</output>
+          <button type="button" data-k="s" data-d="1" aria-label="Adicionar um Sim">+</button></div>
+        <div class="counter"><span class="lab nao">Não</span>
+          <button type="button" data-k="n" data-d="-1" aria-label="Remover um Não">−</button>
+          <output id="cn">2</output>
+          <button type="button" data-k="n" data-d="1" aria-label="Adicionar um Não">+</button></div>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <strong>Índice Gini</strong> — a chance de errar se sortearmos um exemplo e o rotularmos ao acaso segundo as proporções do grupo:
+        <span class="math" id="giniF"></span>
+        <strong>Entropia</strong> — outra métrica comum, vinda da teoria da informação:
+        <span class="math" id="entF"></span>
+        <p class="verdict" id="verdict"></p>
+      </div>
+      <div class="panel curve">
+        <h3>As duas métricas lado a lado</h3>
+        <p class="small">No eixo horizontal, a proporção de Sim no grupo. As duas curvas valem zero nas pontas (grupos puros) e atingem o máximo no meio.</p>
+        <svg id="curve" viewBox="0 0 340 220" role="img" aria-label="Curvas do índice Gini e da entropia em função da proporção de Sim"></svg>
+        <div class="legend"><span>Gini (máximo 0,5)</span><span class="ent">Entropia (máximo 1)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="algoritmo">
+  <div class="wrap">
+    <h2>Agora: construindo a árvore passo a passo</h2>
+    <p class="intro">Temos 14 dias registrados. Em cada nó, o algoritmo testa todos os atributos, calcula quanto cada um reduziria a impureza e escolhe o melhor. Use os botões (ou as setas do teclado) para avançar.</p>
+
+    <div class="bar">
+      <div class="btns">
+        <button class="btn" id="bReset" type="button">Reiniciar</button>
+        <button class="btn" id="bPrev" type="button">Anterior</button>
+        <button class="btn primary" id="bNext" type="button">Próximo passo</button>
+        <button class="btn" id="bEnd" type="button">Ver árvore completa</button>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <span class="small">Métrica:</span>
+        <div class="seg" role="group" aria-label="Métrica de impureza">
+          <button type="button" id="mGini" aria-pressed="true">Gini</button>
+          <button type="button" id="mEnt" aria-pressed="false">Entropia</button>
+        </div>
+        <span class="stepcount" id="stepcount" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="progress"><i id="prog"></i></div>
+
+    <div class="panel treebox"><svg id="tree" role="img" aria-label="Árvore de decisão em construção"></svg></div>
+
+    <div class="below">
+      <div class="panel explain" id="explain" aria-live="polite"></div>
+      <div class="panel">
+        <h3>Os dados</h3>
+        <p class="small">As linhas acesas são os dias que chegaram ao nó em análise.</p>
+        <div class="tablewrap"><table id="tbl"></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="resumo">
+  <div class="wrap">
+    <h2>O algoritmo em resumo</h2>
+    <div class="cols2">
+      <div class="panel">
+        <h3>Receita (para cada nó)</h3>
+        <ol class="algo">
+          <li>Calcule a impureza do nó (Gini ou entropia).</li>
+          <li>Se o grupo for puro, ou não houver mais atributos, transforme o nó em folha com a classe mais frequente.</li>
+          <li>Para cada atributo disponível, divida os exemplos pelas respostas e calcule a impureza de cada grupo.</li>
+          <li>Faça a média ponderada: grupos maiores pesam mais.</li>
+          <li>Ganho = impureza do nó − média ponderada. Escolha o atributo de maior ganho.</li>
+          <li>Crie um ramo para cada resposta e repita tudo em cada novo nó.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <h3>Para conversar em sala</h3>
+        <p><span class="mark">Por que ponderar?</span> Um grupo com 1 exemplo puro não deveria valer tanto quanto um grupo com 10 exemplos misturados.</p>
+        <p><span class="mark">Gini ou entropia?</span> Na prática quase sempre levam à mesma árvore, como você pode testar trocando a métrica acima. O Gini é um pouco mais barato de calcular (não usa logaritmo).</p>
+        <p><span class="mark">E o sobreajuste?</span> Crescer até a pureza total pode decorar os dados. Por isso se limita a profundidade, o mínimo de exemplos por folha, ou se poda a árvore depois.</p>
+        <p class="small">Observação: aqui cada atributo gera um ramo por valor (estilo ID3). O CART, usado no scikit-learn, faz sempre divisões binárias, como "Tempo = Ensolarado? sim / não", mas a lógica de escolha pelo Gini é a mesma.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">Conjunto de dados: exemplo "Play Tennis", de J. R. Quinlan, traduzido.</footer>
+
+<script>
+(function(){
+"use strict";
+const ATTRS=["Tempo","Temperatura","Umidade","Vento"];
+const VALUES={Tempo:["Ensolarado","Nublado","Chuvoso"],Temperatura:["Quente","Ameno","Frio"],Umidade:["Alta","Normal"],Vento:["Fraco","Forte"]};
+const RAW=[
+["Ensolarado","Quente","Alta","Fraco","Não"],["Ensolarado","Quente","Alta","Forte","Não"],
+["Nublado","Quente","Alta","Fraco","Sim"],["Chuvoso","Ameno","Alta","Fraco","Sim"],
+["Chuvoso","Frio","Normal","Fraco","Sim"],["Chuvoso","Frio","Normal","Forte","Não"],
+["Nublado","Frio","Normal","Forte","Sim"],["Ensolarado","Ameno","Alta","Fraco","Não"],
+["Ensolarado","Frio","Normal","Fraco","Sim"],["Chuvoso","Ameno","Normal","Fraco","Sim"],
+["Ensolarado","Ameno","Normal","Forte","Sim"],["Nublado","Ameno","Alta","Forte","Sim"],
+["Nublado","Quente","Normal","Fraco","Sim"],["Chuvoso","Ameno","Alta","Forte","Não"]];
+const DATA=RAW.map((r,i)=>({id:i+1,Tempo:r[0],Temperatura:r[1],Umidade:r[2],Vento:r[3],Jogar:r[4]}));
+
+const fmt=x=>(Math.abs(x)<1e-12?0:x).toFixed(3).replace(".",",");
+const counts=rows=>{let s=0,n=0;rows.forEach(r=>r.Jogar==="Sim"?s++:n++);return{s,n,t:rows.length}};
+const gini=c=>{if(!c.t)return 0;const p=c.s/c.t,q=c.n/c.t;return 1-p*p-q*q};
+const entropy=c=>{if(!c.t)return 0;let h=0;[c.s,c.n].forEach(k=>{if(k){const p=k/c.t;h-=p*Math.log2(p)}});return h};
+let metric="gini";
+const imp=c=>metric==="gini"?gini(c):entropy(c);
+const mName=()=>metric==="gini"?"Gini":"Entropia";
+function impFormula(c){
+  if(metric==="gini") return `1 − (${c.s}/${c.t})² − (${c.n}/${c.t})² = ${fmt(gini(c))}`;
+  const parts=[];
+  [c.s,c.n].forEach(k=>{if(k)parts.push(`(${k}/${c.t})·log₂(${k}/${c.t})`)});
+  return parts.length?`−${parts.join(" − ")} = ${fmt(entropy(c))}`:"0";
+}
+
+/* ---------- Playground ---------- */
+const pc={s:6,n:2};
+function renderPlay(){
+  document.getElementById("cs").textContent=pc.s;
+  document.getElementById("cn").textContent=pc.n;
+  const d=document.getElementById("dots");
+  d.innerHTML=Array(pc.s).fill('<span class="dot s"></span>').join("")+Array(pc.n).fill('<span class="dot n"></span>').join("");
+  const c={s:pc.s,n:pc.n,t:pc.s+pc.n};
+  const gF=document.getElementById("giniF"),eF=document.getElementById("entF"),v=document.getElementById("verdict");
+  if(!c.t){gF.textContent="Grupo vazio";eF.textContent="Grupo vazio";v.textContent="Adicione exemplos ao grupo.";drawCurve(null);return}
+  gF.textContent=`Gini = 1 − (${c.s}/${c.t})² − (${c.n}/${c.t})² = ${fmt(gini(c))}`;
+  const parts=[];[c.s,c.n].forEach(k=>{if(k)parts.push(`(${k}/${c.t})·log₂(${k}/${c.t})`)});
+  eF.textContent=`Entropia = −${parts.join(" − ")} = ${fmt(entropy(c))}`;
+  const g=gini(c);
+  v.textContent=g===0?"Grupo puro: nada a separar. Isso vira uma folha da árvore.":
+    Math.abs(g-.5)<1e-9?"Metade e metade: a mistura máxima possível com duas classes.":
+    g<.3?"Pouco misturado: há uma classe dominante.":"Bem misturado: vale a pena dividir este grupo.";
+  drawCurve(c.s/c.t);
+}
+function drawCurve(p){
+  const W=340,H=220,L=40,R=12,T=14,B=34,w=W-L-R,h=H-T-B;
+  const X=x=>L+x*w,Y=y=>T+h-y*h;
+  let g="",e="";
+  for(let i=0;i<=100;i++){const x=i/100,c={s:x,n:1-x,t:1};g+=(i?"L":"M")+X(x).toFixed(1)+","+Y(gini(c)).toFixed(1);e+=(i?"L":"M")+X(x).toFixed(1)+","+Y(entropy(c)).toFixed(1)}
+  let s=`<line x1="${L}" y1="${Y(0)}" x2="${W-R}" y2="${Y(0)}" stroke="var(--line)"/><line x1="${L}" y1="${T}" x2="${L}" y2="${Y(0)}" stroke="var(--line)"/>`;
+  [0,.5,1].forEach(v=>{s+=`<text x="${L-6}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${String(v).replace(".",",")}</text><line x1="${L}" y1="${Y(v)}" x2="${W-R}" y2="${Y(v)}" stroke="var(--grid)"/>`});
+  [0,.5,1].forEach(v=>{s+=`<text x="${X(v)}" y="${H-16}" text-anchor="middle" font-size="11" fill="var(--muted)">${Math.round(v*100)}%</text>`});
+  s+=`<text x="${L+w/2}" y="${H-2}" text-anchor="middle" font-size="11" fill="var(--muted)">proporção de Sim</text>`;
+  s+=`<path d="${e}" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-dasharray="6 5"/><path d="${g}" fill="none" stroke="var(--ink)" stroke-width="3"/>`;
+  if(p!==null){const c={s:p,n:1-p,t:1};
+    s+=`<line x1="${X(p)}" y1="${T}" x2="${X(p)}" y2="${Y(0)}" stroke="var(--hl)" stroke-width="2"/>`;
+    s+=`<circle cx="${X(p)}" cy="${Y(entropy(c))}" r="6" fill="var(--card)" stroke="var(--muted)" stroke-width="2.5"/><circle cx="${X(p)}" cy="${Y(gini(c))}" r="6" fill="var(--hl)" stroke="var(--ink)" stroke-width="2.5"/>`}
+  document.getElementById("curve").innerHTML=s;
+}
+document.querySelectorAll(".counter button").forEach(b=>b.addEventListener("click",()=>{
+  const k=b.dataset.k;pc[k]=Math.max(0,Math.min(20,pc[k]+Number(b.dataset.d)));renderPlay()}));
+
+/* ---------- Tree induction ---------- */
+let nodes,root,steps,cur=0;
+function evaluate(rows,attrs){
+  const parent=imp(counts(rows)),T=rows.length;
+  const cands=attrs.map(a=>{
+    const branches=VALUES[a].map(v=>{const rs=rows.filter(r=>r[a]===v);const c=counts(rs);return{value:v,rows:rs,c,imp:imp(c)}}).filter(b=>b.c.t>0);
+    const weighted=branches.reduce((acc,b)=>acc+b.c.t/T*b.imp,0);
+    return{attr:a,branches,weighted,gain:parent-weighted};
+  });
+  let best=cands[0];cands.forEach(c=>{if(c.gain>best.gain+1e-12)best=c});
+  return{parent,cands,best};
+}
+function build(){
+  nodes=[];steps=[];
+  const mk=(rows,attrs,depth,parent,edge)=>{const n={id:nodes.length,rows,attrs,depth,parent,edge,children:[],c:counts(rows)};n.imp=imp(n.c);n.major=n.c.s>=n.c.n?"Sim":"Não";nodes.push(n);return n};
+  root=mk(DATA,ATTRS,0,null,null);root.appear=0;
+  steps.push({type:"start",node:root.id});
+  const q=[root];
+  while(q.length){
+    const n=q.shift();
+    if(n.c.s===0||n.c.n===0||!n.attrs.length){n.leafStep=steps.length;steps.push({type:"leaf",node:n.id,reason:n.attrs.length?"pure":"noattr"});continue}
+    const ev=evaluate(n.rows,n.attrs);
+    if(ev.best.gain<=1e-12){n.leafStep=steps.length;steps.push({type:"leaf",node:n.id,reason:"nogain"});continue}
+    steps.push({type:"eval",node:n.id,ev});
+    const si=steps.length;n.splitStep=si;n.split=ev.best.attr;
+    ev.best.branches.forEach(b=>{const ch=mk(b.rows,n.attrs.filter(a=>a!==ev.best.attr),n.depth+1,n,b.value);ch.appear=si;n.children.push(ch);q.push(ch)});
+    steps.push({type:"split",node:n.id,ev});
+  }
+  steps.push({type:"done",node:root.id});
+  layout();
+}
+const NW=164,NH=78,XG=184,YG=138,PAD=14;
+let TW,TH;
+function layout(){
+  let slot=0,maxD=0;
+  (function rec(n){maxD=Math.max(maxD,n.depth);
+    if(!n.children.length)n.x=PAD+slot++*XG+NW/2;
+    else{n.children.forEach(rec);n.x=(n.children[0].x+n.children[n.children.length-1].x)/2}
+    n.y=PAD+n.depth*YG})(root);
+  TW=PAD*2+slot*XG-(XG-NW);TH=PAD*2+maxD*YG+NH;
+}
+
+/* classification */
+const choice={Tempo:"Ensolarado",Temperatura:"Quente",Umidade:"Normal",Vento:"Fraco"};
+function classifyPath(){
+  const path=[root];let n=root;
+  while(n.children.length){const nx=n.children.find(c=>c.edge===choice[n.split]);if(!nx)break;path.push(nx);n=nx}
+  return{path,label:n.children.length?n.major:n.major};
+}
+
+function renderTree(){
+  const k=cur,st=steps[k];
+  const done=st.type==="done";
+  const pathIds=done?new Set(classifyPath().path.map(n=>n.id)):new Set();
+  let s="";
+  nodes.forEach(n=>{if(!n.parent||n.appear>k)return;const p=n.parent;
+    const x1=p.x,y1=p.y+NH,x2=n.x,y2=n.y,my=(y1+y2)/2;
+    const onP=pathIds.has(n.id)&&pathIds.has(p.id);
+    const fresh=n.appear===k?" fadein":"";
+    s+=`<g class="${fresh.trim()}"><path class="edge${onP?" path":""}" d="M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}"/>`;
+    const lw=n.edge.length*7.2+16,lx=(x1+x2)/2,ly=my;
+    s+=`<g class="elab"><rect x="${lx-lw/2}" y="${ly-11}" width="${lw}" height="22" rx="11"/><text x="${lx}" y="${ly+4}" text-anchor="middle">${n.edge}</text></g></g>`});
+  nodes.forEach(n=>{if(n.appear>k)return;
+    const isLeaf=n.leafStep!==undefined&&n.leafStep<=k, isSplit=n.splitStep!==undefined&&n.splitStep<=k;
+    let cls="node";
+    if(isLeaf)cls+=n.major==="Sim"?" leaf-s":" leaf-n";
+    if(st.node===n.id&&!done)cls+=" cur";
+    if(pathIds.has(n.id))cls+=" path";
+    if(n.appear===k&&k>0)cls+=" fadein";
+    const x=n.x-NW/2,y=n.y;
+    let t1=isLeaf?`Joga: ${n.major}`:isSplit?`${n.split}?`:(n.id===0?"Todos os dias":"A analisar…");
+    const bw=NW-24,sw=n.c.t?bw*n.c.s/n.c.t:0;
+    s+=`<g class="${cls}"><rect class="box" x="${x}" y="${y}" width="${NW}" height="${NH}" rx="${isLeaf?22:8}"/>`+
+      `<text class="t1" x="${n.x}" y="${y+23}" text-anchor="middle">${t1}</text>`+
+      `<text class="t2" x="${n.x}" y="${y+42}" text-anchor="middle">${n.c.s} Sim / ${n.c.n} Não</text>`+
+      `<rect x="${x+12}" y="${y+50}" width="${bw}" height="7" rx="2" fill="var(--nao)"/><rect x="${x+12}" y="${y+50}" width="${sw}" height="7" rx="2" fill="var(--sim)"/>`+
+      `<text class="t2" x="${n.x}" y="${y+71}" text-anchor="middle">${mName()} ${fmt(n.imp)}</text></g>`});
+  const svg=document.getElementById("tree");
+  svg.setAttribute("viewBox",`0 0 ${TW} ${TH}`);svg.style.maxWidth=TW+"px";svg.innerHTML=s;
+}
+
+function describeNode(n){
+  if(n.id===0)return"a raiz (todos os dias)";
+  const chain=[];let m=n;while(m.parent){chain.unshift(`${m.parent.split} = ${m.edge}`);m=m.parent}
+  return"o nó "+chain.join(" e ");
+}
+function renderExplain(){
+  const st=steps[cur],n=nodes[st.node],el=document.getElementById("explain");
+  let h="";
+  if(st.type==="start"){
+    h=`<span class="tag">Início</span><h3>Todos os 14 dias começam juntos na raiz</h3>
+    <p>Temos <span class="sim">${n.c.s} Sim</span> e <span class="nao">${n.c.n} Não</span>. Antes de dividir, medimos a impureza desse grupo:</p>
+    <span class="math">${mName()} = ${impFormula(n.c)}</span>
+    <p>Esse é o valor a ser reduzido. Uma boa pergunta vai gerar grupos com impureza bem menor.</p>`;
+  }else if(st.type==="eval"){
+    const ev=st.ev,maxG=Math.max(...ev.cands.map(c=>c.gain),1e-9);
+    h=`<span class="tag">Avaliando ${describeNode(n)}</span><h3>Qual pergunta separa melhor?</h3>
+    <p>Impureza atual: <b>${fmt(ev.parent)}</b> (${n.c.t} dias). Testamos cada atributo ainda não usado neste caminho:</p>`;
+    ev.cands.forEach(c=>{const best=c===ev.best;
+      h+=`<div class="cand${best?" best":""}"><div class="cand-head"><b>${c.attr}${best?'<span class="winner">melhor</span>':""}</b><span>Ganho <b>${fmt(c.gain)}</b></span></div>
+      <div class="gainbar"><i style="width:${Math.max(0,c.gain/maxG*100)}%"></i></div>`;
+      c.branches.forEach(b=>{h+=`<div class="br"><span>${b.value}</span><span class="mini" title="${b.c.s} Sim, ${b.c.n} Não"><span class="s" style="width:${b.c.s/b.c.t*100}%"></span><span class="n" style="width:${b.c.n/b.c.t*100}%"></span></span><span>${b.c.s}S ${b.c.n}N → ${fmt(b.imp)}</span></div>`});
+      h+=`<div class="small">Média ponderada: ${c.branches.map(b=>`(${b.c.t}/${n.c.t})·${fmt(b.imp)}`).join(" + ")} = ${fmt(c.weighted)}<br>Ganho: ${fmt(ev.parent)} − ${fmt(c.weighted)} = ${fmt(c.gain)}</div></div>`});
+  }else if(st.type==="split"){
+    const b=st.ev.best;
+    h=`<span class="tag">Dividindo ${describeNode(n)}</span><h3>Escolhido: ${b.attr}</h3>
+    <p>${b.attr} teve o maior ganho (<b>${fmt(b.gain)}</b>): a impureza cai de ${fmt(st.ev.parent)} para ${fmt(b.weighted)} em média. O nó vira a pergunta "${b.attr}?" e cada resposta gera um ramo:</p>`;
+    n.children.forEach(c=>{h+=`<div class="br"><span><b>${c.edge}</b></span><span class="mini"><span class="s" style="width:${c.c.s/c.c.t*100}%"></span><span class="n" style="width:${c.c.n/c.c.t*100}%"></span></span><span>${c.c.s}S ${c.c.n}N → ${fmt(c.imp)}</span></div>`});
+    h+=`<p class="small">Os novos nós entram na fila e serão analisados um de cada vez.</p>`;
+  }else if(st.type==="leaf"){
+    const why=st.reason==="pure"?`Todos os ${n.c.t} dias aqui são <span class="${n.major==="Sim"?"sim":"nao"}">${n.major}</span>. Impureza ${fmt(n.imp)}: não há nada a separar.`:
+      st.reason==="noattr"?"Não restam atributos para perguntar. A folha recebe a classe mais frequente.":"Nenhuma pergunta reduz a impureza. A folha recebe a classe mais frequente.";
+    h=`<span class="tag">Analisando ${describeNode(n)}</span><h3>Vira folha: joga = ${n.major}</h3><p>${why}</p><p>A recursão para neste ramo.</p>`;
+  }else{
+    h=`<span class="tag">Fim</span><h3>A árvore está pronta</h3>
+    <p>Todos os ramos terminaram em folhas. Para prever um dia novo, basta seguir as perguntas a partir da raiz. Escolha as condições:</p><div class="classify">`;
+    ATTRS.forEach(a=>{h+=`<label>${a}<select data-a="${a}">${VALUES[a].map(v=>`<option${choice[a]===v?" selected":""}>${v}</option>`).join("")}</select></label>`});
+    const r=classifyPath();
+    const used=r.path.filter(p=>p.split&&p.children.length).map(p=>p.split);
+    h+=`</div><div class="result">Previsão: <span class="${r.label==="Sim"?"sim":"nao"}">${r.label==="Sim"?"joga tênis":"não joga"}</span></div>
+    <p class="small">Caminho destacado na árvore. Atributos consultados: ${used.join(", ")}. ${ATTRS.filter(a=>!used.includes(a)).length?`Os outros (${ATTRS.filter(a=>!used.includes(a)).join(", ")}) nem precisaram ser olhados.`:""}</p>`;
+  }
+  el.innerHTML=h;
+  el.querySelectorAll("select").forEach(s=>s.addEventListener("change",()=>{choice[s.dataset.a]=s.value;renderTree();renderExplain();const f=el.querySelector(`select[data-a="${s.dataset.a}"]`);if(f)f.focus()}));
+}
+function renderTable(){
+  const st=steps[cur],n=nodes[st.node],ids=new Set(n.rows.map(r=>r.id)),all=st.type==="done";
+  let h=`<thead><tr><th>Dia</th>${ATTRS.map(a=>`<th>${a}</th>`).join("")}<th>Joga?</th></tr></thead><tbody>`;
+  DATA.forEach(r=>{const on=all||ids.has(r.id);
+    h+=`<tr class="${on?(all?"":"on"):"off"}"><td>${r.id}</td>${ATTRS.map(a=>`<td>${r[a]}</td>`).join("")}<td class="${r.Jogar==="Sim"?"cls-s":"cls-n"}">${r.Jogar}</td></tr>`});
+  document.getElementById("tbl").innerHTML=h+"</tbody>";
+}
+function render(){
+  renderTree();renderExplain();renderTable();
+  document.getElementById("stepcount").textContent=`Passo ${cur+1} de ${steps.length}`;
+  document.getElementById("prog").style.width=`${(cur+1)/steps.length*100}%`;
+  document.getElementById("bPrev").disabled=cur===0;document.getElementById("bReset").disabled=cur===0;
+  document.getElementById("bNext").disabled=cur===steps.length-1;document.getElementById("bEnd").disabled=cur===steps.length-1;
+}
+const go=i=>{cur=Math.max(0,Math.min(steps.length-1,i));render()};
+document.getElementById("bNext").onclick=()=>go(cur+1);
+document.getElementById("bPrev").onclick=()=>go(cur-1);
+document.getElementById("bReset").onclick=()=>go(0);
+document.getElementById("bEnd").onclick=()=>go(steps.length-1);
+document.addEventListener("keydown",e=>{
+  if(e.target.closest&&e.target.closest("select,input,textarea"))return;
+  if(e.key==="ArrowRight")go(cur+1);else if(e.key==="ArrowLeft")go(cur-1)});
+function setMetric(m){metric=m;
+  document.getElementById("mGini").setAttribute("aria-pressed",m==="gini");
+  document.getElementById("mEnt").setAttribute("aria-pressed",m==="entropy");
+  const keep=cur;build();cur=Math.min(keep,steps.length-1);render()}
+document.getElementById("mGini").onclick=()=>setMetric("gini");
+document.getElementById("mEnt").onclick=()=>setMetric("entropy");
+
+renderPlay();build();render();
+})();
+</script>
+</body>
+</html>

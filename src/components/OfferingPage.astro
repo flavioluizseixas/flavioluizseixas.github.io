@@ -218,7 +218,7 @@ const jsonLd = {
             {d.materials.map((m: any) => (
               <a
                 class="resource"
-                href={m.url}
+                href={m.url.startsWith('/') ? withBase(m.url) : m.url}
                 target={m.external ? '_blank' : undefined}
                 rel={m.external ? 'noopener noreferrer' : undefined}
               >

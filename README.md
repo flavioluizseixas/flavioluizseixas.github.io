@@ -150,6 +150,10 @@ materials:
 
 Arquivos locais ficam em `data/static/files/` e são publicados em `/files/`. Não publique links privados, tokens ou dados de alunos.
 
+As atividades interativas de aprendizado de máquina ficam em `data/static/interativos/aprendizado-maquina/` e são publicadas em `/interativos/aprendizado-maquina/`. O catálogo organiza as seis atividades por tema; cada subpasta contém um `index.html` com a simulação. Edite esses arquivos para atualizar as atividades. Os originais em `prompts/site/` são apenas referência local e não participam do build.
+
+Os links do catálogo e das atividades estão em `materials` de `data/offerings/aprendizado-maquina-saude-2026-2.md`. Ao abrir um novo semestre, mantenha esses materiais na oferta corrente. Para adicionar uma atividade, crie sua subpasta, inclua o link no catálogo e na oferta e cadastre a tradução do título em `data/i18n/content.ts`. As simulações estão em português; os títulos na página inglesa indicam esse idioma. As fontes do Google são opcionais: as simulações executam no navegador sem bibliotecas externas.
+
 ## Abrir um semestre
 
 1. Copie `data/offerings/_template.md.example` para um novo `.md`.

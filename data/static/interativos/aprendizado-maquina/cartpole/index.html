@@ -1,0 +1,586 @@
+<!doctype html><html lang="pt-BR"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head><body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../">Todas as atividades</a><a href="../../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+<title>CartPole Interativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f6f3ec; --page:#f2efe6; --surface:#ffffff; --surface-2:#faf8f2;
+    --ink:#181a17; --ink-2:#54564f; --muted:#8b8d84;
+    --line:#e2ded0; --line-strong:#cfc9b8;
+    --accent:#296b5e; --accent-ink:#ffffff; --accent-soft:rgba(41,107,94,0.12);
+    --start:#2b5fae; --start-soft:rgba(43,95,174,0.14);
+    --goal:#1e8a56; --goal-soft:rgba(30,138,86,0.14);
+    --hole:#b23a2e; --hole-soft:rgba(178,58,46,0.14);
+    --shadow: 0 1px 2px rgba(24,26,23,0.06), 0 8px 24px -12px rgba(24,26,23,0.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#111310; --page:#0d0f0c; --surface:#191c18; --surface-2:#1c1f1a;
+      --ink:#f1efe6; --ink-2:#c6c8bd; --muted:#8f9188;
+      --line:#2c2f28; --line-strong:#3c4038;
+      --accent:#63b7a4; --accent-ink:#0c1210; --accent-soft:rgba(99,183,164,0.16);
+      --start:#7fa4e8; --start-soft:rgba(127,164,232,0.16);
+      --goal:#57c98a; --goal-soft:rgba(87,201,138,0.16);
+      --hole:#e08277; --hole-soft:rgba(224,130,119,0.16);
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 28px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#111310; --page:#0d0f0c; --surface:#191c18; --surface-2:#1c1f1a;
+    --ink:#f1efe6; --ink-2:#c6c8bd; --muted:#8f9188;
+    --line:#2c2f28; --line-strong:#3c4038;
+    --accent:#63b7a4; --accent-ink:#0c1210; --accent-soft:rgba(99,183,164,0.16);
+    --start:#7fa4e8; --start-soft:rgba(127,164,232,0.16);
+    --goal:#57c98a; --goal-soft:rgba(87,201,138,0.16);
+    --hole:#e08277; --hole-soft:rgba(224,130,119,0.16);
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 28px -14px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--page); color:var(--ink);
+    font-family:"Sora", system-ui, -apple-system, sans-serif;
+    padding-inline:16px; padding-block: 28px 48px;
+  }
+  .wrap{ max-width: 1040px; margin: 0 auto; display:flex; flex-direction:column; gap:22px; }
+
+  header.top{ display:flex; flex-direction:column; gap:6px; }
+  .eyebrow{
+    font-family:"JetBrains Mono", monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent); font-weight:500;
+  }
+  h1{
+    font-family:"Fraunces", serif; font-weight:600; font-size: clamp(26px, 4vw, 38px);
+    margin:0; text-wrap:balance; letter-spacing:-0.01em;
+  }
+  .lede{ color:var(--ink-2); font-size:15px; line-height:1.55; max-width:64ch; margin:0; }
+  .lede b{ color: var(--ink); font-weight:600; }
+
+  .layout{ display:grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); gap:20px; align-items:start; }
+  @media (max-width: 760px){ .layout{ grid-template-columns: 1fr; } }
+
+  .panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:16px;
+    padding:18px; box-shadow: var(--shadow);
+  }
+  .panel h2{
+    font-family:"Sora", sans-serif; font-size:13px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--ink-2); margin:0 0 12px;
+  }
+
+  /* --- cartpole visualization --- */
+  .cp-card{ display:flex; flex-direction:column; gap:14px; }
+  .cp-frame{
+    position:relative; width:100%; height:230px; border-radius:12px;
+    background: linear-gradient(180deg, var(--surface-2), var(--surface-2) 70%, var(--surface-2));
+    border:1px solid var(--line-strong); overflow:hidden;
+  }
+  .cp-frame .boundary{
+    position:absolute; top:0; bottom:0; width:0; border-left:2px dashed var(--hole);
+    opacity:.55;
+  }
+  .cp-frame .boundary.left{ left:0; } .cp-frame .boundary.right{ right:0; border-left:none; border-right:2px dashed var(--hole); }
+  .cp-frame .zone-label{
+    position:absolute; bottom:6px; font-size:9px; font-family:"JetBrains Mono",monospace; color:var(--hole); opacity:.7;
+    text-transform:uppercase; letter-spacing:.04em;
+  }
+  .zone-label.left{ left:6px; } .zone-label.right{ right:6px; }
+
+  .rail{ position:absolute; left:28px; right:28px; bottom:50px; height:3px; background:var(--line-strong); border-radius:2px; z-index:0; }
+  .rail::before, .rail::after{
+    content:""; position:absolute; top:-3px; width:1px; height:9px; background:var(--line-strong);
+  }
+  .rail::before{ left:0; } .rail::after{ right:0; }
+
+  .cart{
+    position:absolute; bottom:56px; width:56px; height:32px; border-radius:7px;
+    background:var(--accent); box-shadow: var(--shadow);
+  }
+  .cart::before{ /* wheels */
+    content:""; position:absolute; left:8px; right:8px; bottom:-6px; height:6px;
+    border-radius:3px; background:var(--ink-2); opacity:.5;
+  }
+  .pole{
+    position:absolute; bottom:100%; left:50%; margin-left:-3px; width:6px; height:96px;
+    background: linear-gradient(var(--ink-2), var(--ink));
+    border-radius:3px 3px 0 0; transform-origin:50% 100%;
+  }
+  .pole .tip{
+    position:absolute; top:-8px; left:50%; transform:translateX(-50%);
+    width:16px; height:16px; border-radius:50%; background:var(--goal); box-shadow:0 0 0 3px var(--goal-soft);
+  }
+
+  .cp-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  @media (max-width:520px){ .cp-stats{ grid-template-columns:repeat(2,1fr);} }
+  .stat{ background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
+  .stat .k{ font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .stat .v{ font-family:"JetBrains Mono",monospace; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 16px; font-size:12px; color:var(--ink-2); justify-content:center; }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .swatch{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+  /* --- control panel --- */
+  .tabs{ display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:3px; }
+  .tab{
+    flex:1; text-align:center; padding:8px 10px; border-radius:8px; font-size:13px; font-weight:600;
+    color:var(--ink-2); cursor:pointer; border:none; background:none; font-family:"Sora",sans-serif;
+  }
+  .tab.active{ background:var(--surface); color:var(--ink); box-shadow: var(--shadow); }
+
+  .pushrow{ display:flex; gap:10px; margin:14px 0 6px; }
+  button.push{
+    flex:1; padding:16px 10px; border-radius:12px; border:1px solid var(--line-strong);
+    background:var(--surface-2); font-family:"Sora",sans-serif; font-weight:700; font-size:14px;
+    color:var(--ink); cursor:pointer; transition:background .15s ease,border-color .15s ease;
+  }
+  button.push:hover{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+  button.push:active{ transform:scale(.98); }
+  button.push.active-dir{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+  button.push:disabled{ opacity:.35; cursor:not-allowed; }
+  .key-hint{ text-align:center; font-size:11px; color:var(--muted); margin-bottom:12px; font-family:"JetBrains Mono",monospace; }
+
+  .btnrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+  button.btn{
+    font-family:"Sora",sans-serif; font-weight:600; font-size:13px; padding:9px 14px; border-radius:9px;
+    border:1px solid var(--line-strong); background:var(--surface-2); color:var(--ink); cursor:pointer;
+  }
+  button.btn:hover{ border-color:var(--accent); color:var(--accent); }
+  button.btn.primary{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+  button.btn.primary:hover{ opacity:.92; color:var(--accent-ink); }
+  button.btn:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .status-banner{
+    margin-top:12px; padding:9px 12px; border-radius:9px; font-size:13px; font-weight:600;
+    display:none; align-items:center; gap:8px;
+  }
+  .status-banner.show{ display:flex; }
+  .status-banner.ok{ background:var(--goal-soft); color:var(--goal); }
+  .status-banner.bad{ background:var(--hole-soft); color:var(--hole); }
+
+  .autonote{
+    margin-top:12px; padding:9px 12px; border-radius:9px; font-size:12.5px; font-weight:600;
+    background:var(--accent-soft); color:var(--accent); display:none; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .autonote.show{ display:flex; }
+
+  .qhint{
+    margin-top:12px; padding:10px 12px; border-radius:10px; border:1px dashed var(--line-strong);
+    font-size:12.5px; color:var(--ink-2); display:none;
+  }
+  .qhint.show{ display:block; }
+  .qhint b{ color:var(--accent); font-family:"JetBrains Mono",monospace; }
+  .qhint .row{ display:flex; justify-content:space-between; font-family:"JetBrains Mono",monospace; font-size:12px; margin-top:4px; }
+
+  /* --- training panel --- */
+  .slider-row{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .slider-row .lbl{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-2); }
+  .slider-row .lbl b{ color:var(--ink); font-family:"JetBrains Mono",monospace; }
+  input[type="range"]{ width:100%; accent-color: var(--accent); }
+
+  .spark-wrap{ margin: 4px 0 14px; }
+  .spark-wrap .lbl{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:4px; }
+  svg.spark{ width:100%; height:64px; display:block; }
+
+  .info-line{ font-size:12px; color:var(--muted); margin-top:10px; font-family:"JetBrains Mono",monospace; }
+  .explain{ font-size:13px; line-height:1.6; color:var(--ink-2); }
+  .explain code{ font-family:"JetBrains Mono",monospace; background:var(--surface-2); padding:1px 5px; border-radius:5px; font-size:12px; color:var(--ink); }
+  .explain ul{ margin:8px 0 0; padding-left:18px; display:flex; flex-direction:column; gap:4px; }
+  footer.note{ font-size:12px; color:var(--muted); text-align:center; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Reinforcement Learning · complemento do notebook</span>
+    <h1>CartPole: equilibrando o poste</h1>
+    <p class="lede">O estado aqui é <b>contínuo</b> (posição, velocidade, ângulo, velocidade angular) — não dá
+      para desenhar uma "grade" como no GridWorld. Empurre o carrinho manualmente para sentir por que balançar
+      é difícil e depois treine o Q-learning (com o mesmo truque de <b>discretização em bins</b> da Seção 4 do
+      notebook) para ver uma política equilibrar o poste sozinha.</p>
+  </header>
+
+  <div class="layout">
+    <!-- VISUALIZATION -->
+    <div class="panel cp-card">
+      <div class="cp-frame" id="frame">
+        <div class="boundary left"></div>
+        <div class="boundary right"></div>
+        <div class="zone-label left">x = −2.4</div>
+        <div class="zone-label right">x = +2.4</div>
+        <div class="rail"></div>
+        <div class="cart" id="cart">
+          <div class="pole" id="pole"><div class="tip"></div></div>
+        </div>
+      </div>
+
+      <div class="cp-stats">
+        <div class="stat"><div class="k">posição x</div><div class="v" id="vX">0.00 m</div></div>
+        <div class="stat"><div class="k">velocidade ẋ</div><div class="v" id="vXd">0.00 m/s</div></div>
+        <div class="stat"><div class="k">ângulo θ</div><div class="v" id="vTh">0.0°</div></div>
+        <div class="stat"><div class="k">passos (=recompensa)</div><div class="v" id="vSteps">0</div></div>
+      </div>
+
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--accent)"></i>carrinho</span>
+        <span><i class="swatch" style="background:var(--goal)"></i>ponta do poste</span>
+        <span><i class="swatch" style="background:var(--hole)"></i>limite do trilho (±2.4 m) / ±12°</span>
+      </div>
+    </div>
+
+    <!-- CONTROL -->
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab active" id="tabManual" type="button">Controlar manualmente</button>
+        <button class="tab" id="tabTrain" type="button">Treinar Q-learning</button>
+      </div>
+
+      <!-- MANUAL MODE -->
+      <div id="paneManual">
+        <div class="pushrow">
+          <button class="push" id="btnLeft" type="button">◀ empurrar esquerda</button>
+          <button class="push" id="btnRight" type="button">empurrar direita ▶</button>
+        </div>
+        <div class="key-hint">setas ← → do teclado também funcionam</div>
+
+        <div class="btnrow">
+          <button class="btn primary" id="btnReset" type="button">Reiniciar episódio</button>
+          <button class="btn" id="btnPause" type="button">Pausar</button>
+        </div>
+
+        <div class="status-banner" id="banner"></div>
+        <div class="autonote" id="autonote">
+          <span>🤖 política aprendida no controle</span>
+          <button class="btn" id="btnTakeControl" type="button" style="padding:4px 10px;font-size:12px;">assumir controle</button>
+        </div>
+        <div class="qhint" id="qhint">
+          A tabela sugere, para o estado (discretizado) atual: <b id="qSuggest">—</b>
+          <div class="row"><span>Q(s, esquerda)</span><span id="qLeft">—</span></div>
+          <div class="row"><span>Q(s, direita)</span><span id="qRight">—</span></div>
+        </div>
+      </div>
+
+      <!-- TRAIN MODE -->
+      <div id="paneTrain" style="display:none;">
+        <div class="slider-row">
+          <div class="lbl"><span>Episódios de treino</span><b id="epLabel">600</b></div>
+          <input type="range" id="epSlider" min="50" max="1500" step="50" value="600">
+        </div>
+
+        <div class="cp-stats" style="grid-template-columns:repeat(2,1fr);">
+          <div class="stat"><div class="k">passos médios (últ. 20 eps.)</div><div class="v" id="stAvg">—</div></div>
+          <div class="stat"><div class="k">bins de estado visitados</div><div class="v" id="stCoverage">—</div></div>
+        </div>
+
+        <div class="spark-wrap">
+          <div class="lbl">curva de aprendizado (passos sobrevividos, média móvel)</div>
+          <svg class="spark" id="spark" viewBox="0 0 300 64" preserveAspectRatio="none"></svg>
+        </div>
+
+        <div class="btnrow">
+          <button class="btn primary" id="btnWatchPolicy" type="button" disabled>▶ Ver política treinada em ação</button>
+        </div>
+
+        <div class="info-line">Q-table: 6×6×12×12×2 = 10.368 valores (mesma discretização do notebook)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel explain">
+    <h2>O que está acontecendo por baixo do capô</h2>
+    A cada <code>0.02s</code> o ambiente aplica a física do pêndulo invertido: uma força fixa empurra o
+    carrinho para a <code>esquerda</code> ou para a <code>direita</code> (essas são as únicas duas ações
+    possíveis), a gravidade puxa o poste, e o novo estado
+    <code>(x, ẋ, θ, θ̇)</code> é calculado pelas equações de movimento do pêndulo invertido.
+    O episódio termina (falha) se o carrinho sair de <code>±2.4 m</code> ou o poste inclinar mais que
+    <code>±12°</code> — e termina com <b>sucesso</b> se sobreviver <code>500</code> passos. Como o estado é
+    contínuo, para usar Q-learning tabular cada uma das 4 variáveis é cortada em faixas ("bins") e a
+    combinação de faixas vira um estado discreto — exatamente como na Seção 4 do notebook.
+  </div>
+
+  <footer class="note">Física e discretização idênticas às da Seção 4 do notebook <code>rl_tutorial.ipynb</code> (CartPole-v1).</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- physics (mirrors Gymnasium's CartPole-v1) ----------
+  var GRAVITY=9.8, MASSCART=1.0, MASSPOLE=0.1, TOTAL_MASS=1.1, LENGTH=0.5,
+      POLEMASS_LENGTH=0.05, FORCE_MAG=10.0, TAU=0.02;
+  var X_THRESH=2.4, THETA_THRESH=0.2095; // ~12 degrees
+
+  function cartpoleStep(s, action){
+    var force = action===1 ? FORCE_MAG : -FORCE_MAG;
+    var costheta = Math.cos(s.theta), sintheta = Math.sin(s.theta);
+    var temp = (force + POLEMASS_LENGTH*s.theta_dot*s.theta_dot*sintheta) / TOTAL_MASS;
+    var thetaacc = (GRAVITY*sintheta - costheta*temp) / (LENGTH*(4.0/3.0 - MASSPOLE*costheta*costheta/TOTAL_MASS));
+    var xacc = temp - POLEMASS_LENGTH*thetaacc*costheta/TOTAL_MASS;
+
+    var x = s.x + TAU*s.x_dot;
+    var x_dot = s.x_dot + TAU*xacc;
+    var theta = s.theta + TAU*s.theta_dot;
+    var theta_dot = s.theta_dot + TAU*thetaacc;
+
+    var failed = x < -X_THRESH || x > X_THRESH || theta < -THETA_THRESH || theta > THETA_THRESH;
+    return { state:{x:x,x_dot:x_dot,theta:theta,theta_dot:theta_dot}, reward:1, failed:failed };
+  }
+
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var rng = mulberry32(7);
+
+  function randInit(){
+    function u(){ return (rng()*0.1) - 0.05; }
+    return { x:u(), x_dot:u(), theta:u(), theta_dot:u() };
+  }
+
+  // ---------- discretization (mirrors the notebook) ----------
+  var N_BINS = [6,6,12,12];
+  var LIMITS = [[-2.4,2.4],[-3.0,3.0],[-0.418879,0.418879],[-3.5,3.5]];
+  function discretize(s){
+    var vals = [s.x, s.x_dot, s.theta, s.theta_dot];
+    return vals.map(function(v,i){
+      var lo=LIMITS[i][0], hi=LIMITS[i][1], n=N_BINS[i];
+      v = Math.max(lo, Math.min(hi, v));
+      var b = Math.floor((v-lo)/(hi-lo)*n);
+      return Math.min(b, n-1);
+    });
+  }
+  function binKey(bin){ return bin.join(","); }
+
+  // ---------- rendering ----------
+  var cartEl = document.getElementById("cart");
+  var poleEl = document.getElementById("pole");
+
+  function render(s){
+    var pct = Math.max(0, Math.min(1, (s.x + X_THRESH) / (2*X_THRESH)));
+    cartEl.style.left = "calc(" + pct + " * (100% - 56px))";
+    poleEl.style.transform = "rotate(" + (s.theta*180/Math.PI) + "deg)";
+
+    document.getElementById("vX").textContent = s.x.toFixed(2) + " m";
+    document.getElementById("vXd").textContent = s.x_dot.toFixed(2) + " m/s";
+    document.getElementById("vTh").textContent = (s.theta*180/Math.PI).toFixed(1) + "°";
+    document.getElementById("vSteps").textContent = sim.steps;
+
+    if (Q){
+      var bin = discretize(s);
+      var q = Q[binKey(bin)] || [0,0];
+      document.getElementById("qhint").classList.add("show");
+      document.getElementById("qSuggest").textContent = q[1] >= q[0] ? "empurrar direita ▶" : "◀ empurrar esquerda";
+      document.getElementById("qLeft").textContent = q[0].toFixed(2);
+      document.getElementById("qRight").textContent = q[1].toFixed(2);
+    }
+  }
+
+  // ---------- banners ----------
+  var bannerEl = document.getElementById("banner");
+  function showBanner(kind, text){ bannerEl.className = "status-banner show " + kind; bannerEl.textContent = text; }
+  function hideBanner(){ bannerEl.className = "status-banner"; bannerEl.textContent = ""; }
+
+  // ---------- simulation state machine ----------
+  var sim = { obs:randInit(), steps:0, done:false, paused:false, mode:"manual", currentAction:1 };
+  var timer = null;
+
+  function startLoop(){ if (!timer) timer = setInterval(tick, 20); }
+  function stopLoop(){ if (timer){ clearInterval(timer); timer=null; } }
+
+  function tick(){
+    if (sim.paused || sim.done) return;
+    var action = sim.mode==="auto" ? policyAction(sim.obs) : sim.currentAction;
+    var res = cartpoleStep(sim.obs, action);
+    sim.obs = res.state; sim.steps++;
+    if (res.failed){ sim.done=true; endEpisode(false); }
+    else if (sim.steps>=500){ sim.done=true; endEpisode(true); }
+    render(sim.obs);
+  }
+
+  function endEpisode(success){
+    if (success) showBanner("ok", "✓ sucesso — sobreviveu 500/500 passos");
+    else showBanner("bad", "✗ episódio encerrado aos " + sim.steps + " passos");
+    setPushEnabled(false);
+  }
+
+  function policyAction(obs){
+    if (!Q) return 1;
+    var q = Q[binKey(discretize(obs))] || [0,0];
+    return q[1] >= q[0] ? 1 : 0;
+  }
+
+  function resetSim(mode){
+    sim.obs = randInit(); sim.steps=0; sim.done=false; sim.paused=false;
+    sim.mode = mode || sim.mode;
+    hideBanner();
+    document.getElementById("btnPause").textContent = "Pausar";
+    setPushEnabled(sim.mode==="manual");
+    document.getElementById("autonote").classList.toggle("show", sim.mode==="auto");
+    render(sim.obs);
+    startLoop();
+  }
+
+  function setPushEnabled(on){
+    document.getElementById("btnLeft").disabled = !on;
+    document.getElementById("btnRight").disabled = !on;
+  }
+
+  // ---------- manual controls ----------
+  document.getElementById("btnLeft").addEventListener("click", function(){ if (sim.mode==="manual"){ sim.currentAction=0; setActiveDir(0);} });
+  document.getElementById("btnRight").addEventListener("click", function(){ if (sim.mode==="manual"){ sim.currentAction=1; setActiveDir(1);} });
+  function setActiveDir(a){
+    document.getElementById("btnLeft").classList.toggle("active-dir", a===0);
+    document.getElementById("btnRight").classList.toggle("active-dir", a===1);
+  }
+  window.addEventListener("keydown", function(e){
+    if (document.getElementById("paneManual").style.display === "none") return;
+    if (sim.mode!=="manual") return;
+    if (e.key==="ArrowLeft"){ e.preventDefault(); sim.currentAction=0; setActiveDir(0); }
+    if (e.key==="ArrowRight"){ e.preventDefault(); sim.currentAction=1; setActiveDir(1); }
+  });
+
+  document.getElementById("btnReset").addEventListener("click", function(){ resetSim("manual"); setActiveDir(sim.currentAction); });
+  document.getElementById("btnPause").addEventListener("click", function(){
+    sim.paused = !sim.paused;
+    this.textContent = sim.paused ? "Continuar" : "Pausar";
+  });
+  document.getElementById("btnTakeControl").addEventListener("click", function(){ sim.currentAction=1; resetSim("manual"); setActiveDir(1); });
+
+  // ---------- tabs ----------
+  var tabManual = document.getElementById("tabManual"), tabTrain = document.getElementById("tabTrain");
+  var paneManual = document.getElementById("paneManual"), paneTrain = document.getElementById("paneTrain");
+  tabManual.addEventListener("click", function(){
+    tabManual.classList.add("active"); tabTrain.classList.remove("active");
+    paneManual.style.display=""; paneTrain.style.display="none";
+  });
+  tabTrain.addEventListener("click", function(){
+    tabTrain.classList.add("active"); tabManual.classList.remove("active");
+    paneTrain.style.display=""; paneManual.style.display="none";
+    sim.paused = true; // pausa a simulação manual enquanto o usuário mexe no treino
+  });
+
+  // ---------- Q-learning training ----------
+  var Q = null;
+
+  function trainQLearning(episodes){
+    var trainRng = mulberry32(123);
+    var alpha=0.2, gamma=0.99, epsStart=1.0, epsEnd=0.05, epsDecay=0.997, maxSteps=500;
+    var q = {};
+    var eps = epsStart;
+    var hist = [];
+
+    function u(){ return (trainRng()*0.1) - 0.05; }
+
+    for (var ep=0; ep<episodes; ep++){
+      var s = { x:u(), x_dot:u(), theta:u(), theta_dot:u() };
+      var total = 0;
+      for (var t=0; t<maxSteps; t++){
+        var key = binKey(discretize(s));
+        if (!q[key]) q[key] = [0,0];
+        var a;
+        if (trainRng() < eps) a = trainRng() < 0.5 ? 0 : 1;
+        else a = q[key][1] >= q[key][0] ? 1 : 0;
+
+        var res = cartpoleStep(s, a);
+        var key2 = binKey(discretize(res.state));
+        if (!q[key2]) q[key2] = [0,0];
+        var bestNext = Math.max(q[key2][0], q[key2][1]);
+        q[key][a] += alpha * (res.reward + gamma*bestNext*(res.failed?0:1) - q[key][a]);
+
+        s = res.state; total += res.reward;
+        if (res.failed) break;
+      }
+      hist.push(total);
+      eps = Math.max(epsEnd, eps*epsDecay);
+    }
+    return { q:q, hist:hist };
+  }
+
+  function movingAverage(arr, w){
+    var out = [];
+    for (var i=0;i<arr.length;i++){
+      var lo=Math.max(0,i-w+1), slice=arr.slice(lo,i+1);
+      out.push(slice.reduce(function(a,b){return a+b;},0)/slice.length);
+    }
+    return out;
+  }
+
+  function renderSpark(series){
+    var svg = document.getElementById("spark");
+    svg.innerHTML = "";
+    var W=300,H=64,pad=4;
+    if (series.length<2) return;
+    var min=Math.min.apply(null,series), max=Math.max.apply(null,series);
+    if (min===max){ min-=1; max+=1; }
+    function x(i){ return pad + (i/(series.length-1))*(W-2*pad); }
+    function y(v){ return H-pad - ((v-min)/(max-min))*(H-2*pad); }
+
+    var grid = document.createElementNS("http://www.w3.org/2000/svg","line");
+    grid.setAttribute("x1",pad); grid.setAttribute("x2",W-pad);
+    grid.setAttribute("y1",H-pad); grid.setAttribute("y2",H-pad);
+    grid.setAttribute("stroke","var(--line)"); grid.setAttribute("stroke-width","1");
+    svg.appendChild(grid);
+
+    var pts = series.map(function(v,i){ return x(i)+","+y(v); }).join(" ");
+    var poly = document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    poly.setAttribute("points",pts); poly.setAttribute("fill","none");
+    poly.setAttribute("stroke","var(--accent)"); poly.setAttribute("stroke-width","2");
+    poly.setAttribute("stroke-linecap","round"); poly.setAttribute("stroke-linejoin","round");
+    svg.appendChild(poly);
+
+    var dot = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    dot.setAttribute("cx", x(series.length-1)); dot.setAttribute("cy", y(series[series.length-1])); dot.setAttribute("r","3");
+    dot.setAttribute("fill","var(--accent)");
+    svg.appendChild(dot);
+  }
+
+  function trainAndRender(){
+    var btn = document.getElementById("btnWatchPolicy");
+    var episodes = parseInt(document.getElementById("epSlider").value,10);
+    var res = trainQLearning(episodes);
+    Q = res.q;
+
+    var last20 = res.hist.slice(-20);
+    var avg = last20.reduce(function(a,b){return a+b;},0)/last20.length;
+    document.getElementById("stAvg").textContent = avg.toFixed(0);
+    document.getElementById("stCoverage").textContent = Object.keys(Q).length + " / 5184";
+
+    renderSpark(movingAverage(res.hist, Math.max(5, Math.round(episodes*0.05))));
+    btn.disabled = false;
+  }
+
+  document.getElementById("epSlider").addEventListener("input", function(){
+    document.getElementById("epLabel").textContent = this.value;
+  });
+  document.getElementById("epSlider").addEventListener("change", function(){
+    var btn = document.getElementById("btnWatchPolicy");
+    var oldLabel = btn.textContent;
+    btn.textContent = "treinando…"; btn.disabled = true;
+    setTimeout(function(){ trainAndRender(); btn.textContent = "▶ Ver política treinada em ação"; }, 30);
+  });
+
+  document.getElementById("btnWatchPolicy").addEventListener("click", function(){
+    tabManual.click();
+    resetSim("auto");
+  });
+
+  // ---------- boot ----------
+  render(sim.obs);
+  setActiveDir(1);
+  startLoop();
+
+  // train once up front so the Q-table hint / autoplay are available without extra clicks
+  var btn0 = document.getElementById("btnWatchPolicy");
+  btn0.textContent = "treinando…";
+  setTimeout(function(){ trainAndRender(); btn0.textContent = "▶ Ver política treinada em ação"; }, 60);
+})();
+</script>
+
+</body></html>

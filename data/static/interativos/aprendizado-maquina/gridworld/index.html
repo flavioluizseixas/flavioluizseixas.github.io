@@ -1,0 +1,678 @@
+<!doctype html><html lang="pt-BR"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>.activity-navigation{display:flex;flex-wrap:wrap;gap:1rem;max-width:72rem;margin:0 auto;padding:1rem 1.5rem;font:16px/1.5 system-ui,sans-serif}.activity-navigation a{color:inherit;text-decoration:underline;text-underline-offset:3px}.activity-navigation a:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style></head><body><nav class="activity-navigation" aria-label="Navegação das atividades"><a href="../">Todas as atividades</a><a href="../../../ensino/aprendizado-maquina-saude/">Voltar à disciplina</a></nav>
+<title>GridWorld Interativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f6f3ec; --page:#f2efe6; --surface:#ffffff; --surface-2:#faf8f2;
+    --ink:#181a17; --ink-2:#54564f; --muted:#8b8d84;
+    --line:#e2ded0; --line-strong:#cfc9b8;
+    --accent:#296b5e; --accent-ink:#ffffff; --accent-soft:rgba(41,107,94,0.12);
+    --start:#2b5fae; --start-soft:rgba(43,95,174,0.14);
+    --goal:#1e8a56; --goal-soft:rgba(30,138,86,0.14);
+    --hole:#b23a2e; --hole-soft:rgba(178,58,46,0.14);
+    --shadow: 0 1px 2px rgba(24,26,23,0.06), 0 8px 24px -12px rgba(24,26,23,0.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#111310; --page:#0d0f0c; --surface:#191c18; --surface-2:#15170f7f;
+      --surface-2:#1c1f1a;
+      --ink:#f1efe6; --ink-2:#c6c8bd; --muted:#8f9188;
+      --line:#2c2f28; --line-strong:#3c4038;
+      --accent:#63b7a4; --accent-ink:#0c1210; --accent-soft:rgba(99,183,164,0.16);
+      --start:#7fa4e8; --start-soft:rgba(127,164,232,0.16);
+      --goal:#57c98a; --goal-soft:rgba(87,201,138,0.16);
+      --hole:#e08277; --hole-soft:rgba(224,130,119,0.16);
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 28px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#111310; --page:#0d0f0c; --surface:#191c18; --surface-2:#1c1f1a;
+    --ink:#f1efe6; --ink-2:#c6c8bd; --muted:#8f9188;
+    --line:#2c2f28; --line-strong:#3c4038;
+    --accent:#63b7a4; --accent-ink:#0c1210; --accent-soft:rgba(99,183,164,0.16);
+    --start:#7fa4e8; --start-soft:rgba(127,164,232,0.16);
+    --goal:#57c98a; --goal-soft:rgba(87,201,138,0.16);
+    --hole:#e08277; --hole-soft:rgba(224,130,119,0.16);
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 28px -14px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--page); color:var(--ink);
+    font-family:"Sora", system-ui, -apple-system, sans-serif;
+    padding-inline:16px; padding-block: 28px 48px;
+  }
+  .wrap{ max-width: 1040px; margin: 0 auto; display:flex; flex-direction:column; gap:22px; }
+
+  header.top{ display:flex; flex-direction:column; gap:6px; }
+  .eyebrow{
+    font-family:"JetBrains Mono", monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent); font-weight:500;
+  }
+  h1{
+    font-family:"Fraunces", serif; font-weight:600; font-size: clamp(26px, 4vw, 38px);
+    margin:0; text-wrap:balance; letter-spacing:-0.01em;
+  }
+  .lede{ color:var(--ink-2); font-size:15px; line-height:1.55; max-width:62ch; margin:0; }
+  .lede b{ color: var(--ink); font-weight:600; }
+
+  .layout{ display:grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); gap:20px; align-items:start; }
+  @media (max-width: 760px){ .layout{ grid-template-columns: 1fr; } }
+
+  .panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:16px;
+    padding:18px; box-shadow: var(--shadow);
+  }
+  .panel h2{
+    font-family:"Sora", sans-serif; font-size:13px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--ink-2); margin:0 0 12px;
+  }
+
+  /* --- board --- */
+  .board-card{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .board-frame{ position:relative; width:min(92vw, 380px); aspect-ratio:1; }
+  .board{
+    position:relative; width:100%; height:100%;
+    display:grid; grid-template-columns:repeat(5,1fr); grid-template-rows:repeat(5,1fr);
+    border-radius:10px; overflow:hidden; border:1px solid var(--line-strong);
+    background: var(--surface-2);
+  }
+  .cell{
+    position:relative; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:"JetBrains Mono", monospace; font-size:11px; color: var(--muted);
+    cursor:default; user-select:none;
+  }
+  .cell.start{ background:var(--start-soft); }
+  .cell.goal{ background:var(--goal-soft); }
+  .cell.hole{ background:var(--hole-soft); }
+  .cell .tag{
+    position:absolute; top:3px; left:5px; font-size:9px; letter-spacing:.05em;
+    color:var(--muted); text-transform:uppercase;
+  }
+  .cell.start .tag{ color:var(--start); font-weight:700; }
+  .cell.goal .tag{ color:var(--goal); font-weight:700; }
+  .cell.hole .tag{ color:var(--hole); font-weight:700; }
+  .cell .coord{ position:absolute; bottom:3px; right:5px; font-size:9px; opacity:.65; }
+  .cell .mark{ font-size:15px; font-weight:700; }
+  .cell.hole .mark{ color:var(--hole); }
+  .cell.goal .mark{ color:var(--goal); font-size:11px; letter-spacing:.03em; }
+
+  .cell .policy-arrow{
+    font-size:20px; color:var(--accent); opacity:0; transform:scale(.7);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .cell .policy-q{
+    position:absolute; bottom:3px; left:5px; font-size:8.5px; color:var(--accent);
+    opacity:0; transition:opacity .2s ease; font-family:"JetBrains Mono",monospace;
+  }
+  .board.show-policy .cell .policy-arrow{ opacity:1; transform:scale(1); }
+  .board.show-policy .cell .policy-q{ opacity:.85; }
+  .cell.selected{ outline:2px solid var(--accent); outline-offset:-2px; z-index:2; }
+  .cell:not(.hole):not(.goal){ cursor:pointer; }
+
+  .agent{
+    position:absolute; width:16%; height:16%; left:2%; top:2%;
+    border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px var(--accent-soft);
+    transition: left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1);
+    z-index:3;
+  }
+  .agent::after{
+    content:""; position:absolute; inset:28%; border-radius:50%; background:var(--accent-ink);
+    opacity:.85;
+  }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 16px; font-size:12px; color:var(--ink-2); justify-content:center; }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .swatch{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+  /* --- control panel --- */
+  .tabs{ display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:3px; }
+  .tab{
+    flex:1; text-align:center; padding:8px 10px; border-radius:8px; font-size:13px; font-weight:600;
+    color:var(--ink-2); cursor:pointer; border:none; background:none; font-family:"Sora",sans-serif;
+  }
+  .tab.active{ background:var(--surface); color:var(--ink); box-shadow: var(--shadow); }
+
+  .stat-row{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin:14px 0; }
+  .stat{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:9px 11px;
+  }
+  .stat .k{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .stat .v{ font-family:"JetBrains Mono",monospace; font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .stat .v.ok{ color:var(--goal); } .stat .v.bad{ color:var(--hole); }
+
+  .dpad{ display:grid; grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px); gap:6px; justify-content:center; margin: 6px auto 4px; }
+  .dbtn{
+    border:1px solid var(--line-strong); background:var(--surface-2); border-radius:10px;
+    font-size:18px; color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition: background .15s ease, transform .05s ease;
+  }
+  .dbtn:hover{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+  .dbtn:active{ transform:scale(.94); }
+  .dbtn:disabled{ opacity:.35; cursor:not-allowed; }
+  .dbtn[data-a="up"]{ grid-column:2; grid-row:1; }
+  .dbtn[data-a="left"]{ grid-column:1; grid-row:2; }
+  .dbtn[data-a="right"]{ grid-column:3; grid-row:2; }
+  .dbtn[data-a="down"]{ grid-column:2; grid-row:3; }
+  .dcenter{ grid-column:2; grid-row:2; display:flex; align-items:center; justify-content:center; font-size:9px; color:var(--muted); text-align:center; font-family:"JetBrains Mono",monospace;}
+
+  .btnrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  button.btn{
+    font-family:"Sora",sans-serif; font-weight:600; font-size:13px; padding:9px 14px; border-radius:9px;
+    border:1px solid var(--line-strong); background:var(--surface-2); color:var(--ink); cursor:pointer;
+  }
+  button.btn:hover{ border-color:var(--accent); color:var(--accent); }
+  button.btn.primary{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+  button.btn.primary:hover{ opacity:.92; color:var(--accent-ink); }
+  button.btn:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .status-banner{
+    margin-top:12px; padding:9px 12px; border-radius:9px; font-size:13px; font-weight:600;
+    display:none; align-items:center; gap:8px;
+  }
+  .status-banner.show{ display:flex; }
+  .status-banner.ok{ background:var(--goal-soft); color:var(--goal); }
+  .status-banner.bad{ background:var(--hole-soft); color:var(--hole); }
+
+  .log{
+    margin-top:14px; border-top:1px solid var(--line); padding-top:10px;
+    max-height:150px; overflow-y:auto; font-family:"JetBrains Mono",monospace; font-size:11.5px;
+    display:flex; flex-direction:column-reverse; gap:3px;
+  }
+  .log-row{ display:flex; justify-content:space-between; gap:8px; color:var(--ink-2); padding:2px 0; }
+  .log-row .r{ font-variant-numeric:tabular-nums; }
+  .log-row .r.neg{ color:var(--hole); } .log-row .r.pos{ color:var(--goal); }
+  .log-empty{ color:var(--muted); font-family:"Sora",sans-serif; font-size:12.5px; }
+
+  /* --- training panel --- */
+  .slider-row{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .slider-row .lbl{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-2); }
+  .slider-row .lbl b{ color:var(--ink); font-family:"JetBrains Mono",monospace; }
+  input[type="range"]{ width:100%; accent-color: var(--accent); }
+
+  .spark-wrap{ margin: 4px 0 14px; }
+  .spark-wrap .lbl{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:4px; }
+  svg.spark{ width:100%; height:64px; display:block; }
+
+  .qtable{ margin-top:14px; }
+  .qtable .hint{ font-size:12px; color:var(--muted); margin-bottom:8px; }
+  table.qvals{ width:100%; border-collapse:collapse; font-family:"JetBrains Mono",monospace; font-size:12px; }
+  table.qvals th{ text-align:left; font-weight:600; color:var(--muted); padding:4px 6px; border-bottom:1px solid var(--line); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em;}
+  table.qvals td{ padding:5px 6px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+  table.qvals tr.best td{ color:var(--accent); font-weight:700; }
+  table.qvals td.na{ color:var(--muted); font-family:"Sora",sans-serif; }
+
+  .explain{ font-size:13px; line-height:1.6; color:var(--ink-2); }
+  .explain code{ font-family:"JetBrains Mono",monospace; background:var(--surface-2); padding:1px 5px; border-radius:5px; font-size:12px; color:var(--ink); }
+  .explain ul{ margin:8px 0 0; padding-left:18px; display:flex; flex-direction:column; gap:4px; }
+
+  footer.note{ font-size:12px; color:var(--muted); text-align:center; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Reinforcement Learning · complemento do notebook</span>
+    <h1>GridWorld: como o ambiente funciona</h1>
+    <p class="lede">Uma grade 5×5, um agente e uma regra de recompensa. Mova o agente manualmente para
+      sentir a <b>mecânica</b> (estado, ação, recompensa, transição) e depois treine o Q-learning ao vivo
+      para ver a <b>política ótima</b> emergir célula por célula — é exatamente o ambiente da Seção 2 do notebook.</p>
+  </header>
+
+  <div class="layout">
+    <!-- BOARD -->
+    <div class="panel board-card">
+      <div class="board-frame">
+        <div class="board" id="board"></div>
+        <div class="agent" id="agent"></div>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--start)"></i>início (0,0)</span>
+        <span><i class="swatch" style="background:var(--goal)"></i>objetivo (4,4) · +10</span>
+        <span><i class="swatch" style="background:var(--hole)"></i>buraco · −10</span>
+        <span><i class="swatch" style="background:var(--accent)"></i>agente</span>
+      </div>
+    </div>
+
+    <!-- CONTROL -->
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab active" id="tabManual" type="button">Jogar manualmente</button>
+        <button class="tab" id="tabTrain" type="button">Treinar Q-learning</button>
+      </div>
+
+      <!-- MANUAL MODE -->
+      <div id="paneManual">
+        <div class="stat-row">
+          <div class="stat"><div class="k">Estado atual</div><div class="v" id="stState">(0, 0)</div></div>
+          <div class="stat"><div class="k">Passo</div><div class="v" id="stStep">0</div></div>
+          <div class="stat"><div class="k">Última recompensa</div><div class="v" id="stReward">—</div></div>
+          <div class="stat"><div class="k">Retorno acumulado</div><div class="v" id="stTotal">0</div></div>
+        </div>
+
+        <div class="dpad">
+          <button class="dbtn" data-a="up" type="button">↑</button>
+          <button class="dbtn" data-a="left" type="button">←</button>
+          <div class="dcenter">setas<br/>do teclado</div>
+          <button class="dbtn" data-a="right" type="button">→</button>
+          <button class="dbtn" data-a="down" type="button">↓</button>
+        </div>
+
+        <div class="btnrow">
+          <button class="btn primary" id="btnReset" type="button">Reiniciar episódio</button>
+          <button class="btn" id="btnAutoLearned" type="button" disabled title="Treine primeiro na aba ao lado">▶ Autoplay política aprendida</button>
+        </div>
+
+        <div class="status-banner" id="banner"></div>
+
+        <div class="log" id="log"><div class="log-empty">o histórico de passos aparece aqui</div></div>
+      </div>
+
+      <!-- TRAIN MODE -->
+      <div id="paneTrain" style="display:none;">
+        <div class="slider-row">
+          <div class="lbl"><span>Episódios de treino</span><b id="epLabel">400</b></div>
+          <input type="range" id="epSlider" min="10" max="800" step="10" value="400">
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><div class="k">Retorno médio (últ. 20 eps.)</div><div class="v" id="stAvg">—</div></div>
+          <div class="stat"><div class="k">Estados com política ótima</div><div class="v" id="stCoverage">—</div></div>
+        </div>
+
+        <div class="spark-wrap">
+          <div class="lbl">curva de aprendizado (retorno por episódio, média móvel)</div>
+          <svg class="spark" id="spark" viewBox="0 0 300 64" preserveAspectRatio="none"></svg>
+        </div>
+
+        <div class="btnrow">
+          <label class="btn" style="display:flex;align-items:center;gap:7px;cursor:pointer;">
+            <input type="checkbox" id="togglePolicy" checked style="accent-color:var(--accent);"> mostrar setas no tabuleiro
+          </label>
+        </div>
+
+        <div class="qtable">
+          <div class="hint">Clique em uma célula do tabuleiro para inspecionar a linha <code>Q(s, ·)</code> daquele estado.</div>
+          <table class="qvals" id="qtableBody"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel explain">
+    <h2>O que está acontecendo por baixo do capô</h2>
+    A cada passo o agente está em um <b>estado</b> <code>s = (linha, coluna)</code>, escolhe uma
+    <b>ação</b> <code>a ∈ {cima, baixo, esquerda, direita}</code> e o ambiente devolve uma <b>recompensa</b> e
+    um novo estado <code>s'</code>:
+    <ul>
+      <li><code>−1</code> a cada passo comum (incentiva caminhos curtos)</li>
+      <li><code>−10</code> e episódio <b>termina</b> ao cair num buraco</li>
+      <li><code>+10</code> e episódio <b>termina</b> ao chegar no objetivo</li>
+    </ul>
+    Na aba <b>Treinar Q-learning</b>, o botão de episódios roda o mesmo algoritmo do notebook
+    (atualização de Bellman, <code>ε</code>-greedy com decaimento) direto no navegador — arraste o
+    slider para ver a política sair de aleatória (poucos episódios) para ótima (muitos episódios).
+  </div>
+
+  <footer class="note">Ambiente idêntico ao da Seção 2 do notebook <code>rl_tutorial.ipynb</code> — grade 5×5, início (0,0), objetivo (4,4), buracos em (1,2) e (3,1).</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SIZE = 5;
+  var START = [0,0];
+  var GOAL = [4,4];
+  var HOLES = [[1,2],[3,1]];
+  var ACTIONS = ["up","down","left","right"];
+  var DELTA = { up:[-1,0], down:[1,0], left:[0,-1], right:[0,1] };
+  var GLYPH = { up:"↑", down:"↓", left:"←", right:"→" };
+  var NAME_PT = { up:"cima", down:"baixo", left:"esquerda", right:"direita" };
+
+  function isHole(r,c){ return HOLES.some(function(h){ return h[0]===r && h[1]===c; }); }
+  function isGoal(r,c){ return r===GOAL[0] && c===GOAL[1]; }
+  function isStart(r,c){ return r===START[0] && c===START[1]; }
+  function clamp(x,lo,hi){ return Math.max(lo, Math.min(hi,x)); }
+
+  function envStep(pos, action){
+    var d = DELTA[action];
+    var nr = clamp(pos[0]+d[0], 0, SIZE-1);
+    var nc = clamp(pos[1]+d[1], 0, SIZE-1);
+    var reward, done;
+    if (isHole(nr,nc)) { reward=-10; done=true; }
+    else if (isGoal(nr,nc)) { reward=10; done=true; }
+    else { reward=-1; done=false; }
+    return { pos:[nr,nc], reward:reward, done:done };
+  }
+
+  // ---------- board rendering ----------
+  var boardEl = document.getElementById("board");
+  var agentEl = document.getElementById("agent");
+  var cells = {};
+
+  for (var r=0;r<SIZE;r++){
+    for (var c=0;c<SIZE;c++){
+      var cell = document.createElement("div");
+      cell.className = "cell";
+      if (isStart(r,c)) cell.classList.add("start");
+      if (isGoal(r,c)) cell.classList.add("goal");
+      if (isHole(r,c)) cell.classList.add("hole");
+
+      var tag = document.createElement("div"); tag.className="tag";
+      tag.textContent = isStart(r,c) ? "início" : isGoal(r,c) ? "objetivo" : isHole(r,c) ? "buraco" : "";
+      cell.appendChild(tag);
+
+      var coord = document.createElement("div"); coord.className="coord";
+      coord.textContent = "("+r+","+c+")";
+      cell.appendChild(coord);
+
+      if (isHole(r,c)) {
+        var mk = document.createElement("div"); mk.className="mark"; mk.textContent="×"; cell.appendChild(mk);
+      } else if (isGoal(r,c)) {
+        var mk2 = document.createElement("div"); mk2.className="mark"; mk2.textContent="OBJ"; cell.appendChild(mk2);
+      } else {
+        var arrow = document.createElement("div"); arrow.className="policy-arrow"; arrow.textContent="";
+        cell.appendChild(arrow);
+        var pq = document.createElement("div"); pq.className="policy-q"; pq.textContent="";
+        cell.appendChild(pq);
+      }
+
+      cell.dataset.r = r; cell.dataset.c = c;
+      if (!isHole(r,c) && !isGoal(r,c)){
+        cell.addEventListener("click", function(){
+          var rr = parseInt(this.dataset.r,10), cc = parseInt(this.dataset.c,10);
+          selectCellForQ(rr,cc);
+        });
+      }
+      boardEl.appendChild(cell);
+      cells[r+","+c] = cell;
+    }
+  }
+
+  function placeAgent(pos){
+    var pct = 100/SIZE;
+    agentEl.style.left = (pos[1]*pct + pct*0.1) + "%";
+    agentEl.style.top = (pos[0]*pct + pct*0.1) + "%";
+  }
+
+  // ---------- manual play state ----------
+  var state = { pos: START.slice(), step:0, total:0, done:false, autoplaying:false };
+  var logEl = document.getElementById("log");
+  var bannerEl = document.getElementById("banner");
+
+  function fmtSigned(n){ return (n>0? "+":"") + n; }
+
+  function pushLog(fromPos, action, r2){
+    if (logEl.querySelector(".log-empty")) logEl.innerHTML = "";
+    var row = document.createElement("div"); row.className = "log-row";
+    var left = document.createElement("span");
+    left.textContent = "#"+state.step+"  ("+fromPos[0]+","+fromPos[1]+") --"+NAME_PT[action]+"--> ("+r2.pos[0]+","+r2.pos[1]+")";
+    var right = document.createElement("span"); right.className = "r " + (r2.reward<0?"neg":"pos");
+    right.textContent = fmtSigned(r2.reward);
+    row.appendChild(left); row.appendChild(right);
+    logEl.appendChild(row);
+  }
+
+  function renderManualStats(){
+    document.getElementById("stState").textContent = "("+state.pos[0]+", "+state.pos[1]+")";
+    document.getElementById("stStep").textContent = state.step;
+    document.getElementById("stTotal").textContent = state.total;
+  }
+
+  function showBanner(kind, text){
+    bannerEl.className = "status-banner show " + kind;
+    bannerEl.textContent = text;
+  }
+  function hideBanner(){ bannerEl.className = "status-banner"; bannerEl.textContent=""; }
+
+  function doStep(action){
+    if (state.done) return;
+    var res = envStep(state.pos, action);
+    pushLog(state.pos, action, res);
+    state.pos = res.pos; state.step++; state.total += res.reward; state.done = res.done;
+    placeAgent(state.pos);
+    renderManualStats();
+    document.getElementById("stReward").textContent = fmtSigned(res.reward);
+    document.getElementById("stReward").className = "v " + (res.reward<0 ? (res.done?"bad":"") : "ok");
+    if (res.done){
+      if (isGoal(res.pos[0],res.pos[1])) showBanner("ok","✓ objetivo alcançado — episódio encerrado");
+      else showBanner("bad","✗ caiu no buraco — episódio encerrado");
+      setDpadEnabled(false);
+    }
+  }
+
+  function resetEpisode(){
+    state = { pos: START.slice(), step:0, total:0, done:false, autoplaying:state.autoplaying };
+    placeAgent(state.pos);
+    renderManualStats();
+    document.getElementById("stReward").textContent = "—";
+    document.getElementById("stReward").className = "v";
+    hideBanner();
+    logEl.innerHTML = '<div class="log-empty">o histórico de passos aparece aqui</div>';
+    setDpadEnabled(true);
+  }
+
+  function setDpadEnabled(on){
+    document.querySelectorAll(".dbtn").forEach(function(b){ b.disabled = !on; });
+  }
+
+  document.querySelectorAll(".dbtn").forEach(function(btn){
+    btn.addEventListener("click", function(){ doStep(this.dataset.a); });
+  });
+  document.getElementById("btnReset").addEventListener("click", resetEpisode);
+
+  window.addEventListener("keydown", function(e){
+    var map = { ArrowUp:"up", ArrowDown:"down", ArrowLeft:"left", ArrowRight:"right" };
+    if (map[e.key] && document.getElementById("paneManual").style.display !== "none"){
+      e.preventDefault(); doStep(map[e.key]);
+    }
+  });
+
+  placeAgent(state.pos);
+  renderManualStats();
+
+  // ---------- tabs ----------
+  var tabManual = document.getElementById("tabManual");
+  var tabTrain = document.getElementById("tabTrain");
+  var paneManual = document.getElementById("paneManual");
+  var paneTrain = document.getElementById("paneTrain");
+
+  tabManual.addEventListener("click", function(){
+    tabManual.classList.add("active"); tabTrain.classList.remove("active");
+    paneManual.style.display=""; paneTrain.style.display="none";
+  });
+  tabTrain.addEventListener("click", function(){
+    tabTrain.classList.add("active"); tabManual.classList.remove("active");
+    paneTrain.style.display=""; paneManual.style.display="none";
+    if (!trained) trainAndRender();
+  });
+
+  // ---------- seeded RNG (mulberry32), for reproducible training ----------
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ---------- Q-learning (mirrors the notebook) ----------
+  var Q = null; // {"r,c": [up,down,left,right]}
+  var trained = false;
+  var rewardHistory = [];
+
+  function allStates(){
+    var out = [];
+    for (var r=0;r<SIZE;r++) for (var c=0;c<SIZE;c++) out.push([r,c]);
+    return out;
+  }
+
+  function trainQLearning(episodes){
+    var rng = mulberry32(42);
+    var alpha=0.5, gamma=0.95, epsStart=1.0, epsEnd=0.05, epsDecay=0.99, maxSteps=100;
+    var q = {};
+    allStates().forEach(function(s){ q[s[0]+","+s[1]] = [0,0,0,0]; });
+    var eps = epsStart;
+    var hist = [];
+
+    for (var ep=0; ep<episodes; ep++){
+      var pos = START.slice(); var total=0;
+      for (var t=0;t<maxSteps;t++){
+        var key = pos[0]+","+pos[1];
+        var a;
+        if (rng() < eps) a = Math.floor(rng()*4);
+        else a = argmax(q[key]);
+        var action = ACTIONS[a];
+        var res = envStep(pos, action);
+        var k2 = res.pos[0]+","+res.pos[1];
+        var bestNext = Math.max.apply(null, q[k2]);
+        q[key][a] += alpha * (res.reward + gamma*bestNext*(res.done?0:1) - q[key][a]);
+        pos = res.pos; total += res.reward;
+        if (res.done) break;
+      }
+      hist.push(total);
+      eps = Math.max(epsEnd, eps*epsDecay);
+    }
+    return { q:q, hist:hist };
+  }
+
+  function argmax(arr){
+    var bi=0; for (var i=1;i<arr.length;i++) if (arr[i]>arr[bi]) bi=i;
+    return bi;
+  }
+
+  function movingAverage(arr, w){
+    var out = [];
+    for (var i=0;i<arr.length;i++){
+      var lo = Math.max(0,i-w+1);
+      var slice = arr.slice(lo,i+1);
+      out.push(slice.reduce(function(a,b){return a+b;},0)/slice.length);
+    }
+    return out;
+  }
+
+  function trainAndRender(){
+    var episodes = parseInt(document.getElementById("epSlider").value,10);
+    var res = trainQLearning(episodes);
+    Q = res.q; rewardHistory = res.hist; trained = true;
+
+    var last20 = rewardHistory.slice(-20);
+    var avg = last20.reduce(function(a,b){return a+b;},0)/last20.length;
+    document.getElementById("stAvg").textContent = avg.toFixed(1);
+
+    renderPolicyOnBoard();
+    renderSpark(movingAverage(rewardHistory, Math.max(5, Math.round(episodes*0.05))));
+    document.getElementById("btnAutoLearned").disabled = false;
+    document.getElementById("btnAutoLearned").title = "";
+    if (selectedCell) selectCellForQ(selectedCell[0], selectedCell[1]);
+  }
+
+  function renderPolicyOnBoard(){
+    var coverage = 0, total = 0;
+    allStates().forEach(function(s){
+      var r=s[0], c=s[1];
+      if (isHole(r,c) || isGoal(r,c)) return;
+      total++;
+      var qvals = Q[r+","+c];
+      var bi = argmax(qvals);
+      var cell = cells[r+","+c];
+      var arrowEl = cell.querySelector(".policy-arrow");
+      var qEl = cell.querySelector(".policy-q");
+      arrowEl.textContent = GLYPH[ACTIONS[bi]];
+      qEl.textContent = qvals[bi].toFixed(1);
+      if (qvals[bi] > -5) coverage++; // heurística simples de "aprendeu algo útil"
+    });
+    document.getElementById("stCoverage").textContent = coverage + " / " + total;
+    boardEl.classList.toggle("show-policy", document.getElementById("togglePolicy").checked);
+  }
+
+  document.getElementById("togglePolicy").addEventListener("change", function(){
+    boardEl.classList.toggle("show-policy", this.checked);
+  });
+
+  document.getElementById("epSlider").addEventListener("input", function(){
+    document.getElementById("epLabel").textContent = this.value;
+  });
+  document.getElementById("epSlider").addEventListener("change", trainAndRender);
+
+  function renderSpark(series){
+    var svg = document.getElementById("spark");
+    svg.innerHTML = "";
+    var W=300, H=64, pad=4;
+    if (series.length < 2){ return; }
+    var min = Math.min.apply(null, series), max = Math.max.apply(null, series);
+    if (min===max){ min -= 1; max += 1; }
+    function x(i){ return pad + (i/(series.length-1)) * (W-2*pad); }
+    function y(v){ return H-pad - ((v-min)/(max-min)) * (H-2*pad); }
+
+    var grid = document.createElementNS("http://www.w3.org/2000/svg","line");
+    grid.setAttribute("x1",pad); grid.setAttribute("x2",W-pad);
+    grid.setAttribute("y1",H-pad); grid.setAttribute("y2",H-pad);
+    grid.setAttribute("stroke","var(--line)"); grid.setAttribute("stroke-width","1");
+    svg.appendChild(grid);
+
+    var pts = series.map(function(v,i){ return x(i)+","+y(v); }).join(" ");
+    var poly = document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    poly.setAttribute("points", pts);
+    poly.setAttribute("fill","none");
+    poly.setAttribute("stroke","var(--accent)");
+    poly.setAttribute("stroke-width","2");
+    poly.setAttribute("stroke-linecap","round");
+    poly.setAttribute("stroke-linejoin","round");
+    svg.appendChild(poly);
+
+    var lastX = x(series.length-1), lastY = y(series[series.length-1]);
+    var dot = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    dot.setAttribute("cx",lastX); dot.setAttribute("cy",lastY); dot.setAttribute("r","3");
+    dot.setAttribute("fill","var(--accent)");
+    svg.appendChild(dot);
+  }
+
+  // ---------- Q inspection ----------
+  var selectedCell = null;
+  function selectCellForQ(r,c){
+    if (!trained) return;
+    Object.values(cells).forEach(function(el){ el.classList.remove("selected"); });
+    cells[r+","+c].classList.add("selected");
+    selectedCell = [r,c];
+    var qvals = Q[r+","+c];
+    var bi = argmax(qvals);
+    var table = document.getElementById("qtableBody");
+    var html = "<tr><th>ação</th><th>Q(s,a)</th></tr>";
+    ACTIONS.forEach(function(a,i){
+      html += '<tr class="'+(i===bi?"best":"")+'"><td>'+NAME_PT[a]+(i===bi?" ★":"")+'</td><td>'+qvals[i].toFixed(2)+'</td></tr>';
+    });
+    table.innerHTML = html;
+  }
+
+  // ---------- autoplay learned policy (manual tab) ----------
+  document.getElementById("btnAutoLearned").addEventListener("click", function(){
+    if (!trained || state.autoplaying) return;
+    resetEpisode();
+    state.autoplaying = true;
+    setDpadEnabled(false);
+    document.getElementById("btnReset").disabled = true;
+    var guard = 0;
+    (function tick(){
+      if (state.done || guard++ > 60){ state.autoplaying=false; document.getElementById("btnReset").disabled=false; return; }
+      var key = state.pos[0]+","+state.pos[1];
+      var a = argmax(Q[key]);
+      doStep(ACTIONS[a]);
+      if (!state.done) setTimeout(tick, 550);
+      else { state.autoplaying=false; document.getElementById("btnReset").disabled=false; }
+    })();
+  });
+
+  // pre-render an empty hint table
+  document.getElementById("qtableBody").innerHTML =
+    '<tr><th>ação</th><th>Q(s,a)</th></tr><tr><td class="na" colspan="2">treine e clique numa célula</td></tr>';
+})();
+</script>
+
+</body></html>
