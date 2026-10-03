@@ -57,7 +57,7 @@ references:
   - 'PANESAR, Arjun. Machine Learning and AI for Healthcare: Big Data for Improved Health Outcomes. Berkeley: Apress, 2019.'
   - 'BERNER, Eta S. Clinical Decision Support Systems: Theory and Practice. 2. ed. New York: Springer, 2007.'
 language: pt-BR
-updated: 27/09/2026
+updated: 03/10/2026
 materials:
   - title: Atividades interativas
     url: /interativos/aprendizado-maquina/
@@ -190,12 +190,12 @@ calendar:
         type: leitura
         external: true
   - date: '2026-10-09'
-    title: 'Aula 8: Deep learning 2 — transformers e sinais biomédicos'
+    title: 'Aula 8: Deep learning 2 — transformers e sinais biomédicos; Aula 9: Processamento de linguagem natural biomédico; Aula 10: Modelos de linguagem e multimodalidade'
     type: aula
     status: planned
     note: Módulo 3 — Aprendizado profundo e NLP.
     references:
-      - PANESAR (2019)
+      - PANESAR (2019); WORLD HEALTH ORGANIZATION (2024)
     materials:
       - title: Slides da aula 8
         url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-8/
@@ -205,14 +205,6 @@ calendar:
         url: https://aprendizado-de-maquina-para-saude.netlify.app/apostilas/encontro_08_apostila.pdf
         type: leitura
         external: true
-  - date: '2026-10-16'
-    title: 'Aula 9: Processamento de linguagem natural biomédico; Aula 10: Modelos de linguagem e multimodalidade'
-    type: aula
-    status: planned
-    note: Módulo 3 — Aprendizado profundo e NLP.
-    references:
-      - WORLD HEALTH ORGANIZATION (2024)
-    materials:
       - title: Slides da aula 9
         url: https://aprendizado-de-maquina-para-saude.netlify.app/encontro-9/
         type: slides
@@ -229,7 +221,7 @@ calendar:
         url: https://aprendizado-de-maquina-para-saude.netlify.app/apostilas/encontro_10_apostila.pdf
         type: leitura
         external: true
-  - date: '2026-10-23'
+  - date: '2026-10-16'
     title: 'Aula 11: Análise de sobrevivência, predição de risco; Aula 12: Inferência causal e evidência de mundo real'
     type: aula
     status: planned
@@ -253,6 +245,10 @@ calendar:
         url: https://aprendizado-de-maquina-para-saude.netlify.app/apostilas/encontro_12_apostila.pdf
         type: leitura
         external: true
+  - date: '2026-10-23'
+    title: Aula de exercícios
+    type: aula
+    status: planned
   - date: '2026-10-30'
     title: Semana de extensão (SEMEXT)
     type: atividade
@@ -301,6 +297,11 @@ calendar:
     status: planned
     note: Não haverá aula.
   - date: '2026-11-27'
+    title: Apresentação do projeto final
+    type: apresentacao
+    status: planned
+    note: Apresentação e discussão dos miniprojetos desenvolvidos pelas equipes.
+  - date: '2026-12-04'
     title: 'Aula 16: O futuro da medicina baseada em IA'
     type: aula
     status: planned
@@ -316,11 +317,6 @@ calendar:
         url: https://aprendizado-de-maquina-para-saude.netlify.app/apostilas/encontro_16_apostila.pdf
         type: leitura
         external: true
-  - date: '2026-12-04'
-    title: Apresentação do projeto final
-    type: apresentacao
-    status: planned
-    note: Apresentação e discussão dos miniprojetos desenvolvidos pelas equipes.
 ---
 
 ## Visão geral

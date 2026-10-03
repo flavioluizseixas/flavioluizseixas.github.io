@@ -91,6 +91,8 @@ export const englishContent: Record<string, string> = {
   'Módulo 3 — Aprendizado profundo e NLP.': 'Module 3 — Deep learning and NLP.',
   'Aula 8: Deep learning 2 — transformers e sinais biomédicos':
     'Lecture 8: Deep learning 2 — transformers and biomedical signals',
+  'Aula 8: Deep learning 2 — transformers e sinais biomédicos; Aula 9: Processamento de linguagem natural biomédico; Aula 10: Modelos de linguagem e multimodalidade':
+    'Lecture 8: Deep learning 2 — transformers and biomedical signals; Lecture 9: Biomedical natural language processing; Lecture 10: Language models and multimodality',
   'Slides da aula 8': 'Lecture 8 slides',
   'Apostila da aula 8': 'Lecture 8 handout',
   'Aula 9: Processamento de linguagem natural biomédico; Aula 10: Modelos de linguagem e multimodalidade':
@@ -108,6 +110,7 @@ export const englishContent: Record<string, string> = {
   'Módulo 4 — Sobrevivência, inferência causal e decisão.':
     'Module 4 — Survival, causal inference, and decision-making.',
   'Semana de extensão (SEMEXT)': 'University Outreach Week (SEMEXT)',
+  'Aula de exercícios': 'Practice session',
   'Aula 13: Sistemas de apoio à decisão clínica e implementação; Aula 14: Explicabilidade, equidade e privacidade; Aula 15: Regulação, relato científico e MLOps':
     'Lecture 13: Clinical decision support systems and implementation; Lecture 14: Explainability, equity, and privacy; Lecture 15: Regulation, scientific reporting, and MLOps',
   'Slides da aula 13': 'Lecture 13 slides',
@@ -269,6 +272,8 @@ export const englishContent: Record<string, string> = {
     'Lecture 3: Business process management cycle using BPM',
   'Aula 5: Modelagem de processos de negócio com BPMN - parte 1':
     'Lecture 5: Business process modeling with BPMN — part 1',
+  'Aula 5: Modelagem de processos de negócio com BPMN - parte 1; Apresentação 1: tema do estudo de caso':
+    'Lecture 5: Business process modeling with BPMN — part 1; Presentation 1: case study topic',
   'Aula 6: Modelagem de processos de negócio com BPMN - parte 2':
     'Lecture 6: Business process modeling with BPMN — part 2',
   'Apresentação 1: tema do estudo de caso': 'Presentation 1: case study topic',

@@ -21,7 +21,7 @@ references:
   - 'ABPMP Brazil. BPM CBOK, 3ª ed., 2013.'
   - 'Paim, R. Gestão de processos: pensar, agir e aprender. Bookman, 2009.'
 language: pt-BR
-updated: 03/08/2026
+updated: 03/10/2026
 materials: []
 calendar:
   - date: '2026-08-07'
@@ -71,7 +71,7 @@ calendar:
         type: slides
         external: true
   - date: '2026-09-11'
-    title: 'Aula 5: Modelagem de processos de negócio com BPMN - parte 1'
+    title: 'Aula 5: Modelagem de processos de negócio com BPMN - parte 1; Apresentação 1: tema do estudo de caso'
     type: aula
     status: planned
     materials:
@@ -93,9 +93,9 @@ calendar:
     type: avaliacao
     status: planned
   - date: '2026-10-02'
-    title: 'Apresentação 1: tema do estudo de caso'
+    title: 'Apresentação 2: Modelagem de processos de negócio AS-IS'
     type: apresentacao
-    status: planned
+    status: completed
   - date: '2026-10-09'
     title: 'Aula 7: Análise de processos de negócio. Análise qualitativa: análise de valor agregado, análise de desperdício, análise de partes interessadas, diagrama de causa-efeito, técnica dos 5 porquês, pareto.'
     type: aula
@@ -119,9 +119,9 @@ calendar:
         type: slides
         external: true
   - date: '2026-10-23'
-    title: 'Apresentação 2: Modelagem de processos de negócio AS-IS'
-    type: apresentacao
-    status: planned
+    title: Não haverá aula
+    type: sem-aula
+    status: changed
   - date: '2026-10-30'
     title: Semana de extensão (SEMEXT)
     type: atividade
