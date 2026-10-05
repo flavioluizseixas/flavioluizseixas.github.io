@@ -28,9 +28,15 @@ syllabus:
 workload: 30 horas
 prerequisites: []
 evaluation: A proposta de avaliação combina preparação e participação, artefatos cumulativos, leituras orientadas e um brief decisório com apresentação final. Pesos, prazos e critérios institucionais serão confirmados pelos docentes.
-references: []
+references:
+  - 'BRASIL. Lei nº 13.709, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais (LGPD). Brasília, DF: Presidência da República, 2018. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm. Acesso em: 5 out. 2026.'
+  - 'COHEN, Trevor A.; PATEL, Vimla L.; SHORTLIFFE, Edward H. (ed.). Intelligent systems in medicine and health: the role of AI. Cham: Springer, 2022.'
+  - 'HARDY, Lynda R. Health informatics: an interprofessional approach. 3. ed. St. Louis: Elsevier, 2023.'
+  - 'HEBDA, Toni Lee; CZAR, Patricia. Handbook of informatics for nurses & healthcare professionals. 5. ed. Boston: Pearson, 2013.'
+  - 'SHORTLIFFE, Edward H.; CIMINO, James J. (ed.). Biomedical informatics: computer applications in health care and biomedicine. 5. ed. Cham: Springer, 2021.'
+  - 'WORLD HEALTH ORGANIZATION. Ethics and governance of artificial intelligence for health: WHO guidance. Geneva: World Health Organization, 2021. Disponível em: https://www.who.int/publications/i/item/9789240029200. Acesso em: 5 out. 2026.'
 language: pt-BR
-updated: 17/08/2026
+updated: 05/10/2026
 notice: Horários, sala dos encontros presenciais e plataforma dos encontros remotos serão confirmados pelos docentes.
 materials:
   - title: Apresentação da disciplina
@@ -128,4 +134,4 @@ O plano prevê evidências cumulativas ao longo dos seis encontros e uma síntes
 
 ## Referências
 
-As leituras de cada tema estão indicadas nas respectivas apresentações.
+As referências principais estão listadas na seção Referências da página da disciplina, em formato ABNT. As leituras específicas de cada tema estão indicadas nas respectivas apresentações.
