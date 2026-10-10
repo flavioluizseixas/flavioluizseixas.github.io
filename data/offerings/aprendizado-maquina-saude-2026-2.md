@@ -57,7 +57,7 @@ references:
   - 'PANESAR, Arjun. Machine Learning and AI for Healthcare: Big Data for Improved Health Outcomes. Berkeley: Apress, 2019.'
   - 'BERNER, Eta S. Clinical Decision Support Systems: Theory and Practice. 2. ed. New York: Springer, 2007.'
 language: pt-BR
-updated: 09/10/2026
+updated: 10/10/2026
 materials:
   - title: Atividades interativas
     url: /interativos/aprendizado-maquina/
@@ -246,9 +246,9 @@ calendar:
         type: leitura
         external: true
   - date: '2026-10-23'
-    title: Aula de exercícios
-    type: aula
-    status: planned
+    title: Não haverá aula
+    type: sem-aula
+    status: changed
   - date: '2026-10-30'
     title: Semana de extensão (SEMEXT)
     type: atividade
