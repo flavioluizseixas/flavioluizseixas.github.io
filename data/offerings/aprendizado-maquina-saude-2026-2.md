@@ -57,7 +57,7 @@ references:
   - 'PANESAR, Arjun. Machine Learning and AI for Healthcare: Big Data for Improved Health Outcomes. Berkeley: Apress, 2019.'
   - 'BERNER, Eta S. Clinical Decision Support Systems: Theory and Practice. 2. ed. New York: Springer, 2007.'
 language: pt-BR
-updated: 03/10/2026
+updated: 09/10/2026
 materials:
   - title: Atividades interativas
     url: /interativos/aprendizado-maquina/
@@ -255,6 +255,11 @@ calendar:
     status: planned
     note: Módulo 4 — Sobrevivência, inferência causal e decisão.
   - date: '2026-11-06'
+    title: Apresentação de artigo 2
+    type: apresentacao
+    status: planned
+    note: Módulo 5 — Ética, regulação e prática profissional.
+  - date: '2026-11-13'
     title: 'Aula 13: Sistemas de apoio à decisão clínica e implementação; Aula 14: Explicabilidade, equidade e privacidade; Aula 15: Regulação, relato científico e MLOps'
     type: aula
     status: planned
@@ -286,11 +291,6 @@ calendar:
         url: https://aprendizado-de-maquina-para-saude.netlify.app/apostilas/encontro_15_apostila.pdf
         type: leitura
         external: true
-  - date: '2026-11-13'
-    title: Apresentação de artigo 2
-    type: apresentacao
-    status: planned
-    note: Módulo 5 — Ética, regulação e prática profissional.
   - date: '2026-11-20'
     title: Feriado
     type: feriado
